@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig.base",
+  "compilerOptions": {
+    "rootDir": "../",
+    "baseUrl": ".",
+    "paths": {
+      "@lib": ["../lib"],
+      "@lib/*": ["../lib/*"]
+    }
+  },
+  "include": [
+    "../lib/**/*",
+    "**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
