@@ -37,12 +37,6 @@ export class CsEnvironmentConfig extends Construct {
 	}
 
 	public toObject(): {[k: string]: string;} {
-		const result: {[k: string]: string;} = {};
-
-		for ( const [ key, value ] of this.store.entries() ) {
-			result[ key ] = value;
-		}
-
-		return result;
+		return Object.fromEntries( this.store.entries() );
 	}
 }

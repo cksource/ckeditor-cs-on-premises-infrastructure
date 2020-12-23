@@ -23,7 +23,7 @@ export class StackConfig extends Construct {
 			Annotations.of( this ).addError( 'Context parameter "dockerRegistryAuthToken" is required' );
 		}
 
-		this.version = this.node.tryGetContext( 'version' ) ?? '3.7.1';
+		this.version = this.node.tryGetContext( 'version' ) ?? 'latest';
 
 		this.env = ( this.node.tryGetContext( 'env' ) ?? '' ).split( ',' );
 
