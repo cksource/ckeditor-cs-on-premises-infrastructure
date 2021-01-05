@@ -5,6 +5,7 @@
 import { Construct, Duration, Fn, Stack } from '@aws-cdk/core';
 import { ApplicationLoadBalancedEc2Service } from '@aws-cdk/aws-ecs-patterns';
 import {
+	BuiltInAttributes,
 	Cluster,
 	ContainerDefinition,
 	Ec2TaskDefinition,
@@ -26,7 +27,7 @@ import { Database } from './database';
 import { Storage } from './storage';
 import { Network } from './network';
 import { StackConfig } from '../stack-config';
-import { CsEnvironmentConfig } from '../cs-environment-config';
+import { CSEnvironmentConfig } from '../cs-environment-config';
 
 interface IApplicationProps {
 	stackConfig: StackConfig;
@@ -42,7 +43,7 @@ export class Application extends Construct {
 
 	private readonly containerDefinition: ContainerDefinition;
 
-	private readonly csEnvironmentConfig: CsEnvironmentConfig;
+	private readonly csEnvironmentConfig: CSEnvironmentConfig;
 
 	public readonly cluster: Cluster;
 
@@ -53,7 +54,7 @@ export class Application extends Construct {
 	public constructor( scope: Construct, id: string, props: IApplicationProps ) {
 		super( scope, id );
 
-		this.csEnvironmentConfig = new CsEnvironmentConfig( this, props.stackConfig.env );
+		this.csEnvironmentConfig = new CSEnvironmentConfig( this, props.stackConfig.env );
 
 		this.cluster = new Cluster( this, 'EcsCluster', { vpc: props.network.vpc } );
 
@@ -65,15 +66,19 @@ export class Application extends Construct {
 
 		this.taskDefinition = new Ec2TaskDefinition( this, 'TaskDefinition' );
 
-		this.containerDefinition = this.taskDefinition.addContainer( 'CloudServicesContainer', {
+		this.containerDefinition = this.taskDefinition.addContainer( 'CollaborationServerContainer', {
 			image: props.repositoryImage,
 			environment: {
 				DATABASE_HOST: props.database.host,
 				DATABASE_DATABASE: props.database.name,
 				STORAGE_DRIVER: 's3',
-				STORAGE_ENDPOINT: props.storage.bucket.bucketDomainName,
+				STORAGE_ENDPOINT: `${ props.storage.bucket.bucketDomainName }/storage`,
 				STORAGE_BUCKET: props.storage.bucket.bucketName,
 				STORAGE_REGION: Stack.of( this ).region,
+				COLLABORATION_STORAGE_DRIVER: 's3',
+				COLLABORATION_STORAGE_ENDPOINT: `${ props.storage.bucket.bucketDomainName }/collaboration_storage`,
+				COLLABORATION_STORAGE_BUCKET: props.storage.bucket.bucketName,
+				COLLABORATION_STORAGE_REGION: Stack.of( this ).region,
 				REDIS_CLUSTER_NODES: Fn.join( ':', [ props.redis.host, String( Redis.PORT ) ] ),
 				...this.csEnvironmentConfig.toObject()
 			},
@@ -107,6 +112,7 @@ export class Application extends Construct {
 			);
 
 			this.loadBalancedEc2Service.service.addPlacementStrategies(
+				PlacementStrategy.spreadAcross( BuiltInAttributes.AVAILABILITY_ZONE ),
 				PlacementStrategy.spreadAcrossInstances(),
 				PlacementStrategy.packedByCpu()
 			);
@@ -114,7 +120,7 @@ export class Application extends Construct {
 
 		this.targetGroup.configureHealthCheck( { path: '/health' } );
 
-		this.cluster.connections.allowFrom( this.loadBalancer, Port.allTraffic() );
+		this.cluster.connections.allowFrom( this.loadBalancer, Port.tcp( applicationHttpPort ) );
 		props.network.allowRedisConnectionsFrom( this.cluster );
 		props.network.allowDatabaseConnectionsFrom( this.cluster );
 	}

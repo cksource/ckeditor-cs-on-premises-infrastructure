@@ -9,7 +9,7 @@ const ENV_CONFIG_DEFAULTS: [string, string][] = [
 	[ 'APPLICATION_HTTP_PORT', '80' ]
 ];
 
-export class CsEnvironmentConfig extends Construct {
+export class CSEnvironmentConfig extends Construct {
 	private readonly store: Map<string, string> = new Map( ENV_CONFIG_DEFAULTS );
 
 	public constructor( scope: Construct, config: string[] ) {

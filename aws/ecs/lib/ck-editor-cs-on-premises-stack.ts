@@ -14,12 +14,9 @@ import { Redis } from './resource/redis';
 import { Storage } from './resource/storage';
 import { Network } from './resource/network';
 import { Utils } from './utils';
-import { CsEnvironmentConfig } from './cs-environment-config';
 
-export class CkEditorCsOnPremiseStack extends Stack {
+export class CKEditorCSOnPremisesStack extends Stack {
 	private readonly stackConfig: StackConfig;
-
-	private readonly csEnvironmentConfig: CsEnvironmentConfig;
 
 	private readonly network: Network;
 
@@ -37,8 +34,6 @@ export class CkEditorCsOnPremiseStack extends Stack {
 		super( scope, id, props );
 
 		this.stackConfig = new StackConfig( this, 'StackConfig' );
-
-		this.csEnvironmentConfig = new CsEnvironmentConfig( this, this.stackConfig.env );
 
 		this.network = new Network( this, 'Network' );
 
@@ -74,7 +69,7 @@ export class CkEditorCsOnPremiseStack extends Stack {
 
 		Tags.of( this ).add(
 			'Application',
-			'CKEditor - Cloud Server On-Premises Installation'
+			'CKEditor Collaboration Server On-Premises Installation'
 		);
 	}
 }

@@ -6,6 +6,13 @@ Use this script to provision infrastructure with recommended settings and instal
 This script uses AWS CDK. If you haven't worked with it before, we highly recommend to get familiar with it first:
 https://docs.aws.amazon.com/cdk/index.html
 
+## Parameters
+[Read more about AWS CDK context parameters](https://docs.aws.amazon.com/cdk/latest/guide/context.html)
+
+- `dockerRegistryAuthToken` - Authentication token to `docker.cke-cs.com` repository
+- `version` - Collaboration Server version (default `latest`)
+- `env` - A comma-separated list of CKEditor Collaboration Server configuration ([see available options](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/installation/docker.html#docker-container-environment-variables))
+
 ## Quick start
 
 To use AWS CDK first You need an AWS account and AWS credentials. Read more about how to configure the environment [on official CDK docs](https://docs.aws.amazon.com/cdk/latest/guide/work-with.html).
@@ -27,15 +34,9 @@ To use AWS CDK first You need an AWS account and AWS credentials. Read more abou
 
 **Note**:
 For easier work with CDK, we recommend using it together with AWS credentials manager like [aws-vault](https://github.com/99designs/aws-vault).
-
-## Parameters
-[Read more about AWS CDK context parameters](https://docs.aws.amazon.com/cdk/latest/guide/context.html)
-
-- `dockerRegistryAuthToken` - Authentication token to `docker.cke-cs.com` repository
-- `version` - Collaboration Server version (default 3.7.1)
-- `env` - A comma-separated list of CKEditor Collaboration Server configuration ([see available options](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/installation/docker.html#docker-container-environment-variables))
-
 ## Infrastructure overview
+
+![CKEditor ECS Diagram](diagram.jpg)
 
 To provide high availability and fault tolerance we're recommending running the application in at least two availability zones. For high security, we're following the least privilege model for all of the infrastructure resources - no permissions are given unless they are required. All of the data used by the system is encrypted.
 
@@ -51,10 +52,10 @@ Docker container orchestration for running the application and managing availabl
 ### Database
 Databases are running in an isolated network (no in/out internet access) with backup and encryption enabled.
 MySQL (RDS Aurora) is running on R5 large instances.
-Redis (ElastiCache cluster) is running on T3 large instances.
+Redis (ElastiCache cluster) is running on M5 large instances.
 
 ### S3
-Private encrypted bucket for editor files.
+Private encrypted bucket for editor and easy image files.
 
 ### VPC
 Including three subnets:

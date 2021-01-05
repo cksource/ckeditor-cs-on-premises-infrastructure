@@ -31,9 +31,9 @@ export class Network extends Construct {
 
 		this.vpc = new Vpc( this, 'Vpc', {
 			subnetConfiguration: [
-				{ cidrMask: 24, name: 'publicSubnet', subnetType: SubnetType.PUBLIC },
-				{ cidrMask: 24, name: 'privateSubnet', subnetType: SubnetType.PRIVATE },
-				{ cidrMask: 26, subnetType: SubnetType.ISOLATED, name: 'isolatedSubnet' }
+				{ cidrMask: 24, name: 'public-subnet', subnetType: SubnetType.PUBLIC },
+				{ cidrMask: 24, name: 'application-subnet', subnetType: SubnetType.PRIVATE },
+				{ cidrMask: 26, subnetType: SubnetType.ISOLATED, name: 'data-subnet' }
 			]
 		} );
 
@@ -44,6 +44,11 @@ export class Network extends Construct {
 			vpc: this.vpc
 		} );
 
+		/**
+		 * @see {@link https://redis.io/topics/cluster-tutorial#redis-cluster-tcp-ports}
+		 */
+		this.redisSecurityGroup.connections.allowInternally( Port.tcp( Redis.PORT + 10000 ) );
+
 		this.databaseSecurityGroup = new SecurityGroup( this, 'DatabaseSecurityGroup', {
 			securityGroupName: 'database-sg',
 			vpc: this.vpc
@@ -52,7 +57,6 @@ export class Network extends Construct {
 
 	public allowRedisConnectionsFrom( resource: IConnectable ): void {
 		this.redisSecurityGroup.connections.allowFrom( resource, Port.tcp( Redis.PORT ) );
-		this.redisSecurityGroup.connections.allowFrom( resource, Port.tcp( Redis.CLUSTER_BUS_PORT ) );
 	}
 
 	public allowDatabaseConnectionsFrom( resource: IConnectable ): void {

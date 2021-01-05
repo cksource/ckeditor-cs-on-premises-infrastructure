@@ -15,8 +15,6 @@ interface IRedisProps {
 export class Redis extends Construct {
 	public static readonly PORT: number = 6379;
 
-	public static readonly CLUSTER_BUS_PORT: number = 16379
-
 	public readonly connections: Connections;
 
 	private readonly redisSubnetGroup: CfnSubnetGroup;
@@ -39,12 +37,12 @@ export class Redis extends Construct {
 		this.replicationGroup = new CfnReplicationGroup( this, 'RedisReplicaGroup', {
 			engine: 'redis',
 			engineVersion: '6.x',
-			cacheNodeType: 'cache.t3.medium',
+			cacheNodeType: 'cache.m5.large',
 			replicasPerNodeGroup: 1,
-			numNodeGroups: 3,
+			numNodeGroups: 2,
 			automaticFailoverEnabled: true,
 			autoMinorVersionUpgrade: true,
-			replicationGroupDescription: 'CKEditor redis cluster',
+			replicationGroupDescription: 'CKEditor Collaboration Server Redis Cluster',
 			cacheSubnetGroupName: this.redisSubnetGroup.ref,
 			transitEncryptionEnabled: false,
 			atRestEncryptionEnabled: true,
