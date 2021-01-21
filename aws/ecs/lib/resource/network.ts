@@ -20,11 +20,11 @@ import { Redis } from './redis';
 export class Network extends Construct {
 	public readonly vpc: IVpc;
 
-	public readonly s3Endpoint: GatewayVpcEndpoint;
-
 	public readonly redisSecurityGroup: SecurityGroup;
 
 	public readonly databaseSecurityGroup: SecurityGroup;
+
+	public readonly s3Endpoint: GatewayVpcEndpoint;
 
 	public constructor( scope: Construct, id: string ) {
 		super( scope, id );
@@ -37,7 +37,10 @@ export class Network extends Construct {
 			]
 		} );
 
-		this.s3Endpoint = this.vpc.addGatewayEndpoint( 'S3BucketEndpoint', { service: GatewayVpcEndpointAwsService.S3 } );
+		this.s3Endpoint = this.vpc.addGatewayEndpoint( 'S3BucketEndpoint', {
+			service: GatewayVpcEndpointAwsService.S3,
+			subnets: [ { subnetType: SubnetType.PRIVATE } ]
+		} );
 
 		this.redisSecurityGroup = new SecurityGroup( this, 'RedisSecurityGroup', {
 			securityGroupName: 'redis-sg',

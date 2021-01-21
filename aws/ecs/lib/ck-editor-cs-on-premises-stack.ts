@@ -39,7 +39,7 @@ export class CKEditorCSOnPremisesStack extends Stack {
 
 		this.database = new Database( this, 'Database', { network: this.network } );
 
-		this.storage = new Storage( this, 'Storage' );
+		this.storage = new Storage( this, 'Storage', { network: this.network } );
 
 		this.redis = new Redis( this, 'Redis', { network: this.network } );
 

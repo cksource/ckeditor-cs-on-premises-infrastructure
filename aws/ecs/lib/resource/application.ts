@@ -2,7 +2,7 @@
  Copyright (c) 2016-2020, CKSource - Frederico Knabben. All rights reserved.
  */
 
-import { Construct, Duration, Fn, Stack } from '@aws-cdk/core';
+import { Construct, Duration, Fn, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { ApplicationLoadBalancedEc2Service } from '@aws-cdk/aws-ecs-patterns';
 import {
 	BuiltInAttributes,
@@ -17,7 +17,7 @@ import {
 	Secret,
 	TaskDefinition
 } from '@aws-cdk/aws-ecs';
-import { RetentionDays } from '@aws-cdk/aws-logs';
+import { LogGroup, RetentionDays } from '@aws-cdk/aws-logs';
 import { InstanceClass, InstanceSize, InstanceType, Port } from '@aws-cdk/aws-ec2';
 import { ApplicationLoadBalancer, TargetGroupBase } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
@@ -51,16 +51,25 @@ export class Application extends Construct {
 
 	private readonly loadBalancedEc2Service: ApplicationLoadBalancedEc2Service;
 
+	private readonly logGroup: LogGroup;
+
 	public constructor( scope: Construct, id: string, props: IApplicationProps ) {
 		super( scope, id );
 
 		this.csEnvironmentConfig = new CSEnvironmentConfig( this, props.stackConfig.env );
 
-		this.cluster = new Cluster( this, 'EcsCluster', { vpc: props.network.vpc } );
+		this.logGroup = new LogGroup( this, 'LogGroup', {
+			logGroupName: 'ckeditor-cs-logs',
+			retention: RetentionDays.TWO_MONTHS,
+			removalPolicy: RemovalPolicy.DESTROY
+		} );
+
+		this.cluster = new Cluster( this, 'EcsCluster', { vpc: props.network.vpc, clusterName: 'ckeditor-cs-cluster' } );
 
 		this.autoScalingGroup = this.cluster.addCapacity( 'DefaultAutoScalingGroupCapacity', {
 			instanceType: InstanceType.of( InstanceClass.C5, InstanceSize.LARGE ),
 			desiredCapacity: 2,
+			maxCapacity: 3,
 			taskDrainTime: Duration.seconds( 0 )
 		} );
 
@@ -72,13 +81,12 @@ export class Application extends Construct {
 				DATABASE_HOST: props.database.host,
 				DATABASE_DATABASE: props.database.name,
 				STORAGE_DRIVER: 's3',
-				STORAGE_ENDPOINT: `${ props.storage.bucket.bucketDomainName }/storage`,
+				STORAGE_ENDPOINT: `${ props.storage.bucket.bucketRegionalDomainName }/storage`,
 				STORAGE_BUCKET: props.storage.bucket.bucketName,
 				STORAGE_REGION: Stack.of( this ).region,
 				COLLABORATION_STORAGE_DRIVER: 's3',
-				COLLABORATION_STORAGE_ENDPOINT: `${ props.storage.bucket.bucketDomainName }/collaboration_storage`,
+				COLLABORATION_STORAGE_ENDPOINT: `${ props.storage.bucket.bucketRegionalDomainName }/collaboration_storage`,
 				COLLABORATION_STORAGE_BUCKET: props.storage.bucket.bucketName,
-				COLLABORATION_STORAGE_REGION: Stack.of( this ).region,
 				REDIS_CLUSTER_NODES: Fn.join( ':', [ props.redis.host, String( Redis.PORT ) ] ),
 				...this.csEnvironmentConfig.toObject()
 			},
@@ -87,7 +95,7 @@ export class Application extends Construct {
 				DATABASE_USER: Secret.fromSecretsManager( props.database.secret, Database.SECRET_USERNAME_KEY )
 			},
 			memoryLimitMiB: 2048,
-			logging: LogDrivers.awsLogs( { streamPrefix: 'ckeditor/cs', logRetention: RetentionDays.TWO_MONTHS } )
+			logging: LogDrivers.awsLogs( { streamPrefix: 'ckeditor/cs', logGroup: this.logGroup } )
 		} );
 
 		const applicationHttpPort: number = Number( this.csEnvironmentConfig.get( 'APPLICATION_HTTP_PORT' ) );
@@ -107,7 +115,9 @@ export class Application extends Construct {
 				{
 					taskDefinition: this.taskDefinition,
 					cluster: this.cluster,
-					publicLoadBalancer: true
+					publicLoadBalancer: true,
+					desiredCount: 2,
+					serviceName: 'ckeditor-cs-application'
 				}
 			);
 
