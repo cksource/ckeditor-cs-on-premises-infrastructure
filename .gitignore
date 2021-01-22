@@ -1,0 +1,10 @@
+node_modules
+.vscode
+coverage 
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+# Parcel default cache directory
+.parcel-cache
