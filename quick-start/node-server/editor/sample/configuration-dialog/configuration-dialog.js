@@ -34,9 +34,9 @@
 		const additional = document.getElementById( 'additional' );
 		const userContainer = document.getElementById( 'user-container' );
 
-		tokenUrlInput.value =  'http://192.168.9.30:3000/token';
-		uploadUrlInput.value = 'http://192.168.9.30:8005/easyimage/upload/';
-		webSocketUrlInput.value = 'ws://192.168.9.30:8005/ws';
+		tokenUrlInput.value =  'http://192.168.1.1:3000/token';
+		uploadUrlInput.value = 'http://192.168.1.1:8000/easyimage/upload';
+		webSocketUrlInput.value = 'ws://192.168.1.1:8000/ws';
 		channelIdInput.value = handleDocIdInUrl();
 
 		// Create two random users with avatars.
