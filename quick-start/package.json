@@ -7,5 +7,8 @@
     "cleanup": "node cleanup.js"
   },
   "author": "CKSource",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "minimist": "^1.2.5"
+  }
 }
