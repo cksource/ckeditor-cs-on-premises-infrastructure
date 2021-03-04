@@ -1,0 +1,11 @@
+{
+  "name": "on-premises-quick-start",
+  "version": "1.0.0",
+  "description": "",
+  "main": "setup.js",
+  "scripts": {
+    "cleanup": "node cleanup.js"
+  },
+  "author": "CKSource",
+  "license": "ISC"
+}
