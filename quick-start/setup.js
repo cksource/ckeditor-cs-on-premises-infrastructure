@@ -6,6 +6,7 @@ let DOCKER_TOKEN = '';
 let ENV_SECRET = '';
 let CS_PORT = 8005;
 let NODE_PORT = 300;
+let DOCKER_OUTPUT = '';
 
 (async function onPremisesSetup() {
 
@@ -14,6 +15,8 @@ let NODE_PORT = 300;
    await pullDockerImage()
 
    editDockerComposeFile()
+
+   await startDockerContainers()
 
 })();
 
@@ -69,3 +72,34 @@ function editDockerComposeFile() {
        console.log( err );
    }
 }
+
+async function startDockerContainers() {
+   console.log( 'Starting docker containers...' );
+
+   try {
+      const spawn = require( 'child_process' ).spawn;
+      const dockerImages = spawn( "docker-compose", [ "up" ]);
+      
+      dockerImages.output = '';
+      dockerImages.stdout.on( 'data', function( data ) {
+         dockerImages.output += data.toString();
+      });
+
+      return new Promise( ( resolve, reject ) => {
+         var serversAvailabilityCheck = setInterval( () => {
+            //TODO: add similar check for node.js server in a container
+            if ( dockerImages.output.includes( 'Server is listening on port 8000.' ) ) {
+               console.log( 'Docker containers are running' );
+               clearInterval( serversAvailabilityCheck );
+               resolve();
+            }
+         }, 100); 
+      })
+   }
+   catch (err) {
+      console.log(err)
+   }
+}
+
+
+
