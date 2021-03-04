@@ -21,3 +21,4 @@ async function removeContainer( containerName ) {
 removeContainer('quick-start-cs')
 removeContainer('quick-start-mysql')
 removeContainer('quick-start-redis')
+removeContainer('quick-start-node-server')

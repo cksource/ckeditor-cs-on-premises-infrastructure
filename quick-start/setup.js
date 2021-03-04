@@ -87,8 +87,9 @@ async function startDockerContainers() {
 
       return new Promise( ( resolve, reject ) => {
          var serversAvailabilityCheck = setInterval( () => {
-            //TODO: add similar check for node.js server in a container
-            if ( dockerImages.output.includes( 'Server is listening on port 8000.' ) ) {
+
+            if ( dockerImages.output.includes( 'Server is listening on port 8000.' ) &&
+                 dockerImages.output.includes( 'Node-server is listening on port 3000' ) ) {
                console.log( 'Docker containers are running' );
                clearInterval( serversAvailabilityCheck );
                resolve();
