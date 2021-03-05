@@ -1,5 +1,5 @@
-const chalk = require('chalk');
-const ora = require('ora');
+const chalk = require( 'chalk' );
+const ora = require( 'ora' );
 
 let LICENSE_KEY = '';
 let DOCKER_TOKEN = '';
@@ -11,7 +11,7 @@ let IP_ADDR = '';
 (async function onPremisesSetup() {
 
    info( `   This is ${ chalk.green('On-Premises Quick-Start') } installation` )
-   info( `   Add more informations here\n\n` )
+   info( `   Add more informations here\n` )
 
    getCredentials()
 
@@ -23,106 +23,120 @@ let IP_ADDR = '';
 
    await createEnvironment()
 
-   console.log( `Visit http://${ IP_ADDR }:${ NODE_PORT } to start collaborating` )
-
-})();
+   info( `${ chalk.green('\n   Installation complete') }` )
+   info( `   Visit ${ chalk.underline.cyan(`http://${ IP_ADDR }:${ NODE_PORT }`) } to start collaborating` )
+} )();
 
 
 function getCredentials() {
+   const argv = require( 'minimist' )( process.argv.slice( 2 ) );
 
-const argv = require( 'minimist' )( process.argv.slice( 2 ) );
+   LICENSE_KEY = argv.license_key;
+   DOCKER_TOKEN = argv.docker_token;
+   ENV_SECRET = argv.env_secret;
 
-LICENSE_KEY = argv.license_key;
-DOCKER_TOKEN = argv.docker_token;
-ENV_SECRET = argv.env_secret;
-
+   stepInfo( 'Processing credentials' )
 }
 
 async function pullDockerImage() {
-   const util = require('util');
-   const exec = util.promisify(require('child_process').exec);
+   const util = require( 'util' );
+   const exec = util.promisify( require( 'child_process' ).exec );
+
+   const loginSpinner = new Spinner( 'Docker registry authorization...' );
+   loginSpinner.start();
 
    try {
       //TODO: change endpoints to production before publishing
-      console.log( 'Logining to docker image registry...' )
       await exec( `docker login -u cs -p ${ DOCKER_TOKEN } https://docker.cke-cs-dev.com` )
-      console.log( 'Login to docker image registry successful' )
 
-      console.log( 'Downloading docker image...' )
-      await exec( `docker pull docker.cke-cs-dev.com/cs:latest` )
-      console.log( 'Docker image download complete' )
-
+      loginSpinner.stop();
+      stepInfo( 'Docker registry authorization' )
    } catch( err ) {
       //TODO: print clear instructions for users when token is incorrect
-      console.log( err.stderr )
+      loginSpinner.stop();
+      stepError( 'Docker registry authorization' )
+      process.exit(1)
+   }
+
+   const downloadSpinner = new Spinner( 'Pulling docker image...' );
+   downloadSpinner.start();
+
+   try {
+      //TODO: change endpoints to production before publishing
+      await exec( `docker pull docker.cke-cs-dev.com/cs:latest` )
+
+      downloadSpinner.stop();
+      stepInfo( 'Pulling docker image' )
+   } catch( err ) {
+      //TODO: print clear instructions for users: Check your internet connection and try again?
+      downloadSpinner.stop();
+      stepError( 'Pulling docker image' )
+      process.exit(1)
    }
 }
 
 function editDockerComposeFile() {
 
-   const fs = require('fs');
-   const yaml = require('js-yaml');
+   const fs = require( 'fs' );
+   const yaml = require( 'js-yaml' );
    
    try {
-      // read file 
-      console.log('Editing docker-compose.yml file...')
-      let dockerComposeFile = fs.readFileSync('./docker-compose.yml', 'utf8');
-      let dockerComposeObject = yaml.load(dockerComposeFile);
+      let dockerComposeFile = fs.readFileSync( './docker-compose.yml', 'utf8' );
+      let dockerComposeObject = yaml.load( dockerComposeFile );
 
-      // edit file 
-      dockerComposeObject.services['ckeditor-cs'].environment.LICENSE_KEY = LICENSE_KEY;
-      dockerComposeObject.services['ckeditor-cs'].ports[0] = `${ CS_PORT }:8000`;
-      dockerComposeObject.services['node-server'].ports[0] = `${ NODE_PORT }:3000`;
+      dockerComposeObject.services[ 'ckeditor-cs' ].environment.LICENSE_KEY = LICENSE_KEY;
+      dockerComposeObject.services[ 'ckeditor-cs' ].ports[ 0 ] = `${ CS_PORT }:8000`;
+      dockerComposeObject.services[ 'node-server' ].ports[ 0 ] = `${ NODE_PORT }:3000`;
        
-      // save file
-      dockerComposeFile = yaml.dump(dockerComposeObject);
-      fs.writeFileSync('./docker-compose.yml', dockerComposeFile, 'utf8');
-      console.log('docker-compose.yml file edit done')
+      dockerComposeFile = yaml.dump( dockerComposeObject );
+      fs.writeFileSync( './docker-compose.yml', dockerComposeFile, 'utf8' );
+      stepInfo( 'Editing docker-compose.yml file' )
 
    } catch ( err ) {
-       console.log( err );
+      stepError( 'Editing docker-compose.yml file' )
    }
 }
 
 async function startDockerContainers() {
-   console.log( 'Starting docker containers...' );
+   const dockerSpinner = new Spinner( 'Starting docker containers...' );
+   dockerSpinner.start();
 
-   try {
-      const spawn = require( 'child_process' ).spawn;
-      const dockerImages = spawn( "docker-compose", [ "up", "--build" ]);
+   const spawn = require( 'child_process' ).spawn;
+   const dockerImages = spawn( "docker-compose", [ "up", "--build" ]);
+   
+   dockerImages.output = '';
+   dockerImages.stdout.on( 'data', function( data ) {
+      dockerImages.output += data.toString();
+   });
+
+   return new Promise( ( resolve, reject ) => {
+      var serversAvailabilityCheck = setInterval( () => {
+         if ( dockerImages.output.includes( 'Server is listening on port 8000.' ) &&
+               dockerImages.output.includes( 'Node-server is listening on port 3000' ) ) {
+            clearInterval( serversAvailabilityCheck );
+            dockerSpinner.stop();
+            stepInfo( 'Starting docker containers' )
+            resolve();
+         }
+
+         if ( dockerImages.output.includes( 'Wrong license key.' ) ) {
+            dockerSpinner.stop();
+            stepError( 'Starting docker containers' );
+            process.exit(1)
+         }
+      }, 100); 
+   })
+
       
-      dockerImages.output = '';
-      dockerImages.stdout.on( 'data', function( data ) {
-         dockerImages.output += data.toString();
-      });
-
-      return new Promise( ( resolve, reject ) => {
-         var serversAvailabilityCheck = setInterval( () => {
-
-            if ( dockerImages.output.includes( 'Server is listening on port 8000.' ) &&
-                 dockerImages.output.includes( 'Node-server is listening on port 3000' ) ) {
-               console.log( 'Docker containers are running' );
-               clearInterval( serversAvailabilityCheck );
-               resolve();
-            }
-         }, 100); 
-      })
-   }
-   catch (err) {
-      console.log(err)
-   }
 }
 
 async function createEnvironment() {
-
    const axios = require('axios');
-   const os = require('os');
-
-   // get machine ip address
-   // send post request to node-server
-   // wait for 'Done' signal from node-server
-   const interfaces = os.networkInterfaces();
+   const interfaces = require('os').networkInterfaces();
    const machineIpAddresses = []
+
+   const envSpinner = new Spinner( 'Creating environment...' );
+   envSpinner.start();
 
    Object.keys( interfaces ).forEach( device => {
       interfaces[ device ].forEach( details => {
@@ -148,21 +162,24 @@ async function createEnvironment() {
 
    try {
       await axios.post( `http://localhost:${ NODE_PORT }/init`, body )
+      envSpinner.stop();
+      stepInfo( 'Creating environment' )
    }
    catch ( err ) {
-      console.log( err.message )
+      envSpinner.stop();
+      stepError( 'Creating environment' )
    }
 }
 
 
 
 function stepError( message ) {
-   console.log( chalk.bold.red( ' \u2718 '  + message ) )
+   console.log( chalk.bold.red( '\u2718 '  + message ) )
 }
 function stepInfo( message ) {
-   console.log( chalk.bold.green( ' \u2713 ' ) + chalk.bold( message ) )
+   console.log( chalk.bold.green( '\u2713 ' ) + chalk.bold( message ) )
 }
-function stepSpinner( message ) {
+function Spinner( message ) {
    return ora( chalk.bold( message ) )
 }
 function info( message ) {
