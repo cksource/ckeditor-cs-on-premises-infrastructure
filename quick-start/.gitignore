@@ -1,1 +1,3 @@
 node_modules
+# Temporarily remove docker-compose.yml from commited files to not commit a file with license key by mistake
+docker-compose.yml
