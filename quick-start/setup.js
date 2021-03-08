@@ -8,7 +8,7 @@ let DOCKER_TOKEN = '';
 let ENV_SECRET = '';
 let IS_DEV = false;
 let DOCKER_ENDPOINT = '';
-let CS_PORT = 8005;
+let CS_PORT = 8000;
 let NODE_PORT = 3000;
 let IP_ADDR = '';
 
@@ -30,7 +30,6 @@ let IP_ADDR = '';
    await createEnvironment()
 
    printInstructionsAfterInstallation()
-
 } )();
 
 
@@ -49,6 +48,8 @@ async function getCredentials() {
    ENV_SECRET = argv.env_secret;
    IS_DEV = argv.dev;
    DOCKER_ENDPOINT = IS_DEV ? 'docker.cke-cs-dev.com' : 'docker.cke-cs.com';
+   CS_PORT = argv.cs_port || await findFirstUnusedPort( CS_PORT );
+   NODE_PORT = argv.node_port || await findFirstUnusedPort( NODE_PORT );
 
    const properties = [];
    if ( !argv.license_key ) properties.push( 'license_key' );
@@ -227,6 +228,17 @@ async function createEnvironment() {
 function printInstructionsAfterInstallation() {
    info( `${ chalk.green('\n   Installation complete') }` );
    info( `   Visit ${ chalk.underline.cyan(`http://${ IP_ADDR }:${ NODE_PORT }`) } to start collaborating` );
+}
+
+async function findFirstUnusedPort( port ) {
+   const tcpPortUsed = require( 'tcp-port-used' );
+   const inUse = await tcpPortUsed.check( port )
+   
+   if ( inUse ) {
+      return findFirstUnusedPort( port + 1 )
+   } else {
+      return port
+   }
 }
 
 function stepError( message ) {
