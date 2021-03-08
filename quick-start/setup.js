@@ -15,6 +15,8 @@ let IP_ADDR = '';
 
    await getCredentials()
 
+   validateCredentails()
+
    await loginToDockerRegistry()
 
    await pullDockerImage()
@@ -38,19 +40,20 @@ function printWelcomeMessage() {
 
 async function getCredentials() {
    const argv = require( 'minimist' )( process.argv.slice( 2 ) );
-   const  prompt = require('prompt');
+   const prompt = require( 'prompt' );
 
    LICENSE_KEY = argv.license_key;
    DOCKER_TOKEN = argv.docker_token;
    ENV_SECRET = argv.env_secret;
+   IS_DEV = argv.dev;
 
    const properties = [];
-   if (!argv.license_key) properties.push('license_key');
-   if (!argv.docker_token) properties.push('docker_token');
-   if (!argv.env_secret) properties.push('env_secret');
+   if ( !argv.license_key ) properties.push( 'license_key' );
+   if ( !argv.docker_token ) properties.push( 'docker_token' );
+   if ( !argv.env_secret ) properties.push( 'env_secret' );
 
    if ( properties.length > 0 ) {
-      info( 'Some credentials are missing. Please provide them below. \n')
+      info( 'Some credentials are missing or were passed incorrectly. Please provide them below. \n' )
    }
    prompt.start();
    result = await prompt.get( properties );
@@ -59,9 +62,33 @@ async function getCredentials() {
    DOCKER_TOKEN = DOCKER_TOKEN || result.docker_token;
    ENV_SECRET = ENV_SECRET || result.env_secret;
 
+   if ( properties.length > 0 ) {
+      info( '\n' )
+   }
+}
 
-   info( '\n')
-   stepInfo( 'Processing credentials' )
+function validateCredentails() {
+   const licenseKeyRegex = /^[0-9a-f]*$/
+   if ( LICENSE_KEY.length < 300 || !licenseKeyRegex.test( LICENSE_KEY ) ) {
+      stepError( 'Validating credentials' )
+      info( chalk.red( '\n Provided License Key is invalid \n' ) )
+      process.exit(1)
+   }
+
+   const dockerTokenRegex = /^[0-9a-f\-]*$/
+   if ( DOCKER_TOKEN.length != 36 || !dockerTokenRegex.test( DOCKER_TOKEN ) ) {
+      stepError( 'Validating credentials' )
+      info( chalk.red( '\n Provided Docker Token is invalid \n' ) )
+      process.exit(1)
+   }
+
+   if ( ENV_SECRET.length = 0 ) {
+      stepError( 'Validating credentials' )
+      info( chalk.red( '\n Environment secret can not be empty \n' ) )
+      process.exit(1)
+   }
+
+   stepInfo( 'Validating credentials' )
 }
 
 async function loginToDockerRegistry() {
