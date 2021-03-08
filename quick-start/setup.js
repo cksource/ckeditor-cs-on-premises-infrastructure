@@ -13,7 +13,7 @@ let IP_ADDR = '';
 (async function onPremisesSetup() {
    printWelcomeMessage()
 
-   getCredentials()
+   await getCredentials()
 
    await loginToDockerRegistry()
 
@@ -36,13 +36,31 @@ function printWelcomeMessage() {
    info( `   Add more informations here\n` )
 }
 
-function getCredentials() {
+async function getCredentials() {
    const argv = require( 'minimist' )( process.argv.slice( 2 ) );
+   const  prompt = require('prompt');
 
    LICENSE_KEY = argv.license_key;
    DOCKER_TOKEN = argv.docker_token;
    ENV_SECRET = argv.env_secret;
 
+   const properties = [];
+   if (!argv.license_key) properties.push('license_key');
+   if (!argv.docker_token) properties.push('docker_token');
+   if (!argv.env_secret) properties.push('env_secret');
+
+   if ( properties.length > 0 ) {
+      info( 'Some credentials are missing. Please provide them below. \n')
+   }
+   prompt.start();
+   result = await prompt.get( properties );
+   
+   LICENSE_KEY = LICENSE_KEY || result.license_key;
+   DOCKER_TOKEN = DOCKER_TOKEN || result.docker_token;
+   ENV_SECRET = ENV_SECRET || result.env_secret;
+
+
+   info( '\n')
    stepInfo( 'Processing credentials' )
 }
 
