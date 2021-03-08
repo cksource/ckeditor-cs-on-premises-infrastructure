@@ -1,3 +1,5 @@
+const util = require( 'util' );
+const exec = util.promisify( require( 'child_process' ).exec );
 const chalk = require( 'chalk' );
 const ora = require( 'ora' );
 
@@ -9,11 +11,11 @@ let NODE_PORT = 3000;
 let IP_ADDR = '';
 
 (async function onPremisesSetup() {
-
-   info( `   This is ${ chalk.green('On-Premises Quick-Start') } installation` )
-   info( `   Add more informations here\n` )
+   printWelcomeMessage()
 
    getCredentials()
+
+   await loginToDockerRegistry()
 
    await pullDockerImage()
 
@@ -23,10 +25,16 @@ let IP_ADDR = '';
 
    await createEnvironment()
 
-   info( `${ chalk.green('\n   Installation complete') }` )
-   info( `   Visit ${ chalk.underline.cyan(`http://${ IP_ADDR }:${ NODE_PORT }`) } to start collaborating` )
+   printInstructionsAfterInstallation()
+
 } )();
 
+
+function printWelcomeMessage() {
+   console.clear()
+   info( `   This is ${ chalk.green('On-Premises Quick-Start') } installation` )
+   info( `   Add more informations here\n` )
+}
 
 function getCredentials() {
    const argv = require( 'minimist' )( process.argv.slice( 2 ) );
@@ -38,10 +46,7 @@ function getCredentials() {
    stepInfo( 'Processing credentials' )
 }
 
-async function pullDockerImage() {
-   const util = require( 'util' );
-   const exec = util.promisify( require( 'child_process' ).exec );
-
+async function loginToDockerRegistry() {
    const loginSpinner = new Spinner( 'Docker registry authorization...' );
    loginSpinner.start();
 
@@ -54,10 +59,13 @@ async function pullDockerImage() {
    } catch( err ) {
       //TODO: print clear instructions for users when token is incorrect
       loginSpinner.stop();
-      stepError( 'Docker registry authorization' )
+      stepError( 'Docker registry authorization\n' )
+      console.log(err.stderr)
       process.exit(1)
    }
+}
 
+async function pullDockerImage() {
    const downloadSpinner = new Spinner( 'Pulling docker image...' );
    downloadSpinner.start();
 
@@ -70,13 +78,13 @@ async function pullDockerImage() {
    } catch( err ) {
       //TODO: print clear instructions for users: Check your internet connection and try again?
       downloadSpinner.stop();
-      stepError( 'Pulling docker image' )
+      stepError( 'Pulling docker image\n' )
+      console.log(err.stderr)
       process.exit(1)
    }
 }
 
 function editDockerComposeFile() {
-
    const fs = require( 'fs' );
    const yaml = require( 'js-yaml' );
    
@@ -91,9 +99,10 @@ function editDockerComposeFile() {
       dockerComposeFile = yaml.dump( dockerComposeObject );
       fs.writeFileSync( './docker-compose.yml', dockerComposeFile, 'utf8' );
       stepInfo( 'Editing docker-compose.yml file' )
-
    } catch ( err ) {
-      stepError( 'Editing docker-compose.yml file' )
+      stepError( 'Editing docker-compose.yml file\n' )
+      console.log(err.message)
+      process.exit(1)
    }
 }
 
@@ -126,8 +135,6 @@ async function startDockerContainers() {
          }
       }, 100); 
    })
-
-      
 }
 
 async function createEnvironment() {
@@ -171,17 +178,23 @@ async function createEnvironment() {
    }
 }
 
-
+function printInstructionsAfterInstallation() {
+   info( `${ chalk.green('\n   Installation complete') }` )
+   info( `   Visit ${ chalk.underline.cyan(`http://${ IP_ADDR }:${ NODE_PORT }`) } to start collaborating` )
+}
 
 function stepError( message ) {
    console.log( chalk.bold.red( '\u2718 '  + message ) )
 }
+
 function stepInfo( message ) {
    console.log( chalk.bold.green( '\u2713 ' ) + chalk.bold( message ) )
 }
+
 function Spinner( message ) {
    return ora( chalk.bold( message ) )
 }
+
 function info( message ) {
    console.log( chalk.bold( message ) )
 }
