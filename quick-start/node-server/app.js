@@ -110,7 +110,7 @@ async function createEnvironment( req, res ) {
 function injectEndpoints( ip, csPort, nodePort ) { 
   const tokenEndpoint = `http://${ ip }:${ nodePort }/token`;
   const uploadUrl = `http://${ ip }:${ csPort }/easyimage/upload`;
-  const websocketUrl = `http://${ ip }:${ csPort }/ws`;
+  const websocketUrl = `ws://${ ip }:${ csPort }/ws`;
   
   let dialogJsFile = fs.readFileSync('./editor/sample/configuration-dialog/configuration-dialog.js').toString();
 
