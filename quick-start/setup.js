@@ -6,6 +6,8 @@ const ora = require( 'ora' );
 let LICENSE_KEY = '';
 let DOCKER_TOKEN = '';
 let ENV_SECRET = '';
+let IS_DEV = false;
+let DOCKER_ENDPOINT = '';
 let CS_PORT = 8005;
 let NODE_PORT = 3000;
 let IP_ADDR = '';
@@ -33,9 +35,9 @@ let IP_ADDR = '';
 
 
 function printWelcomeMessage() {
-   console.clear()
-   info( `   This is ${ chalk.green('On-Premises Quick-Start') } installation` )
-   info( `   Add more informations here\n` )
+   console.clear();
+   info( `   This is ${ chalk.green('On-Premises Quick-Start') } installation` );
+   info( `   Add more informations here\n` );
 }
 
 async function getCredentials() {
@@ -46,6 +48,7 @@ async function getCredentials() {
    DOCKER_TOKEN = argv.docker_token;
    ENV_SECRET = argv.env_secret;
    IS_DEV = argv.dev;
+   DOCKER_ENDPOINT = IS_DEV ? 'docker.cke-cs-dev.com' : 'docker.cke-cs.com';
 
    const properties = [];
    if ( !argv.license_key ) properties.push( 'license_key' );
@@ -53,7 +56,7 @@ async function getCredentials() {
    if ( !argv.env_secret ) properties.push( 'env_secret' );
 
    if ( properties.length > 0 ) {
-      info( 'Some credentials are missing or were passed incorrectly. Please provide them below. \n' )
+      info( 'Some credentials are missing or were passed incorrectly. Please provide them below. \n' );
    }
    prompt.start();
    result = await prompt.get( properties );
@@ -63,50 +66,49 @@ async function getCredentials() {
    ENV_SECRET = ENV_SECRET || result.env_secret;
 
    if ( properties.length > 0 ) {
-      info( '\n' )
+      info( '\n' );
    }
 }
 
 function validateCredentails() {
-   const licenseKeyRegex = /^[0-9a-f]*$/
+   const licenseKeyRegex = /^[0-9a-f]*$/;
    if ( LICENSE_KEY.length < 300 || !licenseKeyRegex.test( LICENSE_KEY ) ) {
-      stepError( 'Validating credentials' )
-      info( chalk.red( '\n Provided License Key is invalid \n' ) )
-      process.exit(1)
+      stepError( 'Validating credentials' );
+      info( chalk.red( '\n Provided License Key is invalid \n' ) );
+      process.exit( 1 );
    }
 
-   const dockerTokenRegex = /^[0-9a-f\-]*$/
+   const dockerTokenRegex = /^[0-9a-f\-]*$/;
    if ( DOCKER_TOKEN.length != 36 || !dockerTokenRegex.test( DOCKER_TOKEN ) ) {
-      stepError( 'Validating credentials' )
-      info( chalk.red( '\n Provided Docker Token is invalid \n' ) )
-      process.exit(1)
+      stepError( 'Validating credentials' );
+      info( chalk.red( '\n Provided Docker Token is invalid \n' ) );
+      process.exit( 1 );
    }
 
    if ( ENV_SECRET.length = 0 ) {
-      stepError( 'Validating credentials' )
-      info( chalk.red( '\n Environment secret can not be empty \n' ) )
-      process.exit(1)
+      stepError( 'Validating credentials' );
+      info( chalk.red( '\n Environment secret can not be empty \n' ) );
+      process.exit( 1 );
    }
 
-   stepInfo( 'Validating credentials' )
+   stepInfo( 'Validating credentials' );
 }
 
-async function loginToDockerRegistry() {
+async function loginToDockerRegistry() { 
    const loginSpinner = new Spinner( 'Docker registry authorization...' );
    loginSpinner.start();
 
    try {
-      //TODO: change endpoints to production before publishing
-      await exec( `docker login -u cs -p ${ DOCKER_TOKEN } https://docker.cke-cs-dev.com` )
+      await exec( `docker login -u cs -p ${ DOCKER_TOKEN } https://${ DOCKER_ENDPOINT }` )
 
       loginSpinner.stop();
-      stepInfo( 'Docker registry authorization' )
+      stepInfo( 'Docker registry authorization' );
    } catch( err ) {
       //TODO: print clear instructions for users when token is incorrect
       loginSpinner.stop();
-      stepError( 'Docker registry authorization\n' )
-      console.log(err.stderr)
-      process.exit(1)
+      stepError( 'Docker registry authorization\n' );
+      console.log( err.stderr );
+      process.exit( 1 );
    }
 }
 
@@ -115,17 +117,16 @@ async function pullDockerImage() {
    downloadSpinner.start();
 
    try {
-      //TODO: change endpoints to production before publishing
-      await exec( `docker pull docker.cke-cs-dev.com/cs:latest` )
+      await exec( `docker pull ${ DOCKER_ENDPOINT }/cs:latest` )
 
       downloadSpinner.stop();
-      stepInfo( 'Pulling docker image' )
+      stepInfo( 'Pulling docker image' );
    } catch( err ) {
       //TODO: print clear instructions for users: Check your internet connection and try again?
       downloadSpinner.stop();
-      stepError( 'Pulling docker image\n' )
-      console.log(err.stderr)
-      process.exit(1)
+      stepError( 'Pulling docker image\n' );
+      console.log( err.stderr );
+      process.exit( 1 );
    }
 }
 
@@ -143,11 +144,11 @@ function editDockerComposeFile() {
        
       dockerComposeFile = yaml.dump( dockerComposeObject );
       fs.writeFileSync( './docker-compose.yml', dockerComposeFile, 'utf8' );
-      stepInfo( 'Editing docker-compose.yml file' )
+      stepInfo( 'Editing docker-compose.yml file' );
    } catch ( err ) {
-      stepError( 'Editing docker-compose.yml file\n' )
-      console.log(err.message)
-      process.exit(1)
+      stepError( 'Editing docker-compose.yml file\n' );
+      console.log( err.message );
+      process.exit( 1 );
    }
 }
 
@@ -159,7 +160,7 @@ async function startDockerContainers() {
    const dockerImages = spawn( "docker-compose", [ "up", "--build" ]);
    
    dockerImages.output = '';
-   dockerImages.stdout.on( 'data', function( data ) {
+   dockerImages.stdout.on( 'data', ( data ) => {
       dockerImages.output += data.toString();
    });
 
@@ -169,23 +170,23 @@ async function startDockerContainers() {
                dockerImages.output.includes( 'Node-server is listening on port 3000' ) ) {
             clearInterval( serversAvailabilityCheck );
             dockerSpinner.stop();
-            stepInfo( 'Starting docker containers' )
+            stepInfo( 'Starting docker containers' );
             resolve();
          }
 
          if ( dockerImages.output.includes( 'Wrong license key.' ) ) {
             dockerSpinner.stop();
             stepError( 'Starting docker containers' );
-            process.exit(1)
+            process.exit( 1 );
          }
       }, 100); 
    })
 }
 
 async function createEnvironment() {
-   const axios = require('axios');
-   const interfaces = require('os').networkInterfaces();
-   const machineIpAddresses = []
+   const axios = require( 'axios' );
+   const interfaces = require( 'os' ).networkInterfaces();
+   const machineIpAddresses = [];
 
    const envSpinner = new Spinner( 'Creating environment...' );
    envSpinner.start();
@@ -198,11 +199,11 @@ async function createEnvironment() {
       } )
    } )
 
-   const networkIpAddresses = machineIpAddresses.filter(ip => ip !== '127.0.0.1')
+   const networkIpAddresses = machineIpAddresses.filter( ip => ip !== '127.0.0.1' )
    if ( networkIpAddresses.length > 0 ) {
-      IP_ADDR = networkIpAddresses[0];
+      IP_ADDR = networkIpAddresses[ 0 ];
    } else {
-      IP_ADDR = '127.0.0.1'
+      IP_ADDR = '127.0.0.1';
    }
 
    const body = {
@@ -210,36 +211,36 @@ async function createEnvironment() {
       csPort: CS_PORT,
       nodePort: NODE_PORT,
       secret: ENV_SECRET
-   }
+   };
 
    try {
       await axios.post( `http://localhost:${ NODE_PORT }/init`, body )
       envSpinner.stop();
-      stepInfo( 'Creating environment' )
+      stepInfo( 'Creating environment' );
    }
    catch ( err ) {
       envSpinner.stop();
-      stepError( 'Creating environment' )
+      stepError( 'Creating environment' );
    }
 }
 
 function printInstructionsAfterInstallation() {
-   info( `${ chalk.green('\n   Installation complete') }` )
-   info( `   Visit ${ chalk.underline.cyan(`http://${ IP_ADDR }:${ NODE_PORT }`) } to start collaborating` )
+   info( `${ chalk.green('\n   Installation complete') }` );
+   info( `   Visit ${ chalk.underline.cyan(`http://${ IP_ADDR }:${ NODE_PORT }`) } to start collaborating` );
 }
 
 function stepError( message ) {
-   console.log( chalk.bold.red( '\u2718 '  + message ) )
+   console.log( chalk.bold.red( '\u2718 '  + message ) );
 }
 
 function stepInfo( message ) {
-   console.log( chalk.bold.green( '\u2713 ' ) + chalk.bold( message ) )
+   console.log( chalk.bold.green( '\u2713 ' ) + chalk.bold( message ) );
 }
 
 function Spinner( message ) {
-   return ora( chalk.bold( message ) )
+   return ora( chalk.bold( message ) );
 }
 
 function info( message ) {
-   console.log( chalk.bold( message ) )
+   console.log( chalk.bold( message ) );
 }
