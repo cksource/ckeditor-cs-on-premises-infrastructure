@@ -19,6 +19,8 @@ let IP_ADDR = '';
 
    validateCredentails()
 
+   await validateEnvironment()
+
    await loginToDockerRegistry()
 
    await pullDockerImage()
@@ -86,13 +88,32 @@ function validateCredentails() {
       process.exit( 1 );
    }
 
-   if ( ENV_SECRET.length = 0 ) {
+   if ( ENV_SECRET.length == 0 ) {
       stepError( 'Validating credentials' );
       info( chalk.red( '\n Environment secret can not be empty \n' ) );
       process.exit( 1 );
    }
 
    stepInfo( 'Validating credentials' );
+}
+
+async function validateEnvironment() {
+   try {
+      const dockerExec = await exec( 'docker -v' )
+      const dockerVersion = parseFloat(dockerExec.stdout.split( ' ' )[2])
+      
+      if ( dockerVersion === NaN || dockerVersion < 18 ) {
+         stepError('Validating environment')
+         info( `\n Wrong docker version. Please install newer version of docker to run this setup process.` )
+         process.exit(1)
+      } 
+   } catch ( err ) {
+      stepError('Validating environment')
+      info( `\n Docker is not installed on your machine. Please install docker to run this setup process.` )
+      process.exit(1)
+   }
+
+   stepInfo('Validating environment')
 }
 
 async function loginToDockerRegistry() { 
@@ -222,6 +243,7 @@ async function createEnvironment() {
    catch ( err ) {
       envSpinner.stop();
       stepError( 'Creating environment' );
+      process.exit(1)
    }
 }
 
