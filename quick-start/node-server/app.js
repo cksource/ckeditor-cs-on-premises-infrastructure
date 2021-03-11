@@ -56,9 +56,6 @@ function generateToken( req, res ) {
 
 async function createEnvironment( req, res ) {
   
-  console.log('Init called')
-  console.log(req.body)
-
   ENV_SECRET = req.body.secret;
   
   const newEnvironment = {
@@ -102,8 +99,8 @@ async function createEnvironment( req, res ) {
 
     res.send('Done')
   } catch ( err ) {
-    console.log(err);
-    res.status(500).send('Error')
+    console.log(err.message);
+    res.status(500).send( 'Could not create environment. ' + err.message )
   }
 }
 

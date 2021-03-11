@@ -10,15 +10,15 @@ function stepInfo ( message ) {
 }
 
 function error ( message ) {
-   console.log( chalk.bold.red( message ) );
+   console.log( chalk.bold.red( message + '\n' ) );
 }
 
 function stepError ( message ) {
-   console.log( chalk.bold.red( '\u2718 '  + message ) );
+   console.log( chalk.bold.red( '\u2718 '  + message + '\n' ) );
 }
 
 function Spinner ( message ) {
-   return ora( chalk.bold( message ) );
+   return ora( chalk.bold( message + "..." ) );
 }
 
 module.exports = { 
