@@ -1,12 +1,16 @@
+const platform = require('os').platform()
 const chalk = require( 'chalk' );
 const ora = require( 'ora' );
+
+const successIcon = platform === 'win32' ? 'OK ' : '\u2713 ';
+const errorIcon = platform === 'win32' ? ' X ' : '\u2718 ';
 
 function info ( message ) {
    console.log( chalk.bold( message ) );
 }
 
 function stepInfo ( message ) {
-   console.log( chalk.bold.green( '\u2713 ' ) + chalk.bold( message ) );
+   console.log( chalk.bold.green( successIcon ) + chalk.bold( message ) );
 }
 
 function error ( message ) {
@@ -14,7 +18,7 @@ function error ( message ) {
 }
 
 function stepError ( message ) {
-   console.log( chalk.bold.red( '\u2718 '  + message + '\n' ) );
+   console.log( chalk.bold.red( errorIcon  + message + '\n' ) );
 }
 
 function Spinner ( message ) {

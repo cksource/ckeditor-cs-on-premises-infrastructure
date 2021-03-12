@@ -1,25 +1,27 @@
 const util = require( 'util' );
 const exec = util.promisify( require( 'child_process' ).exec );
+const execSync = require( 'child_process' ).execSync;
 const chalk = require( 'chalk' );
 const logger = require('./utils/logger')
 
 const { findFirstUnusedPort, getLocalIpAddress } = require('./utils/networkUtils')
+const SetupError = require('./utils/SetupError')
 const step = require('./utils/steps.json')
 const error = require('./utils/errors.json')
-const SetupError = require('./utils/SetupError')
 
+let STEP = '';
 let LICENSE_KEY = '';
 let DOCKER_TOKEN = '';
 let ENV_SECRET = '';
-let IS_DEV = false;
 let DOCKER_ENDPOINT = '';
+let IP_ADDR = '';
 let CS_PORT = 8000;
 let NODE_PORT = 3000;
-let IP_ADDR = '';
-let STEP = '';
+let IS_DEV = false;
+let KEEP_CONTAINERS = false;
+let CLEANUP_NEEDED = false;
 
 (async () => {
-   
    try {
       printWelcomeMessage()
 
@@ -49,10 +51,8 @@ let STEP = '';
       } else {
          console.log( err )
       }
-      
       process.exit( 1 )
    }
-
 })() ;
 
 function printWelcomeMessage() {
@@ -70,9 +70,10 @@ async function getCredentials() {
    ENV_SECRET = argv.env_secret;
    IS_DEV = argv.dev;
    DOCKER_ENDPOINT = IS_DEV ? 'docker.cke-cs-dev.com' : 'docker.cke-cs.com';
+   IP_ADDR = await getLocalIpAddress();
    CS_PORT = argv.cs_port || await findFirstUnusedPort( CS_PORT );
    NODE_PORT = argv.node_port || await findFirstUnusedPort( NODE_PORT );
-   IP_ADDR = await getLocalIpAddress();
+   KEEP_CONTAINERS = argv.keep_containers;
 
    const properties = [];
    if ( !argv.license_key ) properties.push( 'license_key' );
@@ -194,6 +195,7 @@ async function startDockerContainers() {
    // TODO: Output errors from quick-start-cs to log.txt file
    
    STEP = step.dockerUp;
+   CLEANUP_NEEDED  = true;
    const dockerSpinner = logger.Spinner( STEP );
    dockerSpinner.start();
 
@@ -217,7 +219,7 @@ async function startDockerContainers() {
 
          if ( dockerImages.output.includes( 'Wrong license key.' ) ) {
             dockerSpinner.stop();
-            throw new SetupError( error.wrongLicense );
+            reject( new SetupError( error.wrongLicense ) );
          }
       }, 100); 
    })
@@ -253,5 +255,9 @@ function printInstructionsAfterInstallation() {
    logger.info( `   Visit ${ chalk.underline.cyan(`http://${ IP_ADDR }:${ NODE_PORT }`) } to start collaborating` );
 }
 
-
-
+process.on( 'exit', () => {
+   if ( !KEEP_CONTAINERS && CLEANUP_NEEDED ) {
+      logger.info( 'Removing created containers...' )
+      execSync( 'npm run cleanup' )
+   }
+} );
