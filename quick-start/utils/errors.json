@@ -1,11 +1,11 @@
 {
-   "invalidLicense": "Provided License Key is invalid.",
-   "invalidToken": "Provided Docker Token is invalid.",
-   "invalidSecret": "Environment secret can not be empty.",
+   "missingCredentials": "Some credentials are missing. Plese provide them below:",
+   "invalidLicense": "Provided License Key is invalid. Please provide correct License Key below:",
+   "invalidToken": "Provided Docker Token is invalid. Please provide correct Docker Token below:",
+   "invalidSecret": "Environment secret can not be empty. Please provide correct Environment secret below:",
    "dockerVersion": "Wrong docker version. Please install newer version of docker to run this setup process.",
    "dockerNotInstalled": "Docker is not installed on your machine. Please install docker to run this setup process.",
    "wrongToken": "Could not authorize to docker registry using provided docker token.",
    "containersTimeout": "Timeout during docker containers startup. Created log.txt file with output from docker containers. Please, contact our support team.",
    "wrongLicense": "Could not create On-Premises docker container using provided license key."
-
 }

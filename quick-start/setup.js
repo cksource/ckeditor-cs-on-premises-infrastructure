@@ -1,8 +1,9 @@
 const util = require( 'util' );
+const fs = require( 'fs' );
 const exec = util.promisify( require( 'child_process' ).exec );
 const execSync = require( 'child_process' ).execSync;
 const chalk = require( 'chalk' );
-const fs = require( 'fs' );
+const prompt = require( 'prompt' );
 
 const { findFirstUnusedPort, getLocalIpAddress } = require('./utils/networkUtils')
 const logger = require('./utils/logger')
@@ -26,9 +27,9 @@ let CLEANUP_NEEDED = false;
    try {
       printWelcomeMessage()
 
-      await getCredentials()
+      await readArguments()
    
-      validateCredentails()
+      await validateCredentails()
    
       await validateEnvironment()
    
@@ -45,11 +46,15 @@ let CLEANUP_NEEDED = false;
       printInstructionsAfterInstallation()
 
    } catch ( err ) {
-      logger.stepError( STEP )
-      
+
       if ( err instanceof SetupError ) {
+         logger.stepError( STEP )
          logger.error( err.message )
+      } else if (err.message === 'canceled') {
+         logger.info( '\n' )
+         logger.stepError( STEP )
       } else {
+         logger.stepError( STEP )
          console.log( err )
       }
       process.exit( 1 )
@@ -62,13 +67,10 @@ function printWelcomeMessage() {
    logger.info( `   Add more informations here\n` );
 }
 
-async function getCredentials() {
+async function readArguments() {
    const argv = require( 'minimist' )( process.argv.slice( 2 ) );
-   const prompt = require( 'prompt' );
-
-   LICENSE_KEY = argv.license_key;
-   DOCKER_TOKEN = argv.docker_token;
-   ENV_SECRET = argv.env_secret;
+   STEP = step.getCredentials;
+   
    IS_DEV = argv.dev;
    DOCKER_ENDPOINT = IS_DEV ? 'docker.cke-cs-dev.com' : 'docker.cke-cs.com';
    IP_ADDR = await getLocalIpAddress();
@@ -76,41 +78,36 @@ async function getCredentials() {
    NODE_PORT = argv.node_port || await findFirstUnusedPort( NODE_PORT );
    KEEP_CONTAINERS = argv.keep_containers;
 
-   const properties = [];
-   if ( !argv.license_key ) properties.push( 'license_key' );
-   if ( !argv.docker_token ) properties.push( 'docker_token' );
-   if ( !argv.env_secret ) properties.push( 'env_secret' );
-
-   if ( properties.length > 0 ) {
-      logger.info( 'Some credentials are missing or were passed incorrectly. Please provide them below. \n' );
+   if ( !argv.license_key || !argv.docker_token || !argv.env_secret) {
+      logger.warning( error.missingCredentials)
    }
-   prompt.start();
-   const result = await prompt.get( properties );
-   
-   LICENSE_KEY = LICENSE_KEY || result.license_key;
-   DOCKER_TOKEN = DOCKER_TOKEN || result.docker_token;
-   ENV_SECRET = ENV_SECRET || result.env_secret;
 
-   if ( properties.length > 0 ) {
-      logger.info( '\n' );
-   }
+   LICENSE_KEY = argv.license_key ? argv.license_key.trim() : await askForCredential( 'license_key' );
+   DOCKER_TOKEN = argv.docker_token ? argv.docker_token.trim() : await askForCredential( 'docker_token' ); 
+   ENV_SECRET = argv.env_secret ? argv.env_secret.trim() : await askForCredential( 'env_secret' ); 
 }
 
-function validateCredentails() {
+async function validateCredentails() {
    STEP = step.validateCredentials;
    const licenseKeyRegex = /^[0-9a-f]*$/;
    const dockerTokenRegex = /^[0-9a-f\-]{36}$/;
 
    if ( LICENSE_KEY.length < 300 || !licenseKeyRegex.test( LICENSE_KEY ) ) {
-      throw new SetupError( error.invalidLicense )
+      logger.warning( error.invalidLicense )
+      LICENSE_KEY = await askForCredential( 'license_key' )
+      return validateCredentails()
    }
 
    if ( !dockerTokenRegex.test( DOCKER_TOKEN ) ) {
-      throw new SetupError( error.invalidToken )
+      logger.warning( error.invalidToken )
+      DOCKER_TOKEN = await askForCredential( 'docker_token' )
+      return validateCredentails()
    }
 
    if ( ENV_SECRET.length === 0 ) {
-      throw new SetupError( error.invalidSecret )
+      logger.warning( error.invalidSecret )
+      ENV_SECRET = await askForCredential( 'env_secret' )
+      return validateCredentails()
    }
 
    logger.stepInfo( STEP );
@@ -258,6 +255,12 @@ async function createEnvironment() {
 function printInstructionsAfterInstallation() {
    logger.info( `${ chalk.green('\n   Installation complete') }` );
    logger.info( `   Visit ${ chalk.underline.cyan(`http://${ IP_ADDR }:${ NODE_PORT }`) } to start collaborating` );
+}
+
+async function askForCredential( credential ) {
+   prompt.start();
+   const result = await prompt.get( [ credential ] );
+   return result[ credential ].trim();
 }
 
 process.on( 'exit', () => {

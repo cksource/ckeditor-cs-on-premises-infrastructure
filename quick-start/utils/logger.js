@@ -5,23 +5,27 @@ const ora = require( 'ora' );
 const successIcon = platform === 'win32' ? 'OK ' : '\u2713 ';
 const errorIcon = platform === 'win32' ? ' X ' : '\u2718 ';
 
-function info ( message ) {
+function info( message ) {
    console.log( chalk.bold( message ) );
 }
 
-function stepInfo ( message ) {
+function stepInfo( message ) {
    console.log( chalk.bold.green( successIcon ) + chalk.bold( message ) );
 }
 
-function error ( message ) {
+function error( message ) {
    console.log( chalk.bold.red( message + '\n' ) );
 }
 
-function stepError ( message ) {
+function stepError( message ) {
    console.log( chalk.bold.red( errorIcon  + message + '\n' ) );
 }
 
-function Spinner ( message ) {
+function warning( message ) {
+   console.log( chalk.bold.yellow( message ) );
+}
+
+function Spinner( message ) {
    return ora( chalk.bold( message + "..." ) );
 }
 
@@ -30,5 +34,6 @@ module.exports = {
    stepInfo,
    error,
    stepError,
+   warning,
    Spinner
 }

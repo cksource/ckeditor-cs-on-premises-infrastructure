@@ -1,4 +1,5 @@
 {
+   "getCredentials": "Getting credentials",
    "validateCredentials": "Validating credentials",
    "validateEnvironment": "Validating environment",
    "dockerAuth": "Docker registry authorization",
