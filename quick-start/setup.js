@@ -2,9 +2,10 @@ const util = require( 'util' );
 const exec = util.promisify( require( 'child_process' ).exec );
 const execSync = require( 'child_process' ).execSync;
 const chalk = require( 'chalk' );
-const logger = require('./utils/logger')
+const fs = require( 'fs' );
 
 const { findFirstUnusedPort, getLocalIpAddress } = require('./utils/networkUtils')
+const logger = require('./utils/logger')
 const SetupError = require('./utils/SetupError')
 const step = require('./utils/steps.json')
 const error = require('./utils/errors.json')
@@ -168,7 +169,6 @@ async function pullDockerImage() {
 }
 
 function editDockerComposeFile() {
-   const fs = require( 'fs' );
    const yaml = require( 'js-yaml' );
    
    STEP = step.editFile;
@@ -191,9 +191,6 @@ function editDockerComposeFile() {
 }
 
 async function startDockerContainers() {
-   // TODO: Add timeout
-   // TODO: Output errors from quick-start-cs to log.txt file
-   
    STEP = step.dockerUp;
    CLEANUP_NEEDED  = true;
    const dockerSpinner = logger.Spinner( STEP );
@@ -208,20 +205,28 @@ async function startDockerContainers() {
    });
 
    return new Promise( ( resolve, reject ) => {
+     
       const serversAvailabilityCheck = setInterval( () => {
          if ( dockerImages.output.includes( 'Server is listening on port 8000.' ) &&
-               dockerImages.output.includes( 'Node-server is listening on port 3000' ) ) {
+         dockerImages.output.includes( 'Node-server is listening on port 3000' ) ) {
             clearInterval( serversAvailabilityCheck );
+            clearTimeout( timeout );
             dockerSpinner.stop();
             logger.stepInfo( STEP );
             resolve();
          }
-
+         
          if ( dockerImages.output.includes( 'Wrong license key.' ) ) {
             dockerSpinner.stop();
             reject( new SetupError( error.wrongLicense ) );
          }
       }, 100); 
+
+      const timeout = setTimeout( () => {
+         dockerSpinner.stop();
+         fs.writeFileSync( './log.txt', dockerImages.output, 'utf-8' )
+         reject( new SetupError (error.containersTimeout) )
+      }, 10 * 60 * 1000)
    })
 }
 
