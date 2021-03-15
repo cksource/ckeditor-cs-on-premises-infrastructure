@@ -1,11 +1,9 @@
 class SetupError extends Error {  
-   constructor (message, stepMessage) {
+   constructor (message) {
      super(message);
  
      this.name = this.constructor.name;
      Error.captureStackTrace(this, this.constructor);
-
-     this.stepMessage = stepMessage;
    }
  }
  

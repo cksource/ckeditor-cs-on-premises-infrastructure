@@ -1,4 +1,4 @@
-exports.findFirstUnusedPort = async port => {
+exports.findFirstUnusedPort = async ( port ) => {
    const tcpPortUsed = require( 'tcp-port-used' );
    const inUse = await tcpPortUsed.check( port )
    

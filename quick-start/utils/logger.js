@@ -25,7 +25,7 @@ function warning( message ) {
    console.log( chalk.bold.yellow( message ) );
 }
 
-function Spinner( message ) {
+function spinner( message ) {
    return ora( chalk.bold( message + "..." ) );
 }
 
@@ -35,5 +35,5 @@ module.exports = {
    error,
    stepError,
    warning,
-   Spinner
+   spinner
 }

@@ -3,15 +3,14 @@ const fs = require( 'fs' );
 const exec = util.promisify( require( 'child_process' ).exec );
 const execSync = require( 'child_process' ).execSync;
 const chalk = require( 'chalk' );
-const prompt = require( 'prompt' );
 
-const { findFirstUnusedPort, getLocalIpAddress } = require('./utils/networkUtils')
-const logger = require('./utils/logger')
-const SetupError = require('./utils/SetupError')
-const step = require('./utils/steps.json')
-const error = require('./utils/errors.json')
+const { findFirstUnusedPort, getLocalIpAddress } = require('./utils/networkUtils');
+const logger = require('./utils/logger');
+const SetupError = require('./utils/SetupError');
+const step = require('./utils/steps.json');
+const error = require('./utils/errors.json');
 
-let STEP = '';
+let CURRENT_STEP = '';
 let LICENSE_KEY = '';
 let DOCKER_TOKEN = '';
 let ENV_SECRET = '';
@@ -25,39 +24,36 @@ let CLEANUP_NEEDED = false;
 
 (async () => {
    try {
-      printWelcomeMessage()
+      printWelcomeMessage();
 
-      await readArguments()
+      await readArguments();
    
-      await validateCredentails()
+      await validateCredentails();
    
-      await validateEnvironment()
+      await validateEnvironment();
    
-      await loginToDockerRegistry()
+      await loginToDockerRegistry();
    
-      await pullDockerImage()
+      await pullDockerImage();
+
+      editDockerComposeFile();
    
-      editDockerComposeFile()
+      await startDockerContainers();
    
-      await startDockerContainers()
+      await createEnvironment();
    
-      await createEnvironment()
-   
-      printInstructionsAfterInstallation()
+      printInstructionsAfterInstallation();
 
    } catch ( err ) {
+      logger.stepError( CURRENT_STEP );
 
-      if ( err instanceof SetupError ) {
-         logger.stepError( STEP )
-         logger.error( err.message )
-      } else if (err.message === 'canceled') {
-         logger.info( '\n' )
-         logger.stepError( STEP )
+      if ( err instanceof SetupError ) {    
+         logger.error( err.message );
       } else {
-         logger.stepError( STEP )
-         console.log( err )
+         console.log( err );
       }
-      process.exit( 1 )
+
+      process.exit( 1 );
    }
 })() ;
 
@@ -69,7 +65,7 @@ function printWelcomeMessage() {
 
 async function readArguments() {
    const argv = require( 'minimist' )( process.argv.slice( 2 ) );
-   STEP = step.getCredentials;
+   CURRENT_STEP = step.getCredentials;
    
    IS_DEV = argv.dev;
    DOCKER_ENDPOINT = IS_DEV ? 'docker.cke-cs-dev.com' : 'docker.cke-cs.com';
@@ -78,8 +74,8 @@ async function readArguments() {
    NODE_PORT = argv.node_port || await findFirstUnusedPort( NODE_PORT );
    KEEP_CONTAINERS = argv.keep_containers;
 
-   if ( !argv.license_key || !argv.docker_token || !argv.env_secret) {
-      logger.warning( error.missingCredentials)
+   if ( !argv.license_key || !argv.docker_token || !argv.env_secret ) {
+      logger.warning( error.missingCredentials );
    }
 
    LICENSE_KEY = argv.license_key ? argv.license_key.trim() : await askForCredential( 'license_key' );
@@ -88,87 +84,88 @@ async function readArguments() {
 }
 
 async function validateCredentails() {
-   STEP = step.validateCredentials;
-   const licenseKeyRegex = /^[0-9a-f]*$/;
+   CURRENT_STEP = step.validateCredentials;
+   const licenseKeyRegex = /^[0-9a-f]{300,}$/;
    const dockerTokenRegex = /^[0-9a-f\-]{36}$/;
 
-   if ( LICENSE_KEY.length < 300 || !licenseKeyRegex.test( LICENSE_KEY ) ) {
-      logger.warning( error.invalidLicense )
-      LICENSE_KEY = await askForCredential( 'license_key' )
-      return validateCredentails()
+   if ( !licenseKeyRegex.test( LICENSE_KEY ) ) {
+      logger.warning( error.invalidLicense );
+      LICENSE_KEY = await askForCredential( 'license_key' );
+      return validateCredentails();
    }
 
    if ( !dockerTokenRegex.test( DOCKER_TOKEN ) ) {
-      logger.warning( error.invalidToken )
-      DOCKER_TOKEN = await askForCredential( 'docker_token' )
-      return validateCredentails()
+      logger.warning( error.invalidToken );
+      DOCKER_TOKEN = await askForCredential( 'docker_token' );
+      return validateCredentails();
    }
 
    if ( ENV_SECRET.length === 0 ) {
-      logger.warning( error.invalidSecret )
-      ENV_SECRET = await askForCredential( 'env_secret' )
-      return validateCredentails()
+      logger.warning( error.invalidSecret );
+      ENV_SECRET = await askForCredential( 'env_secret' );
+      return validateCredentails();
    }
 
-   logger.stepInfo( STEP );
+   logger.stepInfo( CURRENT_STEP );
 }
 
 async function validateEnvironment() {
-   STEP = step.validateEnvironment;
+   CURRENT_STEP = step.validateEnvironment;
+   
    try {
-      const dockerExec = await exec( 'docker -v' )
-      const dockerVersion = parseFloat(dockerExec.stdout.split( ' ' )[2])
+      const dockerExec = await exec( 'docker -v' );
+      const dockerVersion = parseFloat( dockerExec.stdout.split( ' ' )[ 2 ] );
       
-      if ( dockerVersion === NaN || dockerVersion < 18 ) {
-         throw new SetupError( error.dockerVersion )
+      if ( dockerVersion < 18 ) {
+         throw new SetupError( error.dockerVersion );
       } 
    } catch ( err ) {
-      throw new SetupError( error.dockerNotInstalled )
+      throw new SetupError( error.dockerNotInstalled );
    }
 
-   logger.stepInfo( STEP )
+   logger.stepInfo( CURRENT_STEP );
 }
 
 async function loginToDockerRegistry() {
-   STEP = step.dockerAuth; 
-   const loginSpinner =  logger.Spinner( STEP );
+   CURRENT_STEP = step.dockerAuth; 
+   const loginSpinner = logger.spinner( CURRENT_STEP );
    loginSpinner.start();
 
    try {
-      await exec( `echo ${DOCKER_TOKEN} | docker login -u cs --password-stdin https://${ DOCKER_ENDPOINT }` )
+      await exec( `echo ${DOCKER_TOKEN} | docker login -u cs --password-stdin https://${ DOCKER_ENDPOINT }` );
    } catch( err ) {
       loginSpinner.stop();
       
-      if ( err.stderr.includes( "403 Forbidden" )) {
-         throw new SetupError( error.wrongToken )
+      if ( err.stderr.includes( "403 Forbidden" ) ) {
+         throw new SetupError( error.wrongToken );
       }
       throw new Error( err.stderr );
    }
 
    loginSpinner.stop();
-   logger.stepInfo( STEP );
+   logger.stepInfo( CURRENT_STEP );
 }
 
 async function pullDockerImage() {
-   STEP = step.dockerPull;
-   const downloadSpinner = logger.Spinner( STEP );
+   CURRENT_STEP = step.dockerPull;
+   const downloadSpinner = logger.spinner( CURRENT_STEP );
    downloadSpinner.start();
 
    try {
-      await exec( `docker pull ${ DOCKER_ENDPOINT }/cs:latest` )
+      await exec( `docker pull ${ DOCKER_ENDPOINT }/cs:latest` );
    } catch( err ) {
       downloadSpinner.stop();
       throw new Error( err.stderr );
    }
 
    downloadSpinner.stop();
-   logger.stepInfo( STEP );
+   logger.stepInfo( CURRENT_STEP );
 }
 
 function editDockerComposeFile() {
    const yaml = require( 'js-yaml' );
    
-   STEP = step.editFile;
+   CURRENT_STEP = step.editFile;
    
    try {
       let dockerComposeFile = fs.readFileSync( './docker-compose.yml', 'utf8' );
@@ -184,13 +181,13 @@ function editDockerComposeFile() {
    } catch ( err ) {
       throw new Error( err );
    }
-   logger.stepInfo( STEP );
+   logger.stepInfo( CURRENT_STEP );
 }
 
 async function startDockerContainers() {
-   STEP = step.dockerUp;
+   CURRENT_STEP = step.dockerUp;
    CLEANUP_NEEDED  = true;
-   const dockerSpinner = logger.Spinner( STEP );
+   const dockerSpinner = logger.spinner( CURRENT_STEP );
    dockerSpinner.start();
 
    const spawn = require( 'child_process' ).spawn;
@@ -209,7 +206,7 @@ async function startDockerContainers() {
             clearInterval( serversAvailabilityCheck );
             clearTimeout( timeout );
             dockerSpinner.stop();
-            logger.stepInfo( STEP );
+            logger.stepInfo( CURRENT_STEP );
             resolve();
          }
          
@@ -221,8 +218,8 @@ async function startDockerContainers() {
 
       const timeout = setTimeout( () => {
          dockerSpinner.stop();
-         fs.writeFileSync( './log.txt', dockerImages.output, 'utf-8' )
-         reject( new SetupError (error.containersTimeout) )
+         fs.writeFileSync( './log.txt', dockerImages.output, 'utf-8' );
+         reject( new SetupError (error.containersTimeout) );
       }, 10 * 60 * 1000)
    })
 }
@@ -230,8 +227,8 @@ async function startDockerContainers() {
 async function createEnvironment() {
    const axios = require( 'axios' );
 
-   STEP = step.createEnvironment;
-   const envSpinner = logger.Spinner( STEP );
+   CURRENT_STEP = step.createEnvironment;
+   const envSpinner = logger.spinner( CURRENT_STEP );
    envSpinner.start();
 
    const body = {
@@ -242,14 +239,14 @@ async function createEnvironment() {
    };
 
    try {
-      await axios.post( `http://localhost:${ NODE_PORT }/init`, body )
+      await axios.post( `http://localhost:${ NODE_PORT }/init`, body );
    }
    catch ( err ) {
       envSpinner.stop();
-      throw new Error( err )
+      throw new Error( err );
    }
    envSpinner.stop();
-   logger.stepInfo( STEP );
+   logger.stepInfo( CURRENT_STEP );
 }
 
 function printInstructionsAfterInstallation() {
@@ -258,14 +255,20 @@ function printInstructionsAfterInstallation() {
 }
 
 async function askForCredential( credential ) {
+   const prompt = require( 'prompt' );
    prompt.start();
-   const result = await prompt.get( [ credential ] );
-   return result[ credential ].trim();
+   try {
+      const input = await prompt.get( [ credential ] );
+      return input[ credential ].trim();
+   } catch ( err ) {
+      logger.info( '\n' );
+      throw new SetupError( '' );
+   }
 }
 
 process.on( 'exit', () => {
    if ( !KEEP_CONTAINERS && CLEANUP_NEEDED ) {
-      logger.info( 'Removing created containers...' )
-      execSync( 'npm run cleanup' )
+      logger.info( 'Removing created containers...' );
+      execSync( 'npm run cleanup' );
    }
 } );
