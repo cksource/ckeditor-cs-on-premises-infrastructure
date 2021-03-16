@@ -268,7 +268,11 @@ async function askForCredential( credential ) {
 
 process.on( 'exit', () => {
    if ( !KEEP_CONTAINERS && CLEANUP_NEEDED ) {
-      logger.info( 'Removing created containers...' );
+      logger.info( '\nRemoving created containers...' );
       execSync( 'npm run cleanup' );
    }
+} );
+
+process.on( 'SIGINT', () => {
+   process.exit(2)
 } );
