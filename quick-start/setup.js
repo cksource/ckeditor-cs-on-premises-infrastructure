@@ -111,15 +111,19 @@ async function validateCredentails() {
 
 async function validateEnvironment() {
    CURRENT_STEP = step.validateEnvironment;
-   
+   let dockerVersion = '';
+
    try {
       const dockerExec = await exec( 'docker -v' );
-      const dockerVersion = parseFloat( dockerExec.stdout.split( ' ' )[ 2 ] );
+      dockerVersion = parseFloat( dockerExec.stdout.split( ' ' )[ 2 ] );
       
       if ( dockerVersion < 18 ) {
-         throw new SetupError( error.dockerVersion );
+         throw dockerVersion
       } 
    } catch ( err ) {
+      if (err === dockerVersion) {
+         throw new SetupError( error.dockerVersion );
+      }
       throw new SetupError( error.dockerNotInstalled );
    }
 
