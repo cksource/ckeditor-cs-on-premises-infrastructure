@@ -1,23 +1,23 @@
-const express = require('express');
-const jwt = require( 'jsonwebtoken' );
-const cors = require( 'cors' );
-const bodyParser = require('body-parser')
+const fs = require( 'fs' );
 const crypto = require( 'crypto' );
 const url = require( 'url' );
+const express = require( 'express' );
+const bodyParser = require( 'body-parser' );
+const cors = require( 'cors' );
+const jwt = require( 'jsonwebtoken' );
 const axios = require( 'axios' );
-const fs = require('fs')
 
 let ENVIRONMENT_ID = 'a0ff2ff251386932c19a';
 let ACCESS_KEY = '53677cc5d12a90d8a3928fe444634c5631f7';
 let ENV_SECRET = 'secret';
 
 const app = express();
-app.use(cors())
-app.use(bodyParser.json({limit: '10mb'}))
+app.use( bodyParser.json( { limit: '10mb' } ) );
+app.use( cors() );
 
-// Serving sample.html from node.js server
-app.use(express.static('editor'));
-app.get('/', (req, res) => {
+// Serving editor sample from node.js server
+app.use( express.static( 'editor' ) );
+app.get( '/', ( req, res ) => {
   res.redirect('/sample/index.html');
 });
 
@@ -29,10 +29,9 @@ app.post('/init', createEnvironment)
 
 app.listen(3000, () => console.log(`Node-server is listening on port 3000`));
 
-////////
+
 function generateToken( req, res ) {
 
-  
   const payload = {
      aud: ENVIRONMENT_ID,
      sub: req.query['user.id'] || 'user-1',
@@ -47,18 +46,14 @@ function generateToken( req, res ) {
              }
          }
      }
- };
+  };
 
- const result = jwt.sign( payload, ACCESS_KEY, { algorithm: 'HS256' } );
-
-   res.send( result );
+  const token = jwt.sign( payload, ACCESS_KEY, { algorithm: 'HS256' } );
+  res.send( token );
 } 
 
 async function createEnvironment( req, res ) {
   
-  console.log('Init called')
-  console.log(req.body)
-
   ENV_SECRET = req.body.secret;
   
   const newEnvironment = {
@@ -79,13 +74,7 @@ async function createEnvironment( req, res ) {
   };
   const timestamp = Date.now();
   const uri = `http://ckeditor-cs:8000/environments`;
-  const signature = _generateSignature(
-    ENV_SECRET,
-    'POST',
-    uri,
-    timestamp,
-    newEnvironment
-  );
+  const signature = _generateSignature( ENV_SECRET, 'POST', uri, timestamp, newEnvironment );
   const headers = {
     'X-CS-Signature': signature,
     'X-CS-Timestamp': timestamp
@@ -102,15 +91,15 @@ async function createEnvironment( req, res ) {
 
     res.send('Done')
   } catch ( err ) {
-    console.log(err);
-    res.status(500).send('Error')
+    console.log(err.message);
+    res.status(500).send( 'Could not create environment. ' + err.message )
   }
 }
 
 function injectEndpoints( ip, csPort, nodePort ) { 
   const tokenEndpoint = `http://${ ip }:${ nodePort }/token`;
   const uploadUrl = `http://${ ip }:${ csPort }/easyimage/upload`;
-  const websocketUrl = `http://${ ip }:${ csPort }/ws`;
+  const websocketUrl = `ws://${ ip }:${ csPort }/ws`;
   
   let dialogJsFile = fs.readFileSync('./editor/sample/configuration-dialog/configuration-dialog.js').toString();
 
