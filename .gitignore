@@ -1,6 +1,7 @@
 node_modules
 .vscode
 coverage 
+.DS_Store
 
 # CDK asset staging directory
 .cdk.staging

@@ -4,11 +4,11 @@ const exec = util.promisify( require( 'child_process' ).exec );
 const execSync = require( 'child_process' ).execSync;
 const chalk = require( 'chalk' );
 
-const { findFirstUnusedPort, getLocalIpAddress } = require('./utils/networkUtils');
-const logger = require('./utils/logger');
-const SetupError = require('./utils/SetupError');
-const step = require('./utils/steps.json');
-const error = require('./utils/errors.json');
+const { findFirstUnusedPort, getLocalIpAddress } = require( './utils/networkUtils' );
+const logger = require( './utils/logger' );
+const SetupError = require( './utils/SetupError' );
+const step = require( './utils/steps.json' );
+const error = require( './utils/errors.json' );
 
 let CURRENT_STEP = '';
 let LICENSE_KEY = '';
@@ -22,7 +22,7 @@ let IS_DEV = false;
 let KEEP_CONTAINERS = false;
 let CLEANUP_NEEDED = false;
 
-(async () => {
+( async () => {
    try {
       printWelcomeMessage();
 
@@ -55,12 +55,12 @@ let CLEANUP_NEEDED = false;
 
       process.exit( 1 );
    }
-})() ;
+} )() ;
 
 function printWelcomeMessage() {
    console.clear();
-   logger.info( `   This is ${ chalk.green('On-Premises Quick-Start') } installation` );
-   logger.info( `   Add more informations here\n` );
+   logger.info( `This is ${ chalk.green( 'On-Premises Quick-Start' ) } installation` );
+   logger.info( `Add more informations here\n` );
 }
 
 async function readArguments() {
@@ -86,7 +86,7 @@ async function readArguments() {
 async function validateCredentails() {
    CURRENT_STEP = step.validateCredentials;
    const licenseKeyRegex = /^[0-9a-f]{300,}$/;
-   const dockerTokenRegex = /^[0-9a-f\-]{36}$/;
+   const dockerTokenRegex = /^[0-9a-f-]{36}$/;
 
    if ( !licenseKeyRegex.test( LICENSE_KEY ) ) {
       logger.warning( error.invalidLicense );
@@ -118,10 +118,10 @@ async function validateEnvironment() {
       dockerVersion = parseFloat( dockerExec.stdout.split( ' ' )[ 2 ] );
       
       if ( dockerVersion < 18 ) {
-         throw dockerVersion
+         throw dockerVersion;
       } 
    } catch ( err ) {
-      if (err === dockerVersion) {
+      if ( err === dockerVersion ) {
          throw new SetupError( error.dockerVersion );
       }
       throw new SetupError( error.dockerNotInstalled );
@@ -136,7 +136,7 @@ async function loginToDockerRegistry() {
    loginSpinner.start();
 
    try {
-      await exec( `echo ${DOCKER_TOKEN} | docker login -u cs --password-stdin https://${ DOCKER_ENDPOINT }` );
+      await exec( `echo ${ DOCKER_TOKEN } | docker login -u cs --password-stdin https://${ DOCKER_ENDPOINT }` );
    } catch( err ) {
       loginSpinner.stop();
       
@@ -195,12 +195,12 @@ async function startDockerContainers() {
    dockerSpinner.start();
 
    const spawn = require( 'child_process' ).spawn;
-   const dockerImages = spawn( "docker-compose", [ "up", "--build" ]);
+   const dockerImages = spawn( "docker-compose", [ "up", "--build" ] );
    
    dockerImages.output = '';
    dockerImages.stdout.on( 'data', ( data ) => {
       dockerImages.output += data.toString();
-   });
+   } );
 
    return new Promise( ( resolve, reject ) => {
      
@@ -218,14 +218,14 @@ async function startDockerContainers() {
             dockerSpinner.stop();
             reject( new SetupError( error.wrongLicense ) );
          }
-      }, 100); 
+      }, 100 ); 
 
       const timeout = setTimeout( () => {
          dockerSpinner.stop();
          fs.writeFileSync( './log.txt', dockerImages.output, 'utf-8' );
-         reject( new SetupError (error.containersTimeout) );
-      }, 10 * 60 * 1000)
-   })
+         reject( new SetupError ( error.containersTimeout ) );
+      }, 10 * 60 * 1000 );
+   } );
 }
 
 async function createEnvironment() {
@@ -254,8 +254,8 @@ async function createEnvironment() {
 }
 
 function printInstructionsAfterInstallation() {
-   logger.info( `${ chalk.green('\n   Installation complete') }` );
-   logger.info( `   Visit ${ chalk.underline.cyan(`http://${ IP_ADDR }:${ NODE_PORT }`) } to start collaborating` );
+   logger.info( `${ chalk.green( '\nInstallation complete' ) }` );
+   logger.info( `Visit ${ chalk.underline.cyan( `http://${ IP_ADDR }:${ NODE_PORT }` ) } to start collaborating` );
 }
 
 async function askForCredential( credential ) {
@@ -278,5 +278,5 @@ process.on( 'exit', () => {
 } );
 
 process.on( 'SIGINT', () => {
-   process.exit(2)
+   process.exit( 2 );
 } );

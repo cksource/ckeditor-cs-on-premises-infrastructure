@@ -16,5 +16,8 @@
     "ora": "^5.3.0",
     "prompt": "^1.1.0",
     "tcp-port-used": "^1.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.25.0"
   }
 }
