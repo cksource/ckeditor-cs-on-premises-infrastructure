@@ -1,15 +1,15 @@
 const fs = require( 'fs' );
 const crypto = require( 'crypto' );
 const url = require( 'url' );
-const express = require( 'express' );
 
+const express = require( 'express' );
 const cors = require( 'cors' );
 const jwt = require( 'jsonwebtoken' );
 const axios = require( 'axios' );
 
-let environment_id = '';
-let access_key = '';
-let env_secret = '';
+let environmentID = '';
+let accessKey = '';
+let envSecret = '';
 
 const app = express();
 app.use( express.json( { limit: '10mb' } ) );
@@ -27,13 +27,16 @@ app.get( '/token', generateToken );
 // Create environment
 app.post( '/init', createEnvironment );
 
+// Health check
+app.get( '/health' , getHealthStatus ); 
+
 app.listen( 3000, () => console.log( `Node-server is listening on port 3000` ) );
 
 
 function generateToken( req, res ) {
 
    const payload = {
-      aud: environment_id,
+      aud: environmentID,
       sub: req.query[ 'user.id' ] || 'user-1',
       user: {
          name: req.query[ 'user.name' ] || 'John Doe',
@@ -48,13 +51,13 @@ function generateToken( req, res ) {
       }
    };
 
-   const token = jwt.sign( payload, access_key, { algorithm: 'HS256' } );
+   const token = jwt.sign( payload, accessKey, { algorithm: 'HS256' } );
    res.send( token );
 } 
 
 async function createEnvironment( req, res ) {
   
-   env_secret = req.body.secret;
+   envSecret = req.body.secret;
   
    const newEnvironment = {
       id: _randomString( 20 ), 
@@ -74,7 +77,7 @@ async function createEnvironment( req, res ) {
    };
    const timestamp = Date.now();
    const uri = `http://ckeditor-cs:8000/environments`;
-   const signature = _generateSignature( env_secret, 'POST', uri, timestamp, newEnvironment );
+   const signature = _generateSignature( envSecret, 'POST', uri, timestamp, newEnvironment );
    const headers = {
       'X-CS-Signature': signature,
       'X-CS-Timestamp': timestamp
@@ -84,14 +87,14 @@ async function createEnvironment( req, res ) {
       await axios.post( uri, newEnvironment, { headers: headers } ) ;
       console.log( 'New Environment created.' );
       console.log( `EnvironmentId: ${ newEnvironment.id } AccessKey: ${ newEnvironment.accessKeys[ 0 ].value }` );
-      environment_id = newEnvironment.id;
-      access_key = newEnvironment.accessKeys[ 0 ].value;
+      environmentID = newEnvironment.id;
+      accessKey = newEnvironment.accessKeys[ 0 ].value;
 
       injectEndpoints( req.body.ip, req.body.csPort, req.body.nodePort );
 
       res.send( 'Done' );
    } catch ( err ) {
-      console.log( err.message );
+      console.log( err );
       res.status( 500 ).send( 'Could not create environment. ' + err.message );
    }
 }
@@ -108,6 +111,13 @@ function injectEndpoints( ip, csPort, nodePort ) {
    dialogJsFile = dialogJsFile.replace( /ws:\/\/.*\/ws/,websocketUrl );
 
    fs.writeFileSync( './editor/sample/configuration-dialog/configuration-dialog.js', dialogJsFile, 'utf8' );
+}
+
+function getHealthStatus( req, res )  {
+   res.send( { 
+      uptime: process.uptime(), 
+      timestamp: Date.now() 
+   } );
 }
 
 

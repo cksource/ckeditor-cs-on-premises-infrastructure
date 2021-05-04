@@ -2,20 +2,16 @@ const util = require( 'util' );
 const exec = util.promisify( require( 'child_process' ).exec );
 
 async function removeContainer( containerName ) {
-   
-   try {
-      await exec( `docker stop ${ containerName }` );
-      await exec( `docker container rm ${ containerName }` );
-      console.log( `${ containerName } container removed` );
-   }
-   catch ( err ) {
-      console.log( `There was an error during ${ containerName } removal` );
-      process.exit( 1 );
-   }
-   
+   await exec( `docker rm -f ${ containerName } || true` );
+   console.log( `Docker container ${ containerName } removed` );  
 }
 
-removeContainer( 'quick-start-cs' );
-removeContainer( 'quick-start-mysql' );
-removeContainer( 'quick-start-redis' );
-removeContainer( 'quick-start-node-server' );
+const containerNames = [ 
+   'quick-start-cs', 
+   'quick-start-mysql', 
+   'quick-start-redis', 
+   'quick-start-node-server' 
+];
+
+containerNames.forEach( removeContainer );
+

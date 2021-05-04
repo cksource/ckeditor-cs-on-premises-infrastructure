@@ -1,0 +1,40 @@
+version: '2.2'
+services:
+  mysql-database:
+    image: mysql:5.6.38
+    container_name: quick-start-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+  redis:
+    image: redis:3.2.6
+    container_name: quick-start-redis
+  node-server:
+    build: ./node-server/
+    container_name: quick-start-node-server
+    restart: always
+    ports:
+      - '3000:3000'
+  ckeditor-cs:
+    image: docker.cke-cs.com/cs:latest
+    container_name: quick-start-cs
+    depends_on:
+      - redis
+      - mysql-database
+    ports:
+      - '8000:8000'
+    restart: always
+    init: true
+    environment:
+      DATABASE_HOST: mysql-database
+      DATABASE_USER: root
+      DATABASE_PASSWORD: password
+      REDIS_HOST: redis
+      ENVIRONMENTS_MANAGEMENT_SECRET_KEY: secret
+      LICENSE_KEY: >-
+        dc68c...ae35179a
+      STORAGE_DRIVER: filesystem
+      STORAGE_LOCATION: /var/cs/easyimage
+    volumes:
+      - ~/easyimage_files:/var/cs/easyimage

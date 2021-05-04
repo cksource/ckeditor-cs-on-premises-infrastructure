@@ -2,6 +2,7 @@ node_modules
 .vscode
 coverage 
 .DS_Store
+quick-start/docker-compose.yml
 
 # CDK asset staging directory
 .cdk.staging

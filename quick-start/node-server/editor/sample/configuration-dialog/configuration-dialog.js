@@ -5,11 +5,11 @@
 
 ( function() {
 
-	function createDialog() {
-		const overlay = document.createElement( 'div' );
+   function createDialog() {
+      const overlay = document.createElement( 'div' );
 
-		overlay.id = 'overlay';
-		overlay.innerHTML = `
+      overlay.id = 'overlay';
+      overlay.innerHTML = `
 			<form class="body">
 				<h2>Connect CKEditor Cloud Services</h2>
 				<p>If you do not have Cloud Services URLs yet, <a href="https://ckeditor.com/docs/cs/latest/guides/collaboration/quick-start.html" target="_blank">see the documentation</a>.</p>
@@ -24,174 +24,174 @@
 				<button type="submit" id="start">Start</button>
 			</form>`;
 
-		document.body.appendChild( overlay );
+      document.body.appendChild( overlay );
 
-		const form = overlay.querySelector( 'form' );
-		const tokenUrlInput = document.getElementById( 'token-url' );
-		const uploadUrlInput = document.getElementById( 'upload-url' );
-		const webSocketUrlInput = document.getElementById( 'web-socket-url' );
-		const channelIdInput = document.getElementById( 'channel-id' );
-		const additional = document.getElementById( 'additional' );
-		const userContainer = document.getElementById( 'user-container' );
+      const form = overlay.querySelector( 'form' );
+      const tokenUrlInput = document.getElementById( 'token-url' );
+      const uploadUrlInput = document.getElementById( 'upload-url' );
+      const webSocketUrlInput = document.getElementById( 'web-socket-url' );
+      const channelIdInput = document.getElementById( 'channel-id' );
+      const additional = document.getElementById( 'additional' );
+      const userContainer = document.getElementById( 'user-container' );
 
-		tokenUrlInput.value =  'http://192.168.1.1:3000/token';
-		uploadUrlInput.value = 'http://192.168.1.1:8000/easyimage/upload';
-		webSocketUrlInput.value = 'ws://192.168.1.1:8000/ws';
-		channelIdInput.value = handleDocIdInUrl();
+      tokenUrlInput.value =  'http://localhost:3000/token';
+      uploadUrlInput.value = 'http://localhost:8000/easyimage/upload';
+      webSocketUrlInput.value = 'ws://localhost:8000/ws';
+      channelIdInput.value = handleDocIdInUrl();
 
-		// Create two random users with avatars.
-		addUser( {
-			id: 'e1',
-			name: 'Tom Rowling',
-			avatar: 'https://randomuser.me/api/portraits/men/30.jpg',
-			role: 'writer'
-		} );
+      // Create two random users with avatars.
+      addUser( {
+         id: 'e1',
+         name: 'Tom Rowling',
+         avatar: 'https://randomuser.me/api/portraits/men/30.jpg',
+         role: 'writer'
+      } );
 
-		addUser( {
-			id: 'e2',
-			name: 'Wei Hong',
-			avatar: 'https://randomuser.me/api/portraits/women/51.jpg',
-			role: 'writer'
-		} );
+      addUser( {
+         id: 'e2',
+         name: 'Wei Hong',
+         avatar: 'https://randomuser.me/api/portraits/women/51.jpg',
+         role: 'writer'
+      } );
 
-		// Create two random users without avatars.
-		addUser( { id: 'e3', name: 'Rani Patel', role: 'writer' } );
-		addUser( { id: 'e4', name: 'Henrik Jensen', role: 'commentator' } );
+      // Create two random users without avatars.
+      addUser( { id: 'e3', name: 'Rani Patel', role: 'writer' } );
+      addUser( { id: 'e4', name: 'Henrik Jensen', role: 'commentator' } );
 
-		// Create two anonymous users.
-		addUser( { id: randomString(), role: 'writer' } );
-		addUser( { id: randomString(), role: 'reader' } );
+      // Create two anonymous users.
+      addUser( { id: randomString(), role: 'writer' } );
+      addUser( { id: randomString(), role: 'reader' } );
 
-		tokenUrlInput.addEventListener( 'input', () => {
-			overlay.classList.remove( 'warning' );
-			userContainer.querySelectorAll( 'div' ).forEach( div => div.classList.remove( 'active' ) );
-			additional.classList.toggle( 'visible',  tokenUrlInput.value );
-		} );
+      tokenUrlInput.addEventListener( 'input', () => {
+         overlay.classList.remove( 'warning' );
+         userContainer.querySelectorAll( 'div' ).forEach( div => div.classList.remove( 'active' ) );
+         additional.classList.toggle( 'visible',  tokenUrlInput.value );
+      } );
 
-		// Mark the first user as selected.
-		if ( tokenUrlInput.value) {
-			additional.classList.add( 'visible' );
-		}
+      // Mark the first user as selected.
+      if ( tokenUrlInput.value ) {
+         additional.classList.add( 'visible' );
+      }
 
-		return new Promise( resolve => {
-			form.addEventListener( 'submit', evt => {
-				evt.preventDefault();
+      return new Promise( resolve => {
+         form.addEventListener( 'submit', evt => {
+            evt.preventDefault();
 
-				// Detect if the token contains user data.
-				if ( tokenUrlInput.value && !tokenUrlInput.value.includes( '?' ) ) {
-					overlay.classList.add( 'warning' );
+            // Detect if the token contains user data.
+            if ( tokenUrlInput.value && !tokenUrlInput.value.includes( '?' ) ) {
+               overlay.classList.add( 'warning' );
 
-					return;
-				}
-
-
-				updateDocIdInUrl( channelIdInput.value );
-
-				overlay.remove();
-
-				resolve( {
-					tokenUrl: tokenUrlInput.value,
-					uploadUrl: uploadUrlInput.value,
-					webSocketUrl: webSocketUrlInput.value,
-					channelId: channelIdInput.value
-				} );
-			} );
-		} );
-	}
-
-	function addUser( options ) {
-		const userContainer = document.getElementById( 'user-container' );
-		const tokenUrlInput = document.getElementById( 'token-url' );
-		const overlayEl = document.getElementById( 'overlay' );
-
-		const userDiv = document.createElement( 'div' );
-		userDiv.innerText = options.name || '(anonymous)';
-
-		const userRoleSpan = document.createElement( 'span' );
-		userRoleSpan.innerText = options.role;
-		userRoleSpan.classList.add( 'role' );
-		userDiv.appendChild( userRoleSpan );
-
-		if ( options.avatar ) {
-			const img = document.createElement( 'img' );
-
-			img.src = options.avatar;
-			userDiv.prepend( img );
-		} else {
-			// Handle cases without avatar to display them properly in the users list.
-			const pseudoAvatar = document.createElement( 'span' );
-			pseudoAvatar.classList.add( 'pseudo-avatar' );
-
-			if ( !options.name ) {
-				pseudoAvatar.classList.add( 'anonymous' );
-			} else {
-				pseudoAvatar.textContent = getUserInitials( options.name );
-			}
-
-			userDiv.prepend( pseudoAvatar );
-		}
-
-		userDiv.addEventListener( 'click', () => {
-			tokenUrlInput.value = `${ getRawTokenUrl( tokenUrlInput.value ) }?` + Object.keys( options )
-				.filter( key => options[ key ] )
-				.map( key => {
-					if ( key === 'role' ) {
-						return `${ key }=${ options[ key ] }`;
-					}
-
-					return `user.${ key }=${ options[ key ] }`;
-				} )
-				.join( '&' );
-
-			overlayEl.classList.remove( 'warning' );
-			userContainer.querySelectorAll( 'div' ).forEach( div => div.classList.remove( 'active' ) );
-			userDiv.classList.add( 'active' );
-		} );
-
-		userContainer.appendChild( userDiv );
-	}
-
-	function handleDocIdInUrl() {
-		let id = getDocIdFromUrl();
-
-		if ( !id ) {
-			id = randomString();
-			updateDocIdInUrl( id );
-		}
-
-		return id;
-	}
-
-	function getUserInitials( name ) {
-		return name.split( ' ', 2 ).map( part => part.charAt( 0 ) ).join( '' ).toUpperCase();
-	}
-
-	function updateDocIdInUrl( id ) {
-		window.history.replaceState( {}, document.title, generateUrlWithDocId( id ) );
-	}
-
-	function generateUrlWithDocId( id ) {
-		return `${ window.location.href.split( '?' )[ 0 ] }?docId=${ id }`;
-	}
-
-	function getDocIdFromUrl() {
-		const docIdMatch = location.search.match( /docId=(.+)$/ );
-
-		return docIdMatch ? decodeURIComponent( docIdMatch[ 1 ] ) : null;
-	}
+               return;
+            }
 
 
-	function getRawTokenUrl( url ) {
-		if ( url ) {
-			return url.split( '?' )[ 0 ];
-		}
+            updateDocIdInUrl( channelIdInput.value );
 
-		return url;
-	}
+            overlay.remove();
 
-	function randomString() {
-		return Math.floor( Math.random() * Math.pow( 2, 52 ) ).toString( 32 );
-	}
+            resolve( {
+               tokenUrl: tokenUrlInput.value,
+               uploadUrl: uploadUrlInput.value,
+               webSocketUrl: webSocketUrlInput.value,
+               channelId: channelIdInput.value
+            } );
+         } );
+      } );
+   }
 
-	window.createDialog = createDialog;
+   function addUser( options ) {
+      const userContainer = document.getElementById( 'user-container' );
+      const tokenUrlInput = document.getElementById( 'token-url' );
+      const overlayEl = document.getElementById( 'overlay' );
+
+      const userDiv = document.createElement( 'div' );
+      userDiv.innerText = options.name || '(anonymous)';
+
+      const userRoleSpan = document.createElement( 'span' );
+      userRoleSpan.innerText = options.role;
+      userRoleSpan.classList.add( 'role' );
+      userDiv.appendChild( userRoleSpan );
+
+      if ( options.avatar ) {
+         const img = document.createElement( 'img' );
+
+         img.src = options.avatar;
+         userDiv.prepend( img );
+      } else {
+         // Handle cases without avatar to display them properly in the users list.
+         const pseudoAvatar = document.createElement( 'span' );
+         pseudoAvatar.classList.add( 'pseudo-avatar' );
+
+         if ( !options.name ) {
+            pseudoAvatar.classList.add( 'anonymous' );
+         } else {
+            pseudoAvatar.textContent = getUserInitials( options.name );
+         }
+
+         userDiv.prepend( pseudoAvatar );
+      }
+
+      userDiv.addEventListener( 'click', () => {
+         tokenUrlInput.value = `${ getRawTokenUrl( tokenUrlInput.value ) }?` + Object.keys( options )
+            .filter( key => options[ key ] )
+            .map( key => {
+               if ( key === 'role' ) {
+                  return `${ key }=${ options[ key ] }`;
+               }
+
+               return `user.${ key }=${ options[ key ] }`;
+            } )
+            .join( '&' );
+
+         overlayEl.classList.remove( 'warning' );
+         userContainer.querySelectorAll( 'div' ).forEach( div => div.classList.remove( 'active' ) );
+         userDiv.classList.add( 'active' );
+      } );
+
+      userContainer.appendChild( userDiv );
+   }
+
+   function handleDocIdInUrl() {
+      let id = getDocIdFromUrl();
+
+      if ( !id ) {
+         id = randomString();
+         updateDocIdInUrl( id );
+      }
+
+      return id;
+   }
+
+   function getUserInitials( name ) {
+      return name.split( ' ', 2 ).map( part => part.charAt( 0 ) ).join( '' ).toUpperCase();
+   }
+
+   function updateDocIdInUrl( id ) {
+      window.history.replaceState( {}, document.title, generateUrlWithDocId( id ) );
+   }
+
+   function generateUrlWithDocId( id ) {
+      return `${ window.location.href.split( '?' )[ 0 ] }?docId=${ id }`;
+   }
+
+   function getDocIdFromUrl() {
+      const docIdMatch = location.search.match( /docId=(.+)$/ );
+
+      return docIdMatch ? decodeURIComponent( docIdMatch[ 1 ] ) : null;
+   }
+
+
+   function getRawTokenUrl( url ) {
+      if ( url ) {
+         return url.split( '?' )[ 0 ];
+      }
+
+      return url;
+   }
+
+   function randomString() {
+      return Math.floor( Math.random() * Math.pow( 2, 52 ) ).toString( 32 );
+   }
+
+   window.createDialog = createDialog;
 }() );

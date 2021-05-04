@@ -8,7 +8,7 @@ module.exports = {
    },
    extends: "eslint:recommended",
    rules: {
-      indent: [ 'error', 3 ],
+      indent: [ 'error', 3, { SwitchCase: 1 } ],
       'no-mixed-spaces-and-tabs': [ 'error', 'smart-tabs' ],
       'array-bracket-spacing': [ 'error', 'always' ],
       'object-curly-spacing': [ 'error', 'always' ],
