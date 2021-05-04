@@ -297,6 +297,5 @@ async function askForCredential( credential ) {
 }
 
 async function askForCredentialIfMissing( argv, credential ) {
-   return argv[ credential ] ? argv[ credential ] : askForCredential( credential );
+   return argv[ credential ] ? argv[ credential ].trim() : askForCredential( credential );
 }
-

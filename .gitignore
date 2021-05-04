@@ -3,6 +3,7 @@ node_modules
 coverage 
 .DS_Store
 quick-start/docker-compose.yml
+quick-start/node-server/package-lock.json
 
 # CDK asset staging directory
 .cdk.staging
