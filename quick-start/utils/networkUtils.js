@@ -19,6 +19,10 @@ exports.getLocalIpAddress = async () => {
          client.end();
          resolve( client.localAddress );
       } );
+      client.on( 'error', () => {
+         client.end();
+         resolve( 'localhost' );
+      } );
    } );
 };
 
