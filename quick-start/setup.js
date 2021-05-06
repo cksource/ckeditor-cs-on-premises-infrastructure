@@ -74,8 +74,9 @@ const error = require( './utils/errors.json' );
 
 function printWelcomeMessage() {
    logger.info( '\n\n' );
-   logger.info( `This is ${ chalk.green( 'On-Premises Quick-Start' ) } installation` );
-   logger.info( `Add more informations here\n` );
+   logger.info( `${ chalk.green( 'Collaboration Server On-Premises Quick-Start' ) } installation` );
+   logger.info( `This setup script allows you to quickly set up infrastructure needed to use CKEditor 5 with Real Time Collaboration and Collaboration Server On-Premises. \n` );
+   logger.warning( `Collaboration Server On-Premises Quick-Start can be only used for testing purposes during local development and it cannot be used in production.\n` );
 }
 
 async function readArguments( context ) {
@@ -83,7 +84,7 @@ async function readArguments( context ) {
    context.currentStep = step.getCredentials;
    
 
-   context.dockerEndpoint = argv.docker_endpoint ? argv.docker_endpoint : 'docker.cke-cs.com';
+   context.dockerEndpoint = argv.docker_endpoint || 'docker.cke-cs.com';
    context.ipAddr = await getLocalIpAddress();
    context.csPort = argv.cs_port || await findFirstUnusedPort( context.csPort );
    context.nodePort = argv.node_port || await findFirstUnusedPort( context.nodePort );

@@ -1,4 +1,4 @@
-const platform = require('os').platform()
+const platform = require( 'os' ).platform();
 const chalk = require( 'chalk' );
 const ora = require( 'ora' );
 
@@ -36,4 +36,4 @@ module.exports = {
    stepError,
    warning,
    spinner
-}
+};
