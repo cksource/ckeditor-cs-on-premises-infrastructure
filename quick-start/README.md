@@ -1,13 +1,13 @@
 ### Collaboration Server On-Premises Quick-Start guide
 
-Collaboration Server On-Premises Quick-Start allows you to quickly set up infrastructure needed to use CKEditor 5 with Real Time Collaboration and Collaboration Server On-Premises. After running one setup command you can jump into working CKEditor 5 instance and start testing our solution, while the Collaboration Server is running locally, on your machine.
+Collaboration Server On-Premises Quick-Start allows you to quickly set up the infrastructure needed to use CKEditor 5 with Real-Time Collaboration and Collaboration Server On-Premises. After running one setup command you can jump into working CKEditor 5 instance and start testing our solution, while the Collaboration Server is running locally, on your machine.
 
-**Infrastructure created with Collaboration Server On-Premises Quick-Start can be only used for testing purposes during local development and it cannot be used in production.** For details about production grade architecture please refer to [our guide.](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/architecture.html)
+**Infrastructure created with Collaboration Server On-Premises Quick-Start can be only used for testing purposes during local development and it cannot be used in production.** For details about production-grade architecture please refer to [our guide.](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/architecture.html)
 
 
 ## Prerequisites
 
-To successfuly run Collaboration Server On-Premises Quick-Start you need following tools:
+To successfully run Collaboration Server On-Premises Quick-Start you need the following tools:
 - **Docker Desktop** for Windows or Mac (or Docker tools for Linux)
 - **node** version 10 and above
 - **npm** version 6 and above
@@ -29,9 +29,9 @@ On-Premises Quick-Start installation will download few docker images with about 
 ```
 docker -v && docker-compose -v && node -v && npm -v && git --version
 ```
-You should see all version numbers of those tools. If there is a message `command not found`, then please install missing tool before procceding to the next step.
+You should see all version numbers of those tools. If there is a message `command not found`, then please install the missing tool before proceeding to the next step.
 
-2. Clone this repository and install packages with following commands:
+2. Clone this repository and install packages with the following commands:
 ```
 git clone https://github.com/cksource/ckeditor-cs-on-premises-infrastructure.git
 
@@ -46,12 +46,12 @@ node setup.js --license_key="YOUR_LICENSE_KEY" --docker_token="YOUR_DOCKER_DOWNL
 ```
 Where:
 - `license_key` can be found in CKEditor Ecosystem Dashboard inside your CKEditor Collaboration Server On-Premises subscription.
-- `docker_token` can be found in CKEditor Ecosystem Dashboard inside your CKEditor Collaboration Server On-Premises subscription in *Download token* section. If you do not see any tokens, you can create it with *Create new token* button.
+- `docker_token` can be found in CKEditor Ecosystem Dashboard inside your CKEditor Collaboration Server On-Premises subscription in the *Download token* section. If you do not see any tokens, you can create it with the *Create new token* button.
 - `env_secret` is a password, that will be used to access the [Management panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
 
 
-This is it. After a while you should see a message `Visit http://xx.xx.xx.xx:port to start collaborating`. Open this page in your browser. Anyone from your network will be able to connect and collaborate together.
-When your testing session is over you can simply stop running process in the terminal with Ctrl+C and created containers will be removed from your machine.
+This is it. After a while, you should see a message `Visit http://xx.xx.xx.xx:port to start collaborating`. Open this page in your browser. Anyone from your network will be able to connect and collaborate.
+When your testing session is over you can simply stop running the process in the terminal with Ctrl+C and created containers will be removed from your machine.
 
 
 ## setup.js arguments
@@ -67,4 +67,4 @@ Only 3 arguments are needed to successfully run our On-Premises Quick-Start. Her
 --keep_containers     - optional, use it to preserve created containers on exit
 ```
 
-**Note:** By default ports 3000 and 8000 are used. Setup process is checking if those ports are available and if they are not, then next available port will be used. Port checking mechanism will not be used if ports are specified as arguments using `--cs_port` and `--node_port`.
+**Note:** By default ports 3000 and 8000 are used. The setup process is checking if those ports are available and if they are not, then the next available port will be used. Port checking mechanism will not be used if ports are specified as arguments using `--cs_port` and `--node_port`.
