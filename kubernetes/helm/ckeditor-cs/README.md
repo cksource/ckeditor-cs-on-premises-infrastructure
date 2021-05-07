@@ -48,7 +48,7 @@ helm install ckeditor-cs kubernetes/helm/ckeditor-cs -f path-to-your-configurati
 
 ## Verify installation
 
-By default our helm chart is configured to use Kubernetes health checks to
+By default our helm chart is configured to use Kubernetes health checkts to
 determine if deployed service works properly, however you can confirm whole set of server features with our e2e tests
 
 ```sh
@@ -57,9 +57,9 @@ APPLICATION_ENDPOINT="$(kubectl get ingresses.networking.k8s.io ckeditor-cs -o j
 # Get CKEditor Cloud Services version
 VERSION="$(kubectl get deployments.apps ckeditor-cs -o json | jq -r '.spec.template.spec.containers[0].image' | sed 's/.*://')"
 # Secret key
-ENVIRONMENTS_MANAGEMENT_SECRET_KEY=secret
+ENVIRONMENTS_MANAGEMENT_SECRET_KEY="$(kubectl get secret ckeditor-cs -o json | jq -r '.data.ENVIRONMENTS_MANAGEMENT_SECRET_KEY' | base64 -d)"
 
-kubectl run ckeditor-cs-tests -i \
+kubectl run ckeditor-cs-tests -i --rm \
   --image docker.cke-cs.com/cs-tests:$VERSION \
   --env APPLICATION_ENDPOINT="$APPLICATION_ENDPOINT" \
   --env ENVIRONMENTS_MANAGEMENT_SECRET_KEY="$ENVIRONMENTS_MANAGEMENT_SECRET_KEY" \
