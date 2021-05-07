@@ -34,13 +34,14 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: default 
+            - name: tcp
               containerPort: 8000
               protocol: TCP
+        {{- with .Values.readinessProbe }}
           readinessProbe:
-            httpGet:
-              path: /health
-              port: default 
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+
           envFrom:
             - secretRef:
                 name: {{ include "ckeditor-cs.secretName" . }}

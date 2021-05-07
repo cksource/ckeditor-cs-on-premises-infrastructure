@@ -57,7 +57,7 @@ Create the name of the service account to use
 {{- if .Values.serviceAccount.create }}
 {{- default (include "ckeditor-cs.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
-{{- default "default" .Values.serviceAccount.name }}
+{{- default "ckeditor-cs" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
 
@@ -68,6 +68,6 @@ Create the name of the secret to use
 {{- if .Values.secret.create }}
 {{- default (include "ckeditor-cs.fullname" .) .Values.secret.name }}
 {{- else }}
-{{- default "default" .Values.secret.name }}
+{{- default "ckeditor-cs" .Values.secret.name }}
 {{- end }}
 {{- end }}

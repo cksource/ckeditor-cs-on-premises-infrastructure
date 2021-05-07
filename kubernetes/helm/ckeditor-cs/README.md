@@ -1,4 +1,4 @@
-# CKEditor Collaboration Server On-Premise Kubernetes Helm chart example
+# CKEditor Collaboration Server On-Premise Helm chart
 
 Use this Helm chart to provision CKEditor Collaboration Server on your
 Kubernetes cluster.
@@ -6,7 +6,7 @@ Kubernetes cluster.
 ## Minimum requirements
 - 1 CPU Core
 - 512 MB RAM
-- External SQL database: 
+- External SQL database:
   - MySQL 5.6/5.7
   - PostgreSQL min. 12.0
 - External Redis cluster 3.2.6 or newer
@@ -16,7 +16,7 @@ Kubernetes cluster.
 For detailed specification of CKEditor Collaboration Server follow instructions
 from [requirements
 documentation](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/requirements.html).
-  
+
 ## Getting started
 
 Create imagePullSecret for CKEditor container registry
@@ -39,37 +39,31 @@ cluster
 > file.
 
 ```sh
-helm install -f example-configuration-file.yaml ckeditor-cs kubernetes/helm/ckeditor-cs
+# Clone repository containing helm charts
+git clone git@github.com:cksource/ckeditor-cs-on-premises-infrastructure.git
+cd ckeditor-cs-on-premises-infrastructure
+# Install helm chart in your kubernetes cluster
+helm install ckeditor-cs kubernetes/helm/ckeditor-cs -f path-to-your-configuration-file.yaml
 ```
 
-## Verify
+## Verify installation
 
 By default our helm chart is configured to use Kubernetes health checks to
 determine if deployed service works properly, however you can confirm whole set of server features with our e2e tests
 
 ```sh
-# Your container registry username
-DOCKER_USERNAME=
-# Your container registry authentication token
-DOCKER_TOKEN=
-# CKEditor Collaboration Server E2E tests version
-VERSION=latest
+# Get ingress hostname
+APPLICATION_ENDPOINT="$(kubectl get ingresses.networking.k8s.io ckeditor-cs -o json | jq -r '.spec.rules[0].host' | sed 's|^|http://|')"
+# Get CKEditor Cloud Services version
+VERSION="$(kubectl get deployments.apps ckeditor-cs -o json | jq -r '.spec.template.spec.containers[0].image' | sed 's/.*://')"
+# Secret key
+ENVIRONMENTS_MANAGEMENT_SECRET_KEY=secret
 
-docker login -u $DOCKER_USERNAME -p $DOCKER_TOKEN docker.cke-cs.com/cs-tests:$VERSION
-
-docker run \
--e APPLICATION_ENDPOINT="$(kubectl get in)" \
--e ENVIRONMENTS_MANAGEMENT_SECRET_KEY="[your_env_management_secret_key]" \
-docker.cke-cs.com/cs-tests:$VERSION
-
+kubectl run ckeditor-cs-tests -i \
+  --image docker.cke-cs.com/cs-tests:$VERSION \
+  --env APPLICATION_ENDPOINT="$APPLICATION_ENDPOINT" \
+  --env ENVIRONMENTS_MANAGEMENT_SECRET_KEY="$ENVIRONMENTS_MANAGEMENT_SECRET_KEY" \
+  --overrides='{ "spec": { "imagePullSecrets": [{"name": "docker-cke-cs-com"}] } }' \
+  --restart='Never'
 ```
 Documentation: [Testing onpremise](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/testing/docker.html)
-## Troubleshooting
-
-### Websocket connection problem
-
-Make sure your ingress controller and load balancer configuration supports stable
-websocket connection. To check if your infrastructure is correctly configured
-compare results of running e2e tests mentioned above against:
-- load balancer/ingress controller endpoint 
-- `kubectl port-forward` endpoint

@@ -11,3 +11,9 @@ cdk.out
 
 # Parcel default cache directory
 .parcel-cache
+
+# Development configuration of helm chart
+dev.values.yaml
+
+# Helm chart dependencies
+kubernetes/helm/*/charts
