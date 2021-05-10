@@ -4,6 +4,7 @@
  */
 
 ( function() {
+   const LOCAL_STORAGE_KEY = 'CKEDITOR_CS_QS_CONFIG';
 
    function createDialog() {
       const overlay = document.createElement( 'div' );
@@ -34,9 +35,11 @@
       const additional = document.getElementById( 'additional' );
       const userContainer = document.getElementById( 'user-container' );
 
-      tokenUrlInput.value =  'http://localhost:3000/token';
-      uploadUrlInput.value = 'http://localhost:8000/easyimage/upload';
-      webSocketUrlInput.value = 'ws://localhost:8000/ws';
+      const csConfig = getStoredConfig();
+
+      tokenUrlInput.value = csConfig.tokenUrl || 'http://localhost:3000/token';
+      uploadUrlInput.value = csConfig.uploadUrl || 'http://localhost:8000/easyimage/upload';
+      webSocketUrlInput.value = csConfig.webSocketUrl || 'ws://localhost:8000/ws';
       channelIdInput.value = handleDocIdInUrl();
 
       // Create two random users with avatars.
@@ -84,6 +87,11 @@
                return;
             }
 
+            storeConfig( {
+               tokenUrl: getRawTokenUrl( tokenUrlInput.value ),
+               uploadUrl: uploadUrlInput.value,
+               webSocketUrl: webSocketUrlInput.value,
+            } );
 
             updateDocIdInUrl( channelIdInput.value );
 
@@ -180,6 +188,13 @@
       return docIdMatch ? decodeURIComponent( docIdMatch[ 1 ] ) : null;
    }
 
+   function getStoredConfig() {
+      return JSON.parse( localStorage.getItem( LOCAL_STORAGE_KEY ) || '{}' );
+   }
+
+   function storeConfig( csConfig ) {
+      localStorage.setItem( LOCAL_STORAGE_KEY, JSON.stringify( csConfig ) );
+   }
 
    function getRawTokenUrl( url ) {
       if ( url ) {

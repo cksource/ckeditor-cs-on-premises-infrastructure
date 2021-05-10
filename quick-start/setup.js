@@ -5,7 +5,7 @@ const execSync = require( 'child_process' ).execSync;
 const spawn = require( 'child_process' ).spawn;
 const chalk = require( 'chalk' );
 
-const { findFirstUnusedPort, getLocalIpAddress, serverIsUp } = require( './utils/networkUtils' );
+const { serverIsUp } = require( './utils/networkUtils' );
 const logger = require( './utils/logger' );
 const SetupError = require( './utils/SetupError' );
 const step = require( './utils/steps.json' );
@@ -85,9 +85,9 @@ async function readArguments( context ) {
    
 
    context.dockerEndpoint = argv.docker_endpoint || 'docker.cke-cs.com';
-   context.ipAddr = await getLocalIpAddress();
-   context.csPort = argv.cs_port || await findFirstUnusedPort( context.csPort );
-   context.nodePort = argv.node_port || await findFirstUnusedPort( context.nodePort );
+   context.ipAddr = 'localhost';
+   context.csPort = argv.cs_port || context.csPort;
+   context.nodePort = argv.node_port || context.nodePort;
    context.keepContainers = argv.keep_containers;
 
    if ( !argv.license_key || !argv.docker_token || !argv.env_secret ) {
@@ -237,7 +237,7 @@ async function startDockerContainers( context ) {
          dockerSpinner.stop();
          fs.writeFileSync( './log.txt', dockerComposeUp.output, 'utf-8' );
          reject( new SetupError ( error.containersTimeout ) );
-      }, 10 * 60 * 1000 );
+      }, 15 * 60 * 1000 );
    } );
 }
 

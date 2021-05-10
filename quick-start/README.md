@@ -50,7 +50,7 @@ Where:
 - `env_secret` is a password, that will be used to access the [Management panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
 
 
-This is it. After a while, you should see a message `Visit http://xx.xx.xx.xx:port to start collaborating`. Open this page in your browser. Anyone from your network will be able to connect and collaborate.
+Running this setup process for the first time may take several minutes. It has to pull few docker images from the web, install packages and build the editor bundle. Further command runs will be much shorter. After successful installation you should see a message `Visit http://localhost:3000 to start collaborating`. Open this page in your browser. 
 When your testing session is over you can simply stop running the process in the terminal with Ctrl+C and created containers will be removed from your machine.
 
 
@@ -67,4 +67,4 @@ Only 3 arguments are needed to successfully run our On-Premises Quick-Start. Her
 --keep_containers     - optional, use it to preserve created containers on exit
 ```
 
-**Note:** By default ports 3000 and 8000 are used. The setup process is checking if those ports are available and if they are not, then the next available port will be used. Port checking mechanism will not be used if ports are specified as arguments using `--cs_port` and `--node_port`.
+**Note:** If you use different ports, then please remember to update URL endpoints after opening editor page.

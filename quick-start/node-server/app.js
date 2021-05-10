@@ -1,7 +1,4 @@
-const fs = require( 'fs' );
 const crypto = require( 'crypto' );
-const url = require( 'url' );
-
 const express = require( 'express' );
 const cors = require( 'cors' );
 const jwt = require( 'jsonwebtoken' );
@@ -90,27 +87,11 @@ async function createEnvironment( req, res ) {
       environmentID = newEnvironment.id;
       accessKey = newEnvironment.accessKeys[ 0 ].value;
 
-      injectEndpoints( req.body.ip, req.body.csPort, req.body.nodePort );
-
       res.send( 'Done' );
    } catch ( err ) {
       console.log( err );
       res.status( 500 ).send( 'Could not create environment. ' + err.message );
    }
-}
-
-function injectEndpoints( ip, csPort, nodePort ) { 
-   const tokenEndpoint = `http://${ ip }:${ nodePort }/token`;
-   const uploadUrl = `http://${ ip }:${ csPort }/easyimage/upload`;
-   const websocketUrl = `ws://${ ip }:${ csPort }/ws`;
-  
-   let dialogJsFile = fs.readFileSync( './editor/sample/configuration-dialog/configuration-dialog.js' ).toString();
-
-   dialogJsFile = dialogJsFile.replace( /http:\/\/.*\/token/, tokenEndpoint );
-   dialogJsFile = dialogJsFile.replace( /http:\/\/.*\/easyimage\/upload/,uploadUrl );
-   dialogJsFile = dialogJsFile.replace( /ws:\/\/.*\/ws/,websocketUrl );
-
-   fs.writeFileSync( './editor/sample/configuration-dialog/configuration-dialog.js', dialogJsFile, 'utf8' );
 }
 
 function getHealthStatus( req, res )  {
@@ -122,7 +103,8 @@ function getHealthStatus( req, res )  {
 
 
 function _generateSignature( apiSecret, method, uri, timestamp, body ) {
-   const path = url.parse( uri ).path;
+   const url = new URL( uri );
+   const path = url.pathname + url.search;
 
    const hmac = crypto.createHmac( 'SHA256', apiSecret );
 
