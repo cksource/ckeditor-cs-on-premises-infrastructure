@@ -1,10 +1,10 @@
-class SetupError extends Error {  
-   constructor ( message ) {
-      super( message );
- 
-      this.name = this.constructor.name;
-      Error.captureStackTrace( this, this.constructor );
-   }
+class SetupError extends Error {
+	constructor( message ) {
+		super( message );
+
+		this.name = this.constructor.name;
+		Error.captureStackTrace( this, this.constructor );
+	}
 }
- 
-module.exports = SetupError;  
+
+module.exports = SetupError;
