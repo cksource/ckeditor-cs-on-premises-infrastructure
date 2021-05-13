@@ -35,9 +35,7 @@ You should see all version numbers of those tools. If there is a message `comman
 ```
 git clone https://github.com/cksource/ckeditor-cs-on-premises-infrastructure.git
 
-cd ckeditor-cs-on-premises-infrastructure
-
-git checkout quick-start && cd quick-start && npm install
+cd ckeditor-cs-on-premises-infrastructure/quick-start && npm install
 ```
 
 3. Run On-Premises Quick-Start, replacing credentials placeholders with your credentials:
