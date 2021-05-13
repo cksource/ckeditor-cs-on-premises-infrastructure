@@ -1,87 +1,141 @@
-replicaCount: 1
-
-image:
-  repository: docker.cke-cs.com/cs
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
-
 imagePullSecrets:
   - name: docker-cke-cs-com
+
 nameOverride: ""
-fullnameOverride: ""
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use. If not set and create is true, a
-  # name is generated using the fullname template
-  name: ""
+server:
+  name: server
+  fullnameOverride: ""
 
-secret:
-  # The name of the secret to use. If not set, a name is generated using the
-  # fullname template
-  name: ""
-  # Whole list of container environment variables is accessible here
-  # https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/installation/docker.html#docker-container-environment-variables
-  # Those mentioned below are absolute minimum to run the service
-  data:
-    DATABASE_HOST: ""
-    DATABASE_USER: ""
-    DATABASE_PASSWORD: ""
-    REDIS_HOST: ""
-    ENVIRONMENTS_MANAGEMENT_SECRET_KEY: ""
-    LICENSE_KEY: ""
-    STORAGE_DRIVER: ""
-    STORAGE_LOCATION: ""
+  replicaCount: 1
 
-readinessProbe:
-  httpGet:
-    path: /health
-    port: tcp
-  initialDelaySeconds: 15
-  periodSeconds: 5
+  image:
+    repository: docker.cke-cs.com/cs
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
 
-podAnnotations: {}
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: tcp
+    initialDelaySeconds: 15
+    periodSeconds: 5
 
-podSecurityContext: {}
+  podAnnotations: {}
 
-securityContext: {}
+  podSecurityContext: {}
 
-service:
-  type: ClusterIP
-  port: 8000
+  securityContext: {}
 
-ingress:
-  enabled: true
-  annotations: {}
-  hosts:
-    - host: ckeditor-cs.organization.test
-      paths:
-      - path: /
-  tls: []
-  #  - secretName: ckeditor-cs-organization-test hosts:
-  #      - ckeditor-cs.organization.test
+  serviceAccount:
+    # Specifies whether a service account for server should be created
+    create: false
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use. If not set and create is true, a
+    # name is generated using the fullname template
+    name: ""
 
-# Default resources request is set up for 250 concurrent users, for more
-# information follow there:
-# https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/requirements.html
-resources:
-  requests:
-    cpu: 1000m
-    memory: 512Mi
+  secret:
+    # The name of the secret for server to use. If not set, a name is generated using the
+    # fullname template
+    name: ""
+    # Whole list of container environment variables is accessible here
+    # https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/installation/docker.html#docker-container-environment-variables
+    # Those mentioned below are absolute minimum to run the service
+    data:
+      DATABASE_HOST: ""
+      DATABASE_USER: ""
+      DATABASE_PASSWORD: ""
+      REDIS_HOST: ""
+      ENVIRONMENTS_MANAGEMENT_SECRET_KEY: ""
+      LICENSE_KEY: ""
+      STORAGE_DRIVER: ""
+      STORAGE_LOCATION: ""
 
-autoscaling:
+  service:
+    type: ClusterIP
+    port: 8000
+
+  ingress:
+    enabled: false
+    annotations: {}
+    hosts:
+      - host: ckeditor-cs.organization.test
+        paths:
+        - path: /
+    tls: []
+    #  - secretName: ckeditor-cs-organization-test
+    #    hosts:
+    #      - ckeditor-cs.organization.test
+
+  resources:
+    requests:
+      cpu: 2000m
+      memory: 1024Mi 
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+
+worker:
   enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
 
-nodeSelector: {}
+  name: worker
+  fullnameOverride: ""
 
-tolerations: []
+  replicaCount: 1
 
-affinity: {}
+  image:
+    repository: docker.cke-cs.com/cs-worker
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+
+  securityContext: {}
+
+  serviceAccount:
+    create: false 
+    annotations: {}
+    name: ""
+
+  secret:
+    name: ""
+    data:
+      DATABASE_HOST: ""
+      DATABASE_USER: ""
+      DATABASE_PASSWORD: ""
+      REDIS_HOST: ""
+
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 1024Mi 
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
