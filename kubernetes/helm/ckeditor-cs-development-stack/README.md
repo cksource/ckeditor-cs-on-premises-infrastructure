@@ -1,4 +1,4 @@
-# CKEditor Collaboration Server On-Premise development stack Helm chart
+# CKEditor Collaboration Server On-Premises development stack Helm chart
 
 >:warning: **Not for production purposes!** This configuration is insecure, not persistent and its purpose is testing only.
 

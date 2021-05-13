@@ -1,4 +1,4 @@
-# CKEditor Collaboration Server On-Premise Helm chart
+# CKEditor Collaboration Server On-Premises Helm chart
 
 Use this Helm chart to provision CKEditor Collaboration Server on your
 Kubernetes cluster.
