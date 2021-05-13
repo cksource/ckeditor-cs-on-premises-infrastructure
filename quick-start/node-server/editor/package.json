@@ -1,0 +1,41 @@
+{
+  "name": "ckeditor5-custom-build",
+  "author": "CKSource",
+  "description": "A custom CKEditor 5 build made by the CKEditor 5 online builder.",
+  "version": "0.0.1",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "private": true,
+  "devDependencies": {
+    "@ckeditor/ckeditor5-autoformat": "*",
+    "@ckeditor/ckeditor5-basic-styles": "*",
+    "@ckeditor/ckeditor5-block-quote": "*",
+    "@ckeditor/ckeditor5-dev-utils": "*",
+    "@ckeditor/ckeditor5-dev-webpack-plugin": "*",
+    "@ckeditor/ckeditor5-easy-image": "*",
+    "@ckeditor/ckeditor5-editor-classic": "*",
+    "@ckeditor/ckeditor5-essentials": "*",
+    "@ckeditor/ckeditor5-heading": "*",
+    "@ckeditor/ckeditor5-image": "*",
+    "@ckeditor/ckeditor5-indent": "*",
+    "@ckeditor/ckeditor5-link": "*",
+    "@ckeditor/ckeditor5-list": "*",
+    "@ckeditor/ckeditor5-media-embed": "*",
+    "@ckeditor/ckeditor5-paragraph": "*",
+    "@ckeditor/ckeditor5-paste-from-office": "*",
+    "@ckeditor/ckeditor5-real-time-collaboration": "*",
+    "@ckeditor/ckeditor5-table": "*",
+    "@ckeditor/ckeditor5-theme-lark": "*",
+    "@ckeditor/ckeditor5-typing": "*",
+    "css-loader": "^5.0.1",
+    "postcss": "^8.2.4",
+    "postcss-loader": "^4.2.0",
+    "raw-loader": "^4.0.2",
+    "style-loader": "^2.0.0",
+    "terser-webpack-plugin": "^4.2.3",
+    "webpack": "^4.46.0",
+    "webpack-cli": "^4.4.0"
+  },
+  "scripts": {
+    "build": "webpack --mode production"
+  }
+}

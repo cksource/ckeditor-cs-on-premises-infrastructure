@@ -1,0 +1,22 @@
+{
+  "name": "on-premises-quick-start",
+  "version": "1.0.0",
+  "description": "",
+  "main": "setup.js",
+  "scripts": {
+    "cleanup": "node cleanup.js"
+  },
+  "author": "CKSource",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "chalk": "^4.1.0",
+    "js-yaml": "^4.0.0",
+    "minimist": "^1.2.5",
+    "ora": "^5.3.0",
+    "prompt": "^1.1.0"
+  },
+  "devDependencies": {
+    "@cksource-cs/eslint-config-cs-module": "^2.1.2"
+  }
+}
