@@ -60,6 +60,8 @@ server:
   ingress:
     enabled: false
     annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
     hosts:
       - host: ckeditor-cs.organization.test
         paths:
@@ -72,7 +74,7 @@ server:
   resources:
     requests:
       cpu: 2000m
-      memory: 1024Mi 
+      memory: 1024Mi
 
   autoscaling:
     enabled: false
@@ -108,7 +110,7 @@ worker:
   securityContext: {}
 
   serviceAccount:
-    create: false 
+    create: false
     annotations: {}
     name: ""
 
@@ -123,7 +125,7 @@ worker:
   resources:
     requests:
       cpu: 1000m
-      memory: 1024Mi 
+      memory: 1024Mi
 
   autoscaling:
     enabled: false

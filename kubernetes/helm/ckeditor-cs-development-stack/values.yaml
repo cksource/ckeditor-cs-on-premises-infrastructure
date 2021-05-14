@@ -7,10 +7,6 @@ ckeditor-cs:
         DATABASE_USER: root
         DATABASE_PASSWORD: root-password
         REDIS_HOST: ckeditor-cs-redis-master
-    resources:
-      requests:
-        cpu: 10m
-        memory: 10Mi
 
   server:
     secret:
@@ -25,16 +21,14 @@ ckeditor-cs:
         LICENSE_KEY:
     ingress:
       enabled: true
+      annotations:
+        nginx.ingress.kubernetes.io/proxy-body-size: 10m
       hosts:
         - host: ckeditor-cs.organization.test
           paths:
           - path: /
     readinessProbe:
       initialDelaySeconds: 60
-    resources:
-      requests:
-        cpu: 10m
-        memory: 10Mi
 
 mysql:
   enabled: true

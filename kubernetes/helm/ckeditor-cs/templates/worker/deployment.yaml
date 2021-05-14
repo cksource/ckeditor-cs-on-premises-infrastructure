@@ -25,7 +25,9 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.worker.serviceAccount.create }}
       serviceAccountName: {{ include "ckeditor-cs.worker.serviceAccountName" . }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.worker.podSecurityContext | nindent 8 }}
       containers:

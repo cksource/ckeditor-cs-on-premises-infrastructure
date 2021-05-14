@@ -108,7 +108,7 @@ Create the name of the secret to use
 {{- if .Values.server.secret.create }}
 {{- default (include "ckeditor-cs.server.fullname" .) .Values.server.secret.name }}
 {{- else }}
-{{- default "ckeditor-cs" .Values.server.secret.name }}
+{{- default "ckeditor-cs-server" .Values.server.secret.name }}
 {{- end }}
 {{- end }}
 
