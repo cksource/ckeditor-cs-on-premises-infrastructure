@@ -16,18 +16,18 @@ Create chart name and version as used by the chart label.
 Create unified labels for ckeditor-cs
 */}}
 {{- define "ckeditor-cs.common.matchLabels" -}}
-app.kubernetes.io/name: {{ template "ckeditor-cs.name" }}
+app.kubernetes.io/name: {{ template "ckeditor-cs.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{- define "ckeditor-cs.common.metaLabels" -}}
-helm.sh/chart: {{ template "ckeditor-cs.chart" }}
+helm.sh/chart: {{ template "ckeditor-cs.chart" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{- define "ckeditor-cs.server.labels" -}}
-{{ include "ckeditor-cs.server.matchLabels" }}
-{{ include "ckeditor-cs.common.metaLabels" }}
+{{ include "ckeditor-cs.server.matchLabels" . }}
+{{ include "ckeditor-cs.common.metaLabels" . }}
 {{- end }}
 
 {{- define "ckeditor-cs.server.matchLabels" -}}
@@ -36,13 +36,13 @@ app.kubernetes.io/component: {{ .Values.server.name | quote }}
 {{- end }}
 
 {{- define "ckeditor-cs.worker.labels" -}}
-{{ include "ckeditor-cs.worker.matchLabels" }}
-{{ include "ckeditor-cs.common.metaLabels"}}
+{{ include "ckeditor-cs.worker.matchLabels" . }}
+{{ include "ckeditor-cs.common.metaLabels" . }}
 {{- end }}
 
 {{- define "ckeditor-cs.worker.matchLabels" -}}
 app.kubernetes.io/component: {{ .Values.worker.name | quote }}
-{{ include "ckeditor-cs.common.matchLabels" }}
+{{ include "ckeditor-cs.common.matchLabels" . }}
 {{- end }}
 
 {{/*

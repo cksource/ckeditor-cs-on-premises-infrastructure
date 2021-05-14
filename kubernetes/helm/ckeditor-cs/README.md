@@ -24,10 +24,7 @@ documentation](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/requ
 
 Create imagePullSecret for CKEditor container registry
 ```sh
-# Your container registry authentication token
-REGISTRY_TOKEN=
-
-kubectl create secret docker-registry docker-cke-cs-com --docker-username cs --docker-server https://docker.cke-cs.com --docker-password=$REGISTRY_TOKEN
+kubectl create secret docker-registry docker-cke-cs-com --docker-username cs --docker-server https://docker.cke-cs.com --docker-password=xxx
 ```
 
 Download repository containing helm chart
@@ -61,17 +58,10 @@ By default our helm chart is configured to use Kubernetes health checks to
 determine if deployed service works properly, however you can confirm whole set of server features with our e2e tests
 
 ```sh
-# Get ingress hostname
-APPLICATION_ENDPOINT="$(kubectl get ingresses.networking.k8s.io ckeditor-cs -o json | jq -r '.spec.rules[0].host' | sed 's|^|http://|')"
-# Get Collaboration Server On-Premises version
-VERSION="$(kubectl get deployments.apps ckeditor-cs -o json | jq -r '.spec.template.spec.containers[0].image' | sed 's/.*://')"
-# Secret key
-ENVIRONMENTS_MANAGEMENT_SECRET_KEY="$(kubectl get secret ckeditor-cs -o json | jq -r '.data.ENVIRONMENTS_MANAGEMENT_SECRET_KEY' | base64 -d)"
-
 kubectl run ckeditor-cs-tests -i --rm \
-  --image docker.cke-cs.com/cs-tests:$VERSION \
-  --env APPLICATION_ENDPOINT="$APPLICATION_ENDPOINT" \
-  --env ENVIRONMENTS_MANAGEMENT_SECRET_KEY="$ENVIRONMENTS_MANAGEMENT_SECRET_KEY" \
+  --image docker.cke-cs.com/cs-tests:"$(kubectl get deployments.apps ckeditor-cs-server -o json | jq -r '.spec.template.spec.containers[0].image' | sed 's/.*://')" \
+  --env APPLICATION_ENDPOINT="$(kubectl get ingresses.networking.k8s.io ckeditor-cs-server -o json | jq -r '.spec.rules[0].host' | sed 's|^|http://|')" \
+  --env ENVIRONMENTS_MANAGEMENT_SECRET_KEY="$(kubectl get secret ckeditor-cs-server -o json | jq -r '.data.ENVIRONMENTS_MANAGEMENT_SECRET_KEY' | base64 -d)" \
   --overrides='{ "spec": { "imagePullSecrets": [{"name": "docker-cke-cs-com"}] } }' \
   --restart='Never'
 ```

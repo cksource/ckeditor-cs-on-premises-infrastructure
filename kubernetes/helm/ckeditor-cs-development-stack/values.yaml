@@ -1,4 +1,17 @@
 ckeditor-cs:
+  worker:
+    enabled: true
+    secret:
+      data:
+        DATABASE_HOST: ckeditor-cs-mysql
+        DATABASE_USER: root
+        DATABASE_PASSWORD: root-password
+        REDIS_HOST: ckeditor-cs-redis-master
+    resources:
+      requests:
+        cpu: 10m
+        memory: 10Mi
+
   server:
     secret:
       data:
@@ -18,6 +31,10 @@ ckeditor-cs:
           - path: /
     readinessProbe:
       initialDelaySeconds: 60
+    resources:
+      requests:
+        cpu: 10m
+        memory: 10Mi
 
 mysql:
   enabled: true
@@ -28,12 +45,16 @@ mysql:
     auth: ckeditor-cs
     password: password
     rootPassword: root-password
+  commonLabels:
+    app.kubernetes.io/part-of: ckeditor-cs
 
 redis:
   enabled: true
   cluster:
     enabled: true
   usePassword: false
+  commonLabels:
+    app.kubernetes.io/part-of: ckeditor-cs
 
 common:
   names:
