@@ -1,8 +1,10 @@
 # CKEditor Collaboration Server On-Premises development stack Helm chart
 
->:warning: **Not for production purposes!** This configuration is insecure, not persistent and its purpose is testing only.
+>:warning: **Not for production purposes!** This configuration is insecure, not
+>persistent and its purpose is testing only.
 
-Helm chart for fast deployment of Collaboration Server On-Premises in Kubernetes with MySQL database and Redis cluster.
+Helm chart for fast deployment of Collaboration Server On-Premises in Kubernetes
+with MySQL database and Redis cluster.
 
 ## Minimum requirements
 - 4 CPU Core
@@ -12,7 +14,8 @@ Helm chart for fast deployment of Collaboration Server On-Premises in Kubernetes
 
 ## Quick start
 
-Create imagePullSecret for pulling images from CKEditor container registry, replace `xxx` with authentication token
+Create imagePullSecret for pulling images from CKEditor container registry,
+replace `xxx` with authentication token
 ```sh
 kubectl create secret docker-registry docker-cke-cs-com \
     --docker-username "cs" \
@@ -35,7 +38,9 @@ helm delete ckeditor-cs
 ```
 ## Local environment
 
-For local minikube environment there is a `init.sh` script located in helm chart directory. The script was made with MacOS in mind and provisions minikube environment. Quick start:
+For local minikube environment there is a `init.sh` script located in helm chart
+directory. The script was made with MacOS in mind and provisions minikube
+environment. Quick start:
 
 Run `init.sh` script for minikube configuration provisioning.
 ```
@@ -51,4 +56,9 @@ ckeditor-cs:
         LICENSE_KEY: xxx
 ```
 
-Next steps are the same as in [quick start](#quick-start) except in `helm install` command where additional flag has to be provided `-f dev.values.yaml`
+Next steps are the same as in [quick start](#quick-start) except in `helm
+install` command where additional flag has to be provided `-f dev.values.yaml`
+
+FYI: First start can result in few CrashLoopBackOff error in server container,
+it's normal and the cause is in MySQL startup time. However it should be running
+correctly after short time.
