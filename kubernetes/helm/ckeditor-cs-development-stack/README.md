@@ -62,3 +62,9 @@ install` command where additional flag has to be provided `-f dev.values.yaml`
 FYI: First start can result in few CrashLoopBackOff error in server container,
 it's normal and the cause is in MySQL startup time. However it should be running
 correctly after short time.
+
+There is a possibility to encounter problems with nginx ingress validation in
+minikube environment, the solution is to remove hook of it:
+```sh
+kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+```
