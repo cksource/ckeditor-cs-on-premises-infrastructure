@@ -79,7 +79,7 @@ https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/installation/docker
 
 ## Infrastructure overview
 
-![CKEditor-cs helm chart diagram](diagram.png)
+![CKEditor-cs helm chart diagram](diagram.jpg)
 
 ### Pod
 
@@ -108,6 +108,7 @@ verify requests. Bearer tokens are mounted into pods.
 
 Storage and management of sensitive information. In this use case, environment
 variables passed to the pods.
+
 ## Destroy installed chart
 You can clean remove installed deployment from Kubernetes by running `helm
 delete ckeditor-cs` command.
