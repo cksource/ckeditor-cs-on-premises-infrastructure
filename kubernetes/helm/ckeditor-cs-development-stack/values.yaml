@@ -23,6 +23,8 @@ ckeditor-cs:
       enabled: true
       annotations:
         nginx.ingress.kubernetes.io/proxy-body-size: 10m
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+        nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
       hosts:
         - host: ckeditor-cs.organization.test
           paths:
