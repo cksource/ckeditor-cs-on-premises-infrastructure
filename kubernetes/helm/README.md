@@ -28,38 +28,9 @@ Server. Used charts as a dependencies:
 
 ## Quick start
 
-- create imagePullSecret for pulling images from CKEditor container registry,
-  replace `xxx` with authentication token
-```sh
-kubectl create secret docker-registry docker-cke-cs-com \
-    --docker-username "cs" \
-    --docker-server "https://docker.cke-cs.com" \
-    --docker-password="xxx"
-```
-
-- install chart in cluster
-```sh
-helm install ckeditor-cs ./ckeditor-cs \
-    --set server.secret.data.DATABASE_HOST="" \
-    --set server.secret.data.DATABASE_USER="" \
-    --set server.secret.data.DATABASE_PASSWORD="" \
-    --set server.secret.data.REDIS_HOST="" \
-    --set server.secret.data.ENVIRONMENTS_MANAGEMENT_SECRET_KEY="" \
-    --set server.secret.data.LICENSE_KEY="" \
-    --set server.secret.data.STORAGE_DRIVER="" \
-    --set server.secret.data.STORAGE_LOCATION="" \
-    --set server.ingress.hosts[0].host="test.example"
-```
-
-- test deployment
-```sh
-kubectl run ckeditor-cs-tests -i --rm \
-    --image docker.cke-cs.com/cs-tests:"$(kubectl get deployments.apps ckeditor-cs-server -o json | jq -r '.spec.template.spec.containers[0].image' | sed 's/.*://')" \
-    --env APPLICATION_ENDPOINT="$(kubectl get ingresses.networking.k8s.io ckeditor-cs-server -o json | jq -r '.spec.rules[0].host' | sed 's|^|http://|')" \
-    --env ENVIRONMENTS_MANAGEMENT_SECRET_KEY="$(kubectl get secret ckeditor-cs-server -o json | jq -r '.data.ENVIRONMENTS_MANAGEMENT_SECRET_KEY' | base64 -d)" \
-    --overrides='{ "spec": { "imagePullSecrets": [{"name": "docker-cke-cs-com"}] } }' \
-    --restart='Never'
-```
+Follow instructions from helm charts:
+- [Production quick start](ckeditor-cs/README.md#quick-start)
+- [Development quick start](ckeditor-cs-development-stack/README.md#quick-start)
 
 ## Configuration
 

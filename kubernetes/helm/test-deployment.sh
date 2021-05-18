@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+base64Decode='base64 -D'
+
+if [[ "$OSTYPE" == "darwin*" ]]; then
+    base64Decode='base64 -d'
+fi
+
+kubectl run ckeditor-cs-tests -i --rm \
+    --image docker.cke-cs-dev.com/cs-tests:"$(kubectl get deployments.apps ckeditor-cs-server -o json | jq -r '.spec.template.spec.containers[0].image' | sed 's/.*://')" \
+    --env APPLICATION_ENDPOINT="$(kubectl get ingresses.networking.k8s.io ckeditor-cs-server -o json | jq -r '.spec.rules[0].host' | sed 's|^|http://|')" \
+    --env ENVIRONMENTS_MANAGEMENT_SECRET_KEY="$(kubectl get secret ckeditor-cs-server -o json | jq -r '.data.ENVIRONMENTS_MANAGEMENT_SECRET_KEY' | $base64Decode)" \
+    --overrides='{ "spec": { "imagePullSecrets": [{"name": "docker-cke-cs-dev-com"}] } }' \
+    --restart='Never'

@@ -20,4 +20,36 @@ https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/requirements.html#d
 
 ## Installation
 
-For installation instructions follow [here](../README.md#quick-start).
+- create imagePullSecret for pulling images from CKEditor container registry,
+  replace `xxx` with authentication token
+```sh
+kubectl create secret docker-registry docker-cke-cs-com \
+    --docker-username "cs" \
+    --docker-server "https://docker.cke-cs.com" \
+    --docker-password="xxx"
+```
+
+- install chart in cluster
+```sh
+helm install ckeditor-cs ./ckeditor-cs \
+    --set server.secret.data.DATABASE_HOST="" \
+    --set server.secret.data.DATABASE_USER="" \
+    --set server.secret.data.DATABASE_PASSWORD="" \
+    --set server.secret.data.REDIS_HOST="" \
+    --set server.secret.data.ENVIRONMENTS_MANAGEMENT_SECRET_KEY="" \
+    --set server.secret.data.LICENSE_KEY="" \
+    --set server.secret.data.STORAGE_DRIVER="" \
+    --set server.secret.data.STORAGE_LOCATION="" \
+    --set server.ingress.hosts[0].host="test.example"
+```
+
+- validate installation by running tests
+```sh
+./../test-deployment.sh
+```
+
+## Deleting
+
+```sh
+helm delete ckeditor-cs
+```

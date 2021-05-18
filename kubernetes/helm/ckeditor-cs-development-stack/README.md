@@ -42,12 +42,12 @@ For local minikube environment there is a `init.sh` script located in helm chart
 directory. The script was made with MacOS in mind and provisions minikube
 environment. Quick start:
 
-Run `init.sh` script for minikube configuration provisioning.
+- run `init.sh` script for minikube configuration provisioning.
 ```
 ./init.sh
 ```
 
-Create `dev.values.yaml` file with license key:
+- edit `dev.values.yaml` file with license key:
 ```yaml
 ckeditor-cs:
   server:
@@ -56,14 +56,31 @@ ckeditor-cs:
         LICENSE_KEY: xxx
 ```
 
-Next steps are the same as in [quick start](#quick-start) except in `helm
-install` command where additional flag has to be provided `-f dev.values.yaml`
+- install chart in cluster
+```sh
+helm install ckeditor-cs . -f dev.values.yaml
+```
 
-FYI: First start can result in few CrashLoopBackOff error in server container,
+- test installation
+```sh
+./../test-deployment.sh
+```
+
+By default development environment can be accessed by http://ckeditor-cs.organization.test address.
+
+## Deleting installation
+
+```sh
+helm delete ckeditor-cs
+```
+
+## Common issues
+
+1. First start can result in few CrashLoopBackOff error in server container,
 it's normal and the cause is in MySQL startup time. However it should be running
 correctly after short time.
 
-There is a possibility to encounter problems with nginx ingress validation in
+2. It is possible to encounter problems with nginx ingress validation in
 minikube environment, the solution is to remove hook of it:
 ```sh
 kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission

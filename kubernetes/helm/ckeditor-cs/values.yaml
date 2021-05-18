@@ -10,7 +10,7 @@ server:
   name: server
 
   ## Number of desired collaboration server instances
-  replicaCount: 1
+  replicaCount: 2
 
   ## Collaboration server container image
   image:
@@ -68,6 +68,9 @@ server:
     annotations: {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
+      # nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      # nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+      # nginx.ingress.kubernetes.io/proxy-send-timeout: "3600
     hosts:
       - host: ckeditor-cs.organization.test
         paths:
@@ -80,8 +83,8 @@ server:
   ## Default resource requirements for collaboration server
   resources:
     requests:
-      cpu: 2000m
-      memory: 1024Mi
+      cpu: 1000m
+      memory: 512Mi
 
   autoscaling:
     enabled: false
