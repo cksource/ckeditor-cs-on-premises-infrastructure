@@ -1,0 +1,6 @@
+{
+    "extends": "@cksource-cs/eslint-config-cs-module/tsconfig.common",
+    "exclude": [
+      "node_modules"
+    ]
+}
