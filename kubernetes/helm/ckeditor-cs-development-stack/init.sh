@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
+set -e
 
 # Provision minikube
 if [[ -z "$(which minikube)" ]]; then
     brew install minikube 
 fi
 
-if minikube status | grep -q 'host: Running'; then
-    minikube start --cpu 4 --memory 4g
+if minikube status | grep -qE 'not found|host: Stopped'; then
+    minikube start --cpus 4 --memory 4g
 fi
 
 # Enable addons
