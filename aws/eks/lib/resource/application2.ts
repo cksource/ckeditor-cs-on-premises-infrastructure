@@ -50,8 +50,8 @@ export class Application2 extends Construct {
 						data: {
 							DATABASE_HOST: props.database.host,
 							DATABASE_DATABASE: props.database.name,
-							DATABASE_PASSWORD: Secret.fromSecretsManager( props.database.secret, Database.SECRET_PASSWORD_KEY ),
-							DATABASE_USER: Secret.fromSecretsManager( props.database.secret, Database.SECRET_USERNAME_KEY ),
+							DATABASE_PASSWORD: '',
+							DATABASE_USER: '',
 							STORAGE_DRIVER: 's3',
 							STORAGE_ENDPOINT: `${ props.storage.bucket.bucketRegionalDomainName }/storage`,
 							STORAGE_BUCKET: props.storage.bucket.bucketName,

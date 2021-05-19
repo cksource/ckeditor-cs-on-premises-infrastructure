@@ -14,6 +14,7 @@ import { Redis } from './resource/redis';
 import { Storage } from './resource/storage';
 import { Network } from './resource/network';
 import { Utils } from './utils';
+import { Application2 } from './resource/application2';
 
 export class CKEditorCSOnPremisesStack extends Stack {
 	private readonly stackConfig: StackConfig;
@@ -29,6 +30,8 @@ export class CKEditorCSOnPremisesStack extends Stack {
 	private readonly repositoryImage: RepositoryImage;
 
 	private readonly application: Application;
+
+	private readonly application2: Application2;
 
 	public constructor( scope: Construct, id: string, props?: StackProps ) {
 		super( scope, id, props );
@@ -61,6 +64,14 @@ export class CKEditorCSOnPremisesStack extends Stack {
 		this.application = new Application( this, 'Application', {
 			stackConfig: this.stackConfig,
 			repositoryImage: this.repositoryImage,
+			network: this.network,
+			database: this.database,
+			redis: this.redis,
+			storage: this.storage
+		} );
+
+		this.application2 = new Application2( this, 'Application2', {
+			stackConfig: this.stackConfig,
 			network: this.network,
 			database: this.database,
 			redis: this.redis,
