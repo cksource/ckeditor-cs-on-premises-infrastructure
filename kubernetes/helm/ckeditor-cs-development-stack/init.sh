@@ -6,6 +6,9 @@ if [[ -z "$LICENSE_KEY" || -z "$DOCKER_TOKEN" ]]; then
   exit 1
 fi
 
+# Authenticate user as sudoer at the start of the script
+sudo echo ''
+
 # Install required tools
 tools=( "minikube" "helm" )
 for tool in "${tools[@]}"; do
@@ -23,7 +26,7 @@ fi
 addons=( "ingress" "ingress-dns" "metrics-server" "dashboard" )
 
 for addon in "${addons[@]}"; do
-  if minikube addons list | grep -E "$addon.*enabled"; then 
+  if minikube addons list | grep -E "$addon.*disabled"; then 
     minikube addons enable "$addon"
   fi
 done
