@@ -60,4 +60,4 @@ helm upgrade ckeditor-cs . \
   --install \
   --set ckeditor-cs.server.secret.data.LICENSE_KEY="$LICENSE_KEY" \
   --wait \
-  --timeout=5m
+  --timeout=10m
