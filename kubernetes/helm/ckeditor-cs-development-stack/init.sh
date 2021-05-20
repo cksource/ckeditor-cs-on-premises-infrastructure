@@ -58,5 +58,3 @@ helm upgrade ckeditor-cs . \
   --set server.secret.data.LICENSE_KEY="$LICENSE_KEY" \
   --wait \
   --timeout=5m
-
-# Wait until 
