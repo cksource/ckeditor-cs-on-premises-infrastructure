@@ -14,6 +14,7 @@ with MySQL database and Redis cluster.
 
 ## Quick start
 
+### External Kubernetes cluster
 Create imagePullSecret for pulling images from CKEditor container registry,
 replace `xxx` with authentication token
 ```sh
@@ -32,41 +33,30 @@ helm dependency update
 helm install ckeditor-cs .
 ```
 
-Deleting it:
-```sh
-helm delete ckeditor-cs
-```
-## Local environment
+### Local environment
 
-For local minikube environment there is a `init.sh` script located in helm chart
-directory. The script was made with MacOS in mind and provisions minikube
-environment. Quick start:
+For the local minikube environment there is a `init.sh` script located in helm
+chart directory. The script was made with MacOS in mind and provisions minikube
+environment.
 
-- run `init.sh` script for minikube configuration provisioning.
+Run `init.sh` script for minikube configuration provisioning. Replace `xxx` with
+correct values.
 ```
-./init.sh
+LICENSE_KEY=xxx DOCKER_TOKEN=xxx ./init.sh
 ```
+The script waits until deployment is successful for 5 minutes. If you want to
+check the status of the deployment you can either run `kubectl get pods` command
+or access Kubernetes Dashboard by `minikube dashboard`.
 
-- edit `dev.values.yaml` file with license key:
-```yaml
-ckeditor-cs:
-  server:
-    secret:
-      data:
-        LICENSE_KEY: xxx
-```
+By default development environment can be accessed by
+http://ckeditor-cs.organization.test address.
 
-- install chart in cluster
-```sh
-helm install ckeditor-cs . -f dev.values.yaml
-```
+## Validating installation
 
-- test installation
+The deployment configuration can be validated by running e2e tests.
 ```sh
 ./../test-deployment.sh
 ```
-
-By default development environment can be accessed by http://ckeditor-cs.organization.test address.
 
 ## Deleting installation
 
@@ -76,12 +66,12 @@ helm delete ckeditor-cs
 
 ## Common issues
 
-1. First start can result in few CrashLoopBackOff error in server container,
-it's normal and the cause is in MySQL startup time. However it should be running
-correctly after short time.
+1. The first start can result in a few CrashLoopBackOff errors in the server
+   container, it's normal and the cause is in MySQL startup time. However, it
+   should be running correctly after a short time.
 
-2. It is possible to encounter problems with nginx ingress validation in
-minikube environment, the solution is to remove hook of it:
+2. It is possible to encounter problems with Nginx ingress validation in
+   minikube environment, the solution is to remove the hook of it:
 ```sh
 kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
 ```

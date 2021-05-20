@@ -13,9 +13,9 @@ Kubernetes cluster.
 - Kubernetes 1.19+
 - Helm v3
 
-Default configuration of running this service requires reservation of 2 CPU
-cores and 1GB of RAM in cluster. For more information about resources usage look
-here:
+The default configuration of running this service requires the reservation of 2
+CPU cores and 1GB of RAM in the cluster. For more information about resources
+usage look here:
 https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/requirements.html#docker
 
 ## Installation

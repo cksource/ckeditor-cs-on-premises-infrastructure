@@ -4,7 +4,7 @@ Use this Helm charts to provision CKEditor Collaboration Server on your
 Kubernetes cluster.
 
 **Note**: This script uses Helm. If you haven't worked with it before, we highly
-recommend to get familiar with it first: https://helm.sh/docs/intro/quickstart/
+recommend getting familiar with it first: https://helm.sh/docs/intro/quickstart/
 
 ## List of charts
 
@@ -18,7 +18,7 @@ configured to connect to external third-party services.
 ### [ckeditor-cs-development-stack](ckeditor-cs-development-stack)
 
 Fast way to provision whole infrastructure needed for CKEditor Collaboration
-Server. Used charts as a dependencies:
+Server. Used charts as dependencies:
 - `ckeditor-cs`
 - `bitnami/mysql`
 - `bitnami/redis`
@@ -43,8 +43,9 @@ by `-f [path]` flag.
 > [SOPS](https://github.com/mozilla/sops) for encrypting specific parts of yaml
 > file.
 
-Environment variables mentioned in configuration file are an absolute minimum to
-run the service. Visit documentation for whole list of configuration options:
+Environment variables mentioned in the configuration file are an absolute
+minimum to run the service. Visit documentation for the whole list of
+configuration options:
 
 https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/installation/docker.html#docker-container-environment-variables
 
@@ -54,20 +55,20 @@ https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/installation/docker
 
 ### Pod
 
-Individual instance of the CKEditor Collaboration Server container.
+An individual instance of the CKEditor Collaboration Server container.
 
 ### Deployment
 
-Manages provisioning pods, handles creating, replacing and scaling pods.
+Manages provisioning, creating, replacing and scaling pods.
 
 ### Service
 
-Abstract object that exposes a specific set of pods as a network interface. That
-set if pods targeting is determined by selectors assigned to them.
+An abstract object that exposes a specific set of pods as a network interface.
+That set if pods targeting is determined by selectors assigned to them.
 
 ### Ingress
 
-Ingress manages external access to the service located in cluster. Creates
+Ingress manages external access to the service located in the cluster. Creates
 routing by hostnames and can handle terminating SSL/TLS.
 
 ### ServiceAccount
@@ -77,8 +78,8 @@ verify requests. Bearer tokens are mounted into pods.
 
 ### Secret
 
-Storage and management of sensitive information. In this use case, environment
-variables passed to the pods.
+Storage and management of sensitive information. In this use case, the
+environment variables passed to the pods.
 
 ## Destroy installed chart
 You can clean remove installed deployment from Kubernetes by running `helm
