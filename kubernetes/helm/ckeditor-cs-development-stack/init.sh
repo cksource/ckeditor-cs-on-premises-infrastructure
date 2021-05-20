@@ -55,6 +55,6 @@ helm repo update
 helm dependency update
 helm upgrade ckeditor-cs . \
   --install \
-  --set server.secret.data.LICENSE_KEY="$LICENSE_KEY" \
+  --set ckeditor-cs.server.secret.data.LICENSE_KEY="$LICENSE_KEY" \
   --wait \
   --timeout=5m
