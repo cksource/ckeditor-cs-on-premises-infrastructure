@@ -16,7 +16,7 @@ done
 
 # Provision minikube
 if ! minikube status; then
-    minikube start --cpus 4 --memory 4g
+    minikube start --cpus 4 --memory 4g --driver=hyperkit
 fi
 
 # Enable addons
