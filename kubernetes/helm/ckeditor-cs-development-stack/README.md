@@ -24,13 +24,14 @@ kubectl create secret docker-registry docker-cke-cs-com \
     --docker-password="xxx"
 ```
 
-Installing helm chart in cluster:
+Installing helm chart in cluster, replace `xxx` with valid licence key:
 ```sh
 cd ckeditor-cs-development-stack
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 helm dependency update
-helm install ckeditor-cs .
+helm install ckeditor-cs . \
+   --set server.secret.data.LICENSE_KEY="xxx"
 ```
 
 ### Local environment
