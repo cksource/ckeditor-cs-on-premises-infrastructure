@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.104.0",
+    "aws-alb-ingress-controller": "git://github.com/kubernetes-sigs/aws-alb-ingress-controller.git#v2.2.0",
     "@cksource-cs/eslint-config-cs-module": "^2.1.2",
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
