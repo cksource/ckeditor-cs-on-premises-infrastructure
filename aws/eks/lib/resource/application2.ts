@@ -1,4 +1,4 @@
-import { Cluster, HelmChart, KubernetesVersion } from '@aws-cdk/aws-eks';
+import { Cluster, HelmChart, KubernetesVersion, OpenIdConnectProvider } from '@aws-cdk/aws-eks';
 import { Construct, Fn, IgnoreStrategy, Stack } from '@aws-cdk/core';
 
 import { InstanceClass, InstanceSize, InstanceType } from '@aws-cdk/aws-ec2';
@@ -25,6 +25,8 @@ export class Application2 extends Construct {
 
 	private readonly csEnvironmentConfig: CSEnvironmentConfig;
 
+	private readonly openIdConnectProvider: OpenIdConnectProvider;
+
 	public constructor( scope: Construct, id: string, props: IApplication2Props ) {
 		super( scope, id );
 
@@ -40,6 +42,10 @@ export class Application2 extends Construct {
 			instanceTypes: [
 				InstanceType.of( InstanceClass.C5, InstanceSize.LARGE )
 			]
+		} );
+
+		this.openIdConnectProvider = new OpenIdConnectProvider( this, 'defaultOpenIdConnectProvider', {
+			url: this.cluster.openIdConnectProvider.openIdConnectProviderIssuer
 		} );
 
 		this.helmChart = new HelmChart( scope, 'defaultHelmChart', {
@@ -69,7 +75,9 @@ export class Application2 extends Construct {
 						annotations: {
 							'kubernetes.io/ingress.class': 'alb',
 							'alb.ingress.kubernetes.io/scheme': 'internet-facing',
-							'alb.ingress.kubernetes.io/target-group-attributes': 'stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60',	
+							'alb.ingress.kubernetes.io/target-group-attributes':
+								'stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60',
+							'alb.ingress.kubernetes.io/target-type': 'ip'
 						}
 					}
 				}
