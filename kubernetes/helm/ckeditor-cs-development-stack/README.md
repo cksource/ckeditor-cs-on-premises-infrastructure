@@ -49,7 +49,7 @@ check the status of the deployment you can either run `kubectl get pods` command
 or access Kubernetes Dashboard by `minikube dashboard`.
 
 By default development environment can be accessed by
-http://ckeditor-cs.organization.test address.
+http://ckeditor-cs.organization.test/panel address.
 
 ## Validating installation
 
