@@ -23,7 +23,7 @@ export class AWSLoadBalancerController extends Construct {
 
 		this.iamPolicy = new Policy( this, 'AWSLoadBalancerIAMPolicy', {
 			policyName: 'AWSLoadBalancerIAMPolicy',
-			document: new PolicyDocument( require( './aws-lbc-iam-policy.json' ) )
+			document: PolicyDocument.fromJson( require( './aws-lbc-iam-policy.json' ) )
 		} );
 
 		this.serviceAccount = new ServiceAccount( this, 'aws-lbc', {
