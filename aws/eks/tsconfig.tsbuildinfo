@@ -2242,7 +2242,7 @@
         "affectsGlobalScope": false
       },
       "./lib/resource/aws-lbc.ts": {
-        "version": "2bb643c5425754af9bb416d2e2381b268d89dd96f773a787ee0e2a2dd715ae60",
+        "version": "71d4865716395f3c5ab4414efb9b0b947f17b7045d51d11c43536bd2d1c3c6eb",
         "signature": "350d3a127da72a253e32804a3165864c6e13d99587773d15c6462b5c4f2ec7b7",
         "affectsGlobalScope": false
       },
