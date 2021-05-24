@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2016-2020, CKSource - Frederico Knabben. All rights reserved.
+ Copyright (c) 2016-2021, CKSource - Frederico Knabben. All rights reserved.
  */
 
 import { Construct, RemovalPolicy } from '@aws-cdk/core';
@@ -54,7 +54,7 @@ export class Database extends Construct {
 
 		this.databaseCluster = new DatabaseCluster( this, 'DatabaseCluster', {
 			defaultDatabaseName: this.name,
-			removalPolicy: RemovalPolicy.DESTROY, // change later to SNAPSHOT
+			removalPolicy: RemovalPolicy.DESTROY,
 			engine: DatabaseClusterEngine.auroraMysql( {
 				version: AuroraMysqlEngineVersion.VER_2_09_0
 			} ),

@@ -12,12 +12,11 @@
     "lint": "eslint"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.104.0",
-    "aws-alb-ingress-controller": "git://github.com/kubernetes-sigs/aws-alb-ingress-controller.git#v2.2.0",
+    "@aws-cdk/assert": "^1.104.0",
     "@cksource-cs/eslint-config-cs-module": "^2.1.2",
     "@types/jest": "^26.0.10",
-    "@types/node": "10.17.27",
-    "aws-cdk": "1.104.0",
+    "@types/node": "^10.17.27",
+    "aws-cdk": "^1.104.0",
     "eslint": "^6.8.0",
     "ts-node": "^9.0.0",
     "typescript": "~3.9.7"
@@ -37,7 +36,7 @@
     "@aws-cdk/aws-s3": "^1.104.0",
     "@aws-cdk/aws-secretsmanager": "^1.104.0",
     "@aws-cdk/aws-ssm": "^1.104.0",
-    "@aws-cdk/core": "1.104.0",
+    "@aws-cdk/core": "^1.104.0",
     "source-map-support": "^0.5.16"
   }
 }

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2016-2020, CKSource - Frederico Knabben. All rights reserved.
+ Copyright (c) 2016-2021, CKSource - Frederico Knabben. All rights reserved.
  */
 
 import { StackProps, Stack, Construct, Tags } from '@aws-cdk/core';
@@ -8,30 +8,33 @@ import { RepositoryImage } from '@aws-cdk/aws-ecs';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
 
 import { StackConfig } from './stack-config';
-import { Application } from './resource/application';
 import { Database } from './resource/database';
 import { Redis } from './resource/redis';
 import { Storage } from './resource/storage';
 import { Network } from './resource/network';
 import { Utils } from './utils';
-import { Application2 } from './resource/application2';
+import { Application } from './resource/application';
+import { Kubernetes } from './resource/kubernetes';
+import { AWSLoadBalancerController } from './resource/aws-lbc';
 
 export class CKEditorCSOnPremisesStack extends Stack {
-	private readonly stackConfig: StackConfig;
+	private readonly application: Application;
 
-	private readonly network: Network;
+	private readonly awsLoadBalancerController: AWSLoadBalancerController;
 
 	private readonly database: Database;
 
-	private readonly storage: Storage;
+	private readonly kubernetes: Kubernetes;
+
+	private readonly network: Network;
 
 	private readonly redis: Redis;
 
 	private readonly repositoryImage: RepositoryImage;
 
-	private readonly application: Application;
+	private readonly stackConfig: StackConfig;
 
-	private readonly application2: Application2;
+	private readonly storage: Storage;
 
 	public constructor( scope: Construct, id: string, props?: StackProps ) {
 		super( scope, id, props );
@@ -61,20 +64,21 @@ export class CKEditorCSOnPremisesStack extends Stack {
 				credentials: repositoryCredentials
 			} );
 
-		this.application = new Application( this, 'Application', {
-			stackConfig: this.stackConfig,
-			repositoryImage: this.repositoryImage,
-			network: this.network,
-			database: this.database,
-			redis: this.redis,
-			storage: this.storage
+		this.kubernetes = new Kubernetes( this, 'Kubernetes', {
+			network: this.network
 		} );
 
-		this.application2 = new Application2( this, 'Application2', {
-			stackConfig: this.stackConfig,
-			network: this.network,
+		this.awsLoadBalancerController = new AWSLoadBalancerController( this, 'AWSLoadBalancerController', {
+			cluster: this.kubernetes.cluster,
+			namespace: 'kube-system'
+		} );
+
+		this.application = new Application( this, 'Application', {
+			cluster: this.kubernetes.cluster,
+			namespace: 'default',
 			database: this.database,
 			redis: this.redis,
+			stackConfig: this.stackConfig,
 			storage: this.storage
 		} );
 
