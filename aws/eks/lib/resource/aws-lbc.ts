@@ -2,13 +2,16 @@
  Copyright (c) 2016-2021, CKSource - Frederico Knabben. All rights reserved.
  */
 
-import { Construct, StackProps } from '@aws-cdk/core';
+import { CfnJson, Construct, Fn, StackProps } from '@aws-cdk/core';
 import { Cluster, HelmChart, ServiceAccount } from '@aws-cdk/aws-eks';
-import { Policy, PolicyDocument } from '@aws-cdk/aws-iam';
+import { FederatedPrincipal, Policy, PolicyDocument } from '@aws-cdk/aws-iam';
+
+import { Network } from './network';
 
 export interface AWSLoadBalancerControllerProps extends StackProps {
 	cluster: Cluster;
 	namespace: string;
+	network: Network;
 }
 
 export class AWSLoadBalancerController extends Construct {
@@ -17,6 +20,8 @@ export class AWSLoadBalancerController extends Construct {
 	private readonly serviceAccount: ServiceAccount;
 
 	private readonly helmChart: HelmChart;
+
+	private readonly oidcPrincipal: FederatedPrincipal;
 
 	public constructor( scope: Construct, id: string, props: AWSLoadBalancerControllerProps ) {
 		super( scope, id );
@@ -33,6 +38,20 @@ export class AWSLoadBalancerController extends Construct {
 		} );
 
 		this.serviceAccount.role.attachInlinePolicy( this.iamPolicy );
+
+		const clusterId = Fn.select(4, Fn.split('/', props.cluster.clusterOpenIdConnectIssuerUrl))
+
+        this.oidcPrincipal = new FederatedPrincipal(
+            props.cluster.openIdConnectProvider.openIdConnectProviderArn,
+            {
+                StringEquals: new CfnJson(this, "FederatedPrincipalCondition", {
+                    value: {
+                        [`oidc.eks.${props.network.vpc.env.region}.amazonaws.com/id/${clusterId}:aud`]: "sts.amazonaws.com",
+                        [`oidc.eks.${props.network.vpc.env.region}.amazonaws.com/id/${clusterId}:sub`]: `system:serviceaccount:kube-system:${this.serviceAccount.serviceAccountName}`
+                    }
+                })
+            }, "sts:AssumeRoleWithWebIdentity"
+		)
 
 		this.helmChart = new HelmChart( this, 'AWSLBCHelmChart', {
 			cluster: props.cluster,

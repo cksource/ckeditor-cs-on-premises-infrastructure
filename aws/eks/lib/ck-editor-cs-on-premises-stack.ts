@@ -49,29 +49,17 @@ export class CKEditorCSOnPremisesStack extends Stack {
 
 		this.redis = new Redis( this, 'Redis', { network: this.network } );
 
-		const repositoryCredentialValue: string = JSON.stringify( {
-			username: 'ckeditor',
-			password: this.stackConfig.dockerRegistryAuthToken
-		} );
-		const repositoryCredentials: ISecret = Utils.createUserProvidedSecret(
-			this,
-			'DockerRegistryToken',
-			repositoryCredentialValue
-		);
-
-		this.repositoryImage = RepositoryImage.fromRegistry(
-			`docker.cke-cs.com/cs:${ this.stackConfig.version }`, {
-				credentials: repositoryCredentials
-			} );
-
 		this.kubernetes = new Kubernetes( this, 'Kubernetes', {
 			network: this.network
 		} );
 
 		this.awsLoadBalancerController = new AWSLoadBalancerController( this, 'AWSLoadBalancerController', {
 			cluster: this.kubernetes.cluster,
-			namespace: 'kube-system'
+			namespace: 'kube-system',
+			network: this.network
 		} );
+
+		this.kubernetes.node.addDependency( this.awsLoadBalancerController );
 
 		this.application = new Application( this, 'Application', {
 			cluster: this.kubernetes.cluster,
@@ -81,6 +69,8 @@ export class CKEditorCSOnPremisesStack extends Stack {
 			stackConfig: this.stackConfig,
 			storage: this.storage
 		} );
+
+		this.application.node.addDependency( this.kubernetes, this.awsLoadBalancerController );
 
 		Tags.of( this ).add(
 			'Application',
