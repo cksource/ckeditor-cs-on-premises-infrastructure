@@ -44,6 +44,7 @@ export class Network extends Construct {
 
 		this.redisSecurityGroup = new SecurityGroup( this, 'RedisSecurityGroup', {
 			securityGroupName: 'redis-sg',
+			allowAllOutbound: false,
 			vpc: this.vpc
 		} );
 
@@ -54,6 +55,7 @@ export class Network extends Construct {
 
 		this.databaseSecurityGroup = new SecurityGroup( this, 'DatabaseSecurityGroup', {
 			securityGroupName: 'database-sg',
+			allowAllOutbound: false,
 			vpc: this.vpc
 		} );
 	}

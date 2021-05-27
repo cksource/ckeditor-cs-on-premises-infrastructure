@@ -41,24 +41,29 @@ export class Application extends Construct {
 			}
 		} );
 
+		const buffer: Buffer = Buffer.from(repositoryCredentialValue);
+
 		this.registrySecret = new KubernetesManifest(this, 'registrySecret', {
 			cluster: props.cluster,
 			manifest: [{
 				kind: 'Secret',
 				apiVersion: 'v1',
 				type: 'kubernetes.io/dockerconfigjson',
-				namespace: props.namespace,
-				name: 'docker-cke-cs-com',
+				metadata: {
+					name: 'docker-cke-cs-com',
+					namespace: props.namespace
+				},
 				data: {
-					'.dockerconfigjson': repositoryCredentialValue,
+					'.dockerconfigjson': buffer.toString('base64'),
 				}
 			}]
 		});
 
-		this.helmChart = new HelmChart( scope, 'defaultHelmChart', {
+		this.helmChart = new HelmChart( scope, 'ApplicationHelmChart', {
 			cluster: props.cluster,
-			chart: './../../kubernetes/helm/ckeditor-cs',
+			chart: './ckeditor-cs',
 			namespace: props.namespace,
+			release: 'ckeditor-cs',
 			values: {
 				'server': {
 					'image': {

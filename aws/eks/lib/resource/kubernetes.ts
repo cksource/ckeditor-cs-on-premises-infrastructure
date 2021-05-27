@@ -4,7 +4,7 @@
 
 import { Cluster, KubernetesVersion } from '@aws-cdk/aws-eks';
 import { Construct } from '@aws-cdk/core';
-import { InstanceClass, InstanceSize, InstanceType, SubnetType } from '@aws-cdk/aws-ec2';
+import { InstanceClass, InstanceSize, InstanceType, SecurityGroup, SubnetType } from '@aws-cdk/aws-ec2';
 
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 
@@ -32,23 +32,30 @@ export class Kubernetes extends Construct {
 			]
 		} );
 
-		this.cluster = new Cluster( scope, 'defaultEksCluster', {
+		this.cluster = new Cluster( scope, 'EksCluster', {
+			clusterName: 'cs-on-premises',
 			defaultCapacity: 0,
 			role: this.clusterRole,
 			version: KubernetesVersion.V1_19,
-			vpc: props.network.vpc
+			vpc: props.network.vpc,
+			securityGroup: new SecurityGroup(this, 'EksSecurityGroup', {
+				vpc: props.network.vpc,
+				allowAllOutbound: false,
+				securityGroupName: 'eks-sg'
+			} )
 		} );
 
 		this.workerRole = new Role( this, 'WorkerRole', {
 			assumedBy: new ServicePrincipal( 'ec2.amazonaws.com' ),
 			managedPolicies: [
+				ManagedPolicy.fromAwsManagedPolicyName( 'AmazonEC2ContainerRegistryReadOnly' ),
 				ManagedPolicy.fromAwsManagedPolicyName( 'AmazonEKSWorkerNodePolicy' ),
 				ManagedPolicy.fromAwsManagedPolicyName( 'AmazonEKS_CNI_Policy' ),
 				ManagedPolicy.fromAwsManagedPolicyName( 'AmazonEKSVPCResourceController' )
 			]
 		} );
 
-		this.cluster.addNodegroupCapacity( 'defaultNodegroupCapacity', {
+		this.cluster.addNodegroupCapacity( 'NodegroupCapacity', {
 			subnets: props.network.vpc.selectSubnets( { subnetType: SubnetType.PRIVATE } ),
 			nodeRole: this.workerRole,
 			minSize: 2,

@@ -5,7 +5,7 @@
     "ckeditor-cs-on-premise-infrastructure": "bin/ckeditor-cs-on-premise-infrastructure.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "cp -r ../../kubernetes/helm/ckeditor-cs lib/resource/ckeditor-cs && tsc",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",

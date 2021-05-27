@@ -5,14 +5,11 @@
 import { StackProps, Stack, Construct, Tags } from '@aws-cdk/core';
 import { RepositoryImage } from '@aws-cdk/aws-ecs';
 
-import { ISecret } from '@aws-cdk/aws-secretsmanager';
-
 import { StackConfig } from './stack-config';
 import { Database } from './resource/database';
 import { Redis } from './resource/redis';
 import { Storage } from './resource/storage';
 import { Network } from './resource/network';
-import { Utils } from './utils';
 import { Application } from './resource/application';
 import { Kubernetes } from './resource/kubernetes';
 import { AWSLoadBalancerController } from './resource/aws-lbc';
@@ -59,8 +56,6 @@ export class CKEditorCSOnPremisesStack extends Stack {
 			network: this.network
 		} );
 
-		this.kubernetes.node.addDependency( this.awsLoadBalancerController );
-
 		this.application = new Application( this, 'Application', {
 			cluster: this.kubernetes.cluster,
 			namespace: 'default',
@@ -69,8 +64,6 @@ export class CKEditorCSOnPremisesStack extends Stack {
 			stackConfig: this.stackConfig,
 			storage: this.storage
 		} );
-
-		this.application.node.addDependency( this.kubernetes, this.awsLoadBalancerController );
 
 		Tags.of( this ).add(
 			'Application',

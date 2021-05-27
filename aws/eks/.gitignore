@@ -4,6 +4,7 @@
 *.d.ts
 node_modules
 tsconfig.tsbuildinfo
+lib/resource/ckeditor-cs
 
 # CDK asset staging directory
 .cdk.staging
