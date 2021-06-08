@@ -1,0 +1,62 @@
+ckeditor-cs:
+  worker:
+    enabled: true
+    secret:
+      data:
+        DATABASE_HOST: ckeditor-cs-mysql
+        DATABASE_USER: root
+        DATABASE_PASSWORD: root-password
+        REDIS_HOST: ckeditor-cs-redis-master
+
+  server:
+    secret:
+      data:
+        DATABASE_HOST: ckeditor-cs-mysql
+        DATABASE_USER: root
+        DATABASE_PASSWORD: root-password
+        REDIS_HOST: ckeditor-cs-redis-master
+        ENVIRONMENTS_MANAGEMENT_SECRET_KEY: secret
+        STORAGE_DRIVER: filesystem
+        STORAGE_LOCATION: /var/cs/easyimage
+        LICENSE_KEY:
+    ingress:
+      enabled: true
+      annotations:
+        nginx.ingress.kubernetes.io/proxy-body-size: 10m
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+        nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+      hosts:
+        - host: ckeditor-cs.organization.test
+          paths:
+          - path: /
+    readinessProbe:
+      initialDelaySeconds: 60
+
+mysql:
+  enabled: true
+  image:
+    tag: "5.7"
+  auth:
+    database: cs-on-premises
+    auth: ckeditor-cs
+    password: password
+    rootPassword: root-password
+  commonLabels:
+    app.kubernetes.io/part-of: ckeditor-cs
+
+redis:
+  enabled: true
+  cluster:
+    enabled: true
+  usePassword: false
+  commonLabels:
+    app.kubernetes.io/part-of: ckeditor-cs
+
+common:
+  names:
+    fullname: ckeditor-cs
+  capabilities:
+    deployment:
+      apiVersion: apps/v1
+    statefulset:
+      apiVersion: apps/v1

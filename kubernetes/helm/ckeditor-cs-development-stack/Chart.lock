@@ -1,0 +1,15 @@
+dependencies:
+- name: ckeditor-cs
+  repository: file://../ckeditor-cs
+  version: 0.1.0
+- name: mysql
+  repository: https://charts.bitnami.com/bitnami
+  version: 8.5.8
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 11.3.4
+- name: common
+  repository: https://charts.bitnami.com/bitnami
+  version: 0.10.0
+digest: sha256:b4d8b0840f0572b5a8c1319174e1c31e07674439894419c5b9fe869a6712f7a4
+generated: "2021-05-14T13:58:15.506696+02:00"
