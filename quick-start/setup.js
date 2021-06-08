@@ -124,22 +124,26 @@ async function validateCredentails( context ) {
 
 async function validateEnvironment( context ) {
 	context.currentStep = step.validateEnvironment;
-	let dockerVersion = '';
+	const dockerVersionRegex = /Version:\s*(1[89]|[2-9]\d|\d{3,}).\d*.\d*/;
+	let dockerOutput;
 
 	try {
-		const dockerExec = await exec( 'docker -v' );
-		dockerVersion = parseFloat( dockerExec.stdout.split( ' ' )[ 2 ] );
-
-		if ( dockerVersion < 18 ) {
-			throw dockerVersion;
-		}
+		dockerOutput = await exec( 'docker version' );
 	} catch ( err ) {
-		if ( err === dockerVersion ) {
-			throw new SetupError( error.dockerVersion );
+		if ( err.message.includes( 'command not found' ) ) {
+			throw new SetupError( error.dockerNotInstalled );
 		}
-		throw new SetupError( error.dockerNotInstalled );
+
+		if ( err.message.includes( 'Cannot connect to the Docker daemon' ) ) {
+			throw new SetupError( error.dockerNotRunning );
+		}
+
+		throw new Error( err );
 	}
 
+	if ( !dockerVersionRegex.test( dockerOutput.stdout ) ) {
+		throw new SetupError( error.dockerVersion );
+	}
 	logger.stepInfo( context.currentStep );
 }
 

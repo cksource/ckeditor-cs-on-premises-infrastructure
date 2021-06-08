@@ -24,28 +24,29 @@ On-Premises Quick-Start installation will download few docker images with about 
 
 
 ## Setup steps
+1. Make sure that Docker Desktop is running. You can check Docker tray icon to see the current status.
 
-1. Verify if you have all needed tools installed by running this command in your terminal:
+2. Verify if you have all needed tools installed by running this command in your terminal:
 ```
 docker -v && docker-compose -v && node -v && npm -v && git --version
 ```
 You should see all version numbers of those tools. If there is a message `command not found`, then please install the missing tool before proceeding to the next step.
 
-2. Clone this repository and install packages with the following commands:
+3. Clone this repository and install packages with the following commands:
 ```
 git clone https://github.com/cksource/ckeditor-cs-on-premises-infrastructure.git
 
 cd ckeditor-cs-on-premises-infrastructure/quick-start && npm install
 ```
 
-3. Run On-Premises Quick-Start, replacing credentials placeholders with your credentials:
+4. Run On-Premises Quick-Start, replacing credentials placeholders with your credentials:
 ```
 node setup.js --license_key="YOUR_LICENSE_KEY" --docker_token="YOUR_DOCKER_DOWNLOAD_TOKEN" --env_secret="YOUR_ENVIRONMENT_SECRET"
 ```
 Where:
 - `license_key` can be found in CKEditor Ecosystem Dashboard inside your CKEditor Collaboration Server On-Premises subscription.
 - `docker_token` can be found in CKEditor Ecosystem Dashboard inside your CKEditor Collaboration Server On-Premises subscription in the *Download token* section. If you do not see any tokens, you can create it with the *Create new token* button.
-- `env_secret` is a password, that will be used to access the [Management panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
+- `env_secret` is your password, that will be used to access the [Management panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
 
 
 Running this setup process for the first time may take several minutes. It has to pull few docker images from the web, install packages and build the editor bundle. Further command runs will be much shorter. After successful installation you should see a message `Visit http://localhost:3000 to start collaborating`. Open this page in your browser. 
