@@ -20,7 +20,7 @@ If you do not have those tools installed on your machine, then refer to the foll
 - [Git installation guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
 
-On-Premises Quick-Start installation will download few docker images with about 2GB in size. Similar space on your disk is also needed.
+On-Premises Quick-Start installation will download few docker images with about 2GB in size. Similar space on your disk is also required.
 
 
 ## Setup steps
