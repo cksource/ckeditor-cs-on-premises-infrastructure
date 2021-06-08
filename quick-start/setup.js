@@ -214,13 +214,13 @@ function startDockerContainers( context ) {
 	} );
 
 	return new Promise( ( resolve, reject ) => {
-		const serversAvailabilityCheck = setInterval( async () => {
-			const timeout = setTimeout( () => {
-				dockerSpinner.stop();
-				fs.writeFileSync( './log.txt', dockerComposeUp.output, 'utf-8' );
-				reject( new SetupError( error.containersTimeout ) );
-			}, 15 * 60 * 1000 );
+		const timeout = setTimeout( () => {
+			dockerSpinner.stop();
+			fs.writeFileSync( './log.txt', dockerComposeUp.output, 'utf-8' );
+			reject( new SetupError( error.containersTimeout ) );
+		}, 15 * 60 * 1000 );
 
+		const serversAvailabilityCheck = setInterval( async () => {
 			if ( await serverIsUp( 'cs', context ) && await serverIsUp( 'node', context ) ) {
 				clearInterval( serversAvailabilityCheck );
 				clearTimeout( timeout );
