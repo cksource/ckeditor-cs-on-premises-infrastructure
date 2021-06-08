@@ -18,8 +18,8 @@
 			<h1><a href="https://ckeditor.com/ckeditor-5/" target="_blank" rel="noopener noreferrer"><img src="https://c.cksource.com/a/1/logos/ckeditor5.svg" alt="CKEditor 5 logo">CKEditor 5</a></h1>
 			<nav>
 				<ul>
-					<li><a href="https://ckeditor.com/docs/ckeditor5/latest/features/collaboration/real-time-collaboration/real-time-collaboration.html" target="_blank" rel="noopener noreferrer">Documentation</a></li>
-					<li><a href="https://ckeditor.com/collaboration/real-time/" target="_blank" rel="noopener noreferrer">Website</a></li>
+					<li><a href="https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/overview.html" target="_blank" rel="noopener noreferrer">Documentation</a></li>
+					<li><a href="https://ckeditor.com/collaboration/real-time-collaborative-editing/" target="_blank" rel="noopener noreferrer">Website</a></li>
 				</ul>
 			</nav>
 		</div>
@@ -28,7 +28,7 @@
 		<div class="collaboration-demo" id="collaboration">
 			<div class="message">
 				<div class="centered">
-					<h2>CKEditor 5 online builder demo - ClassicEditor with collaboration</h2>
+					<h2>Collaboration Server On-Premises Quick-start</h2>
 					<p>Open this sample in another browser tab to start real-time collaborative editing.</p>
 				</div>
 			</div>
@@ -40,15 +40,6 @@
 			<div class="collaboration-demo__container">
 				<div class="collaboration-demo__topbar">
 					<div class="presence"></div>
-					<div class="collaboration-demo__share">
-						<div class="collaboration-demo__share-description">
-							<p>Share link &amp; collaborate:</p>
-						</div>
-						<div>
-							<input class="form-control" id="demo-collaboration-url" type="text" readonly="readonly" aria-label="Shared document link">
-							<button class="btn btn--tinyCopy">URL</button>
-						</div>
-					</div>
 				</div>
 				<div class="collaboration-demo__editor">
 					<div class="collaboration-demo__toolbar"></div>
@@ -64,6 +55,16 @@
 						</div>
 					</div>
 				</div>
+				<section>
+					<h3>Check out other Collaboration Server On-Premises features:</h3>
+					<ul>
+						<li><a href="http://localhost:8000/panel" target="_blank" rel="noopener">Cloud Services Management Panel</a></li>
+						<li><a href="https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/features/easy-image.html" target="_blank" rel="noopener">Easy Image</a></li>
+						<li><a href="http://localhost:8000/api/v4/docs" target="_blank" rel="noopener">REST API</a></li>
+						<li><a href="https://ckeditor.com/docs/cs/latest/guides/collaboration/document-storage.html" target="_blank" rel="noopener">Document storage</a></li>
+						<li><a href="https://ckeditor.com/docs/cs/latest/guides/webhooks/overview.html" target="_blank" rel="noopener">Webhooks</a></li>
+					</ul>
+				</section>
 			</div>
 		</div>
 	</main>
@@ -246,7 +247,6 @@ function uid() {
 					loaderElement.parentNode.removeChild( loaderElement );
 				}, 200 );
 		
-				handleCopyUrlButton();
 		
 				// Prevent closing the tab when any action is pending.
 				editor.ui.view.listenTo( window, 'beforeunload', ( evt, domEvt ) => {
@@ -320,25 +320,25 @@ function uid() {
 			} );
 		} );
 		
-		function handleCopyUrlButton() {
-			const triggerElement = document.querySelector( '.collaboration-demo__share .btn' );
-			const inputElement = document.getElementById( 'demo-collaboration-url' );
+		// function handleCopyUrlButton() {
+		// 	const triggerElement = document.querySelector( '.collaboration-demo__share .btn' );
+		// 	const inputElement = document.getElementById( 'demo-collaboration-url' );
 		
-			inputElement.value = window.location;
-			inputElement.addEventListener( 'click', () => inputElement.select() );
-			triggerElement.addEventListener( 'click', () => copyFromInput( inputElement, triggerElement ) );
-		}
+		// 	inputElement.value = window.location;
+		// 	inputElement.addEventListener( 'click', () => inputElement.select() );
+		// 	triggerElement.addEventListener( 'click', () => copyFromInput( inputElement, triggerElement ) );
+		// }
 		
-		function copyFromInput( inputElement, triggerElement ) {
-			inputElement.select();
-			document.execCommand( 'copy' );
+		// function copyFromInput( inputElement, triggerElement ) {
+		// 	inputElement.select();
+		// 	document.execCommand( 'copy' );
 		
-			triggerElement.textContent = 'Copied!';
-			clearTimeout( revertOriginalButtonTimeoutId );
+		// 	triggerElement.textContent = 'Copied!';
+		// 	clearTimeout( revertOriginalButtonTimeoutId );
 		
-			revertOriginalButtonTimeoutId = setTimeout( () => {
-				triggerElement.textContent = 'Copy URL';
-			}, 1500 );
-		}
+		// 	revertOriginalButtonTimeoutId = setTimeout( () => {
+		// 		triggerElement.textContent = 'Copy URL';
+		// 	}, 1500 );
+		// }
 	</script>
 </body>
