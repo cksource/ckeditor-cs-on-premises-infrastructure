@@ -5,6 +5,7 @@
    "dockerAuth": "Docker registry authorization",
    "dockerPull": "Pulling docker image",
    "editFile": "Editing docker-compose.yml file",
+   "dockerUpWaiting": "Starting docker containers (it may take a few minutes)",
    "dockerUp": "Starting docker containers",
    "createEnvironment": "Creating environment"
 }

@@ -207,7 +207,7 @@ function editDockerComposeFile( context ) {
 function startDockerContainers( context ) {
 	context.currentStep = step.dockerUp;
 	context.cleanupNeeded = true;
-	const dockerSpinner = logger.spinner( context.currentStep );
+	const dockerSpinner = logger.spinner( step.dockerUpWaiting );
 	dockerSpinner.start();
 
 	const dockerComposeUp = spawn( 'docker-compose', [ 'up', '--build' ] );
