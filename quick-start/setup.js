@@ -70,12 +70,11 @@ const error = require( './utils/errors.json' );
 } )();
 
 function printWelcomeMessage() {
+	/* eslint-disable max-len */
 	logger.info( '\n\n' );
 	logger.info( `${ chalk.green( 'Collaboration Server On-Premises Quick-Start' ) } installation` );
-	logger.info( `This setup script allows you to quickly set up infrastructure needed to use CKEditor 5 with
-Real-Time Collaboration and Collaboration Server On-Premises.` );
-	logger.warning( `Collaboration Server On-Premises Quick-Start can be only used for testing purposes 
-during local development and it cannot be used in production.\n` );
+	logger.info( 'This setup script allows you to quickly set up infrastructure needed to use CKEditor 5 with Real-Time Collaboration and Collaboration Server On-Premises.' );
+	logger.warning( 'Collaboration Server On-Premises Quick-Start can be only used for testing purposes during local development and it cannot be used in production.\n' );
 }
 
 async function readArguments( context ) {
@@ -103,17 +102,18 @@ async function validateCredentails( context ) {
 	const dockerTokenRegex = /^[0-9a-f-]{36}$/;
 
 	if ( !licenseKeyRegex.test( context.licenseKey ) ) {
-		logger.warning( error.invalidLicense );
+		logger.warning( error.invalidLicense, { newLine: false } );
 		context.licenseKey = await askForCredential( 'license_key' );
 	}
 	else if ( !dockerTokenRegex.test( context.dockerToken ) ) {
-		logger.warning( error.invalidToken );
+		logger.warning( error.invalidToken, { newLine: false } );
 		context.dockerToken = await askForCredential( 'docker_token' );
 	}
 	else if ( context.envSecret.length === 0 ) {
-		logger.warning( error.invalidSecret );
+		logger.warning( error.invalidSecret, { newLine: false } );
 		context.envSecret = await askForCredential( 'env_secret' );
 	} else {
+		logger.info( '\n' );
 		logger.stepInfo( context.currentStep );
 
 		return;
