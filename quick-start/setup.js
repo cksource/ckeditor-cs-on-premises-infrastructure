@@ -190,7 +190,7 @@ function editDockerComposeFile( context ) {
 
 	context.currentStep = step.editFile;
 
-	let dockerComposeFile = fs.readFileSync( './docker-compose-template.yml', 'utf8' );
+	let dockerComposeFile = fs.readFileSync( './docker/docker-compose-template.yml', 'utf8' );
 	const dockerComposeObject = yaml.load( dockerComposeFile );
 
 	dockerComposeObject.services[ 'ckeditor-cs' ].image = `${ context.dockerEndpoint }/cs:${ context.imageVersion }`;

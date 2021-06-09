@@ -4,7 +4,7 @@
   "description": "",
   "main": "setup.js",
   "scripts": {
-    "cleanup": "node cleanup.js"
+    "cleanup": "node ./docker/cleanup.js"
   },
   "author": "CKSource",
   "license": "ISC",
