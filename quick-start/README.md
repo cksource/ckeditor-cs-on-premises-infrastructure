@@ -24,7 +24,7 @@ On-Premises Quick-Start installation will download few docker images with about 
 
 
 ## Setup steps
-1. Make sure that Docker Desktop is running. You can check Docker tray icon to see the current status.
+1. Make sure that Docker Desktop is running. You can check the Docker tray icon to see the current status.
 
 2. Verify if you have all needed tools installed by running this command in your terminal:
 ```
@@ -45,11 +45,11 @@ node setup.js --license_key="YOUR_LICENSE_KEY" --docker_token="YOUR_DOCKER_DOWNL
 ```
 Where:
 - `license_key` can be found in CKEditor Ecosystem Dashboard inside your CKEditor Collaboration Server On-Premises subscription.
-- `docker_token` can be found in CKEditor Ecosystem Dashboard inside your CKEditor Collaboration Server On-Premises subscription in the *Download token* section. If you do not see any tokens, you can create it with the *Create new token* button.
+- `docker_token` can be found in CKEditor Ecosystem Dashboard inside your CKEditor Collaboration Server On-Premises subscription in the *Download token* section. If you do not see any tokens, you can create them with the *Create new token* button.
 - `env_secret` is your password, that will be used to access the [Management panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
 
 
-**Running this setup process for the first time may take several minutes.** It has to pull few docker images from the web, install packages and build the editor bundle. Further command runs will be much shorter. After successful installation you should see a message `Visit http://localhost:3000 to start collaborating`. Open this page in your browser. 
+**Running this setup process for the first time may take several minutes.** It has to pull few docker images from the web, install packages and build the editor bundle. Further command runs will be much shorter. After thesuccessful installation, you should see a message `Visit http://localhost:3000 to start collaborating`. Open this page in your browser. 
 When your testing session is over you can simply stop running the process in the terminal with Ctrl+C and created containers will be removed from your machine.
 
 
@@ -61,9 +61,10 @@ Only 3 arguments are needed to successfully run our On-Premises Quick-Start. Her
 --docker_token=""     - required,
 --env_secret=""       - required,
 --docker_endpoint=""  - optional, default is "docker.cke-cs.com", use it to change docker registry url
+--version=""          - optional, default is "latest", use it to specify a different version of docker image
 --cs_port=""          - optional, default is "8000", port for Collaboration Server On-Premises
 --node_port=""        - optional, default is "3000", port for Frontend part of Quick-Start
 --keep_containers     - optional, use it to preserve created containers on exit
 ```
 
-**Note:** If you use different ports, then please remember to update URL endpoints after opening editor page.
+**Note:** If you use different ports, then please remember to update URL endpoints after opening a sample page.

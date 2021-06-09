@@ -18,11 +18,12 @@ const error = require( './utils/errors.json' );
 		dockerToken: '',
 		envSecret: '',
 		dockerEndpoint: '',
-		ipAddr: '',
+		ipAddr: 'localhost',
 		csPort: 8000,
 		nodePort: 3000,
 		keepContainers: false,
-		cleanupNeeded: false
+		cleanupNeeded: false,
+		imageVersion: 'latest'
 	};
 
 	process.on( 'exit', () => {
@@ -82,7 +83,7 @@ async function readArguments( context ) {
 	context.currentStep = step.getCredentials;
 
 	context.dockerEndpoint = argv.docker_endpoint || 'docker.cke-cs.com';
-	context.ipAddr = 'localhost';
+	context.imageVersion = argv.version || context.imageVersion;
 	context.csPort = argv.cs_port || context.csPort;
 	context.nodePort = argv.node_port || context.nodePort;
 	context.keepContainers = argv.keep_containers;
@@ -174,7 +175,7 @@ async function pullDockerImage( context ) {
 	downloadSpinner.start();
 
 	try {
-		await exec( `docker pull ${ context.dockerEndpoint }/cs:latest` );
+		await exec( `docker pull ${ context.dockerEndpoint }/cs:${ context.imageVersion }` );
 	} catch ( err ) {
 		downloadSpinner.stop();
 		throw new Error( err.stderr );
@@ -192,7 +193,7 @@ function editDockerComposeFile( context ) {
 	let dockerComposeFile = fs.readFileSync( './docker-compose-template.yml', 'utf8' );
 	const dockerComposeObject = yaml.load( dockerComposeFile );
 
-	dockerComposeObject.services[ 'ckeditor-cs' ].image = `${ context.dockerEndpoint }/cs:latest`;
+	dockerComposeObject.services[ 'ckeditor-cs' ].image = `${ context.dockerEndpoint }/cs:${ context.imageVersion }`;
 	dockerComposeObject.services[ 'ckeditor-cs' ].environment.LICENSE_KEY = context.licenseKey;
 	dockerComposeObject.services[ 'ckeditor-cs' ].environment.ENVIRONMENTS_MANAGEMENT_SECRET_KEY = context.envSecret;
 	dockerComposeObject.services[ 'ckeditor-cs' ].ports[ 0 ] = `${ context.csPort }:8000`;
