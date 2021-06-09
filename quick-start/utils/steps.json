@@ -7,5 +7,5 @@
    "editFile": "Editing docker-compose.yml file",
    "dockerUpWaiting": "Starting docker containers (it may take a few minutes)",
    "dockerUp": "Starting docker containers",
-   "createEnvironment": "Creating environment"
+   "createEnvironment": "Creating new environment"
 }

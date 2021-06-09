@@ -49,13 +49,13 @@ Where:
 - `env_secret` is your password, that will be used to access the [Management panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
 
 
-**Running this setup process for the first time may take several minutes.** It has to pull few docker images from the web, install packages and build the editor bundle. Further command runs will be much shorter. After thesuccessful installation, you should see a message `Visit http://localhost:3000 to start collaborating`. Open this page in your browser. 
+**Running this setup process for the first time may take several minutes.** It has to pull few docker images from the web, install packages and build the editor bundle. Further command runs will be much shorter. After the successful installation, you should see a message `Visit http://localhost:3000 to start collaborating`. Open this page in your browser. 
 When your testing session is over you can simply stop running the process in the terminal with Ctrl+C and created containers will be removed from your machine.
 
 
 ## setup.js arguments
 
-Only 3 arguments are needed to successfully run our On-Premises Quick-Start. Here is a list of all possible arguments:
+Only 3 arguments are needed to successfully run our On-Premises Quick-Start. There are other optional arguments to customize this setup process. Here is a list of all possible arguments:
 ```
 --license_key=""      - required,
 --docker_token=""     - required,
