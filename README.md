@@ -12,4 +12,4 @@ By implementing the infrastructure in this way the service will be easily scalab
 - [Kubernetes Helm charts](/kubernetes/helm)
 
 ## Collaboration Server On-Premises Quick-start
-Collaboration Server On-Premises Quick-Start allows you to quickly set up the infrastructure needed to use CKEditor 5 with Real-Time Collaboration and Collaboration Server On-Premises. After running one setup command you can jump into working CKEditor 5 instance and start testing our solution, while the Collaboration Server is running locally, on your machine. Check out [On-Premises Quick-start](/quick-start) guide.
+The Collaboration Server On-Premises Quick-Start guide lets you to quickly set up the infrastructure needed to use CKEditor 5 with Real-Time Collaboration and Collaboration Server On-Premises. After running a single setup command you can run a into working CKEditor 5 instance and start testing our solution, with the Collaboration Server is running locally, on your machine. Check out the [On-Premises Quick-start](/quick-start) guide.
