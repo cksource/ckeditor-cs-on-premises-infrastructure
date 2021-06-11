@@ -73,9 +73,9 @@ const error = require( './utils/errors.json' );
 function printWelcomeMessage() {
 	/* eslint-disable max-len */
 	logger.info( '\n\n' );
-	logger.info( `${ chalk.green( 'Collaboration Server On-Premises Quick-Start' ) } installation` );
-	logger.info( 'This setup script allows you to quickly set up infrastructure needed to use CKEditor 5 with Real-Time Collaboration and Collaboration Server On-Premises.' );
-	logger.warning( 'Collaboration Server On-Premises Quick-Start can be only used for testing purposes during local development and it cannot be used in production.' );
+	logger.info( `The ${ chalk.green( 'Collaboration Server On-Premises Quick-Start' ) } installation` );
+	logger.info( 'This setup script allows you to quickly set up the infrastructure needed to use CKEditor 5 with Real-Time Collaboration and Collaboration Server On-Premises.' );
+	logger.warning( 'The Collaboration Server On-Premises Quick-Start can be only used for testing purposes during local development and it cannot be used in production.' );
 }
 
 async function readArguments( context ) {
