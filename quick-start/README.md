@@ -1,6 +1,6 @@
 ### Collaboration Server On-Premises Quick-Start guide
 
-The Collaboration Server On-Premises Quick-Start guide lets you to quickly set up the infrastructure needed to use CKEditor 5 with Real-Time Collaboration and Collaboration Server On-Premises. After running a single setup command you can run a into working CKEditor 5 instance and start testing our solution, with the Collaboration Server is running locally, on your machine.
+The Collaboration Server On-Premises Quick-Start guide lets you to quickly set up the infrastructure needed to use CKEditor 5 with Real-Time Collaboration and Collaboration Server On-Premises. After running a single setup command you can run a working CKEditor 5 instance and start testing our solution, with the Collaboration Server is running locally, on your machine.
 
 **Infrastructure created with Collaboration Server On-Premises Quick-Start can be only used for testing purposes during local development and it cannot be used in production.** For details about production-grade architecture please refer to [our guide.](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/architecture.html)
 
