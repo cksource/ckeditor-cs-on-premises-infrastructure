@@ -6,7 +6,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./docker/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
   redis:
     image: redis:3.2.6
     container_name: quick-start-redis

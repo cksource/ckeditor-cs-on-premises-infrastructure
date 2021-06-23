@@ -1,10 +1,11 @@
 {
-   "getCredentials": "Getting credentials",
-   "validateCredentials": "Validating credentials",
-   "validateEnvironment": "Validating environment",
+   "getCredentials": "Getting the credentials",
+   "validateCredentials": "Validating the credentials",
+   "validateEnvironment": "Validating the environment",
    "dockerAuth": "Docker registry authorization",
-   "dockerPull": "Pulling docker image",
+   "dockerPull": "Pulling the docker image",
    "editFile": "Editing docker-compose.yml file",
-   "dockerUp": "Starting docker containers",
-   "createEnvironment": "Creating environment"
+   "dockerUpWaiting": "Starting the docker containers (it may take several minutes)",
+   "dockerUp": "Starting the docker containers",
+   "createEnvironment": "Creating a new environment"
 }

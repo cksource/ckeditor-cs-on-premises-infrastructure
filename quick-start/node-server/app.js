@@ -57,7 +57,8 @@ async function createEnvironment( req, res ) {
 		id: _randomString( 20 ),
 		name: 'On-Premises Quick-start',
 		organizationId: _randomString( 20 ),
-		accessKeys: [ { value: _randomString( 20 ) } ],
+		accessKeys: [ { name: 'Access Key', value: _randomString( 20 ) } ],
+		apiSecret: _randomString( 20 ),
 		services: [
 			{
 				id: _randomString( 24 ),
@@ -80,7 +81,6 @@ async function createEnvironment( req, res ) {
 	try {
 		await axios.post( uri, newEnvironment, { headers } );
 		console.log( 'New Environment created.' );
-		console.log( `EnvironmentId: ${ newEnvironment.id } AccessKey: ${ newEnvironment.accessKeys[ 0 ].value }` );
 		environmentID = newEnvironment.id;
 		accessKey = newEnvironment.accessKeys[ 0 ].value;
 

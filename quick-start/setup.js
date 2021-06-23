@@ -18,11 +18,12 @@ const error = require( './utils/errors.json' );
 		dockerToken: '',
 		envSecret: '',
 		dockerEndpoint: '',
-		ipAddr: '',
+		ipAddr: 'localhost',
 		csPort: 8000,
 		nodePort: 3000,
 		keepContainers: false,
-		cleanupNeeded: false
+		cleanupNeeded: false,
+		imageVersion: 'latest'
 	};
 
 	process.on( 'exit', () => {
@@ -70,12 +71,11 @@ const error = require( './utils/errors.json' );
 } )();
 
 function printWelcomeMessage() {
+	/* eslint-disable max-len */
 	logger.info( '\n\n' );
-	logger.info( `${ chalk.green( 'Collaboration Server On-Premises Quick-Start' ) } installation` );
-	logger.info( `This setup script allows you to quickly set up infrastructure needed to use CKEditor 5 with
-Real-Time Collaboration and Collaboration Server On-Premises.` );
-	logger.warning( `Collaboration Server On-Premises Quick-Start can be only used for testing purposes 
-during local development and it cannot be used in production.\n` );
+	logger.info( `The ${ chalk.green( 'Collaboration Server On-Premises Quick-Start' ) } installation` );
+	logger.info( 'This setup script allows you to quickly set up the infrastructure needed to use CKEditor 5 with Real-Time Collaboration and Collaboration Server On-Premises.' );
+	logger.warning( 'The Collaboration Server On-Premises Quick-Start can be only used for testing purposes during local development and it cannot be used in production.' );
 }
 
 async function readArguments( context ) {
@@ -83,7 +83,7 @@ async function readArguments( context ) {
 	context.currentStep = step.getCredentials;
 
 	context.dockerEndpoint = argv.docker_endpoint || 'docker.cke-cs.com';
-	context.ipAddr = 'localhost';
+	context.imageVersion = argv.version || context.imageVersion;
 	context.csPort = argv.cs_port || context.csPort;
 	context.nodePort = argv.node_port || context.nodePort;
 	context.keepContainers = argv.keep_containers;
@@ -103,17 +103,18 @@ async function validateCredentails( context ) {
 	const dockerTokenRegex = /^[0-9a-f-]{36}$/;
 
 	if ( !licenseKeyRegex.test( context.licenseKey ) ) {
-		logger.warning( error.invalidLicense );
+		logger.warning( error.invalidLicense, { newLine: false } );
 		context.licenseKey = await askForCredential( 'license_key' );
 	}
 	else if ( !dockerTokenRegex.test( context.dockerToken ) ) {
-		logger.warning( error.invalidToken );
+		logger.warning( error.invalidToken, { newLine: false } );
 		context.dockerToken = await askForCredential( 'docker_token' );
 	}
 	else if ( context.envSecret.length === 0 ) {
-		logger.warning( error.invalidSecret );
+		logger.warning( error.invalidSecret, { newLine: false } );
 		context.envSecret = await askForCredential( 'env_secret' );
 	} else {
+		logger.info( '\n' );
 		logger.stepInfo( context.currentStep );
 
 		return;
@@ -124,22 +125,26 @@ async function validateCredentails( context ) {
 
 async function validateEnvironment( context ) {
 	context.currentStep = step.validateEnvironment;
-	let dockerVersion = '';
+	const dockerVersionRegex = /Version:\s*(1[89]|[2-9]\d|\d{3,}).\d*.\d*/;
+	let dockerOutput;
 
 	try {
-		const dockerExec = await exec( 'docker -v' );
-		dockerVersion = parseFloat( dockerExec.stdout.split( ' ' )[ 2 ] );
-
-		if ( dockerVersion < 18 ) {
-			throw dockerVersion;
-		}
+		dockerOutput = await exec( 'docker version' );
 	} catch ( err ) {
-		if ( err === dockerVersion ) {
-			throw new SetupError( error.dockerVersion );
+		if ( err.message.includes( 'command not found' ) ) {
+			throw new SetupError( error.dockerNotInstalled );
 		}
-		throw new SetupError( error.dockerNotInstalled );
+
+		if ( err.message.includes( 'Cannot connect to the Docker daemon' ) ) {
+			throw new SetupError( error.dockerNotRunning );
+		}
+
+		throw new Error( err );
 	}
 
+	if ( !dockerVersionRegex.test( dockerOutput.stdout ) ) {
+		throw new SetupError( error.dockerVersion );
+	}
 	logger.stepInfo( context.currentStep );
 }
 
@@ -170,7 +175,7 @@ async function pullDockerImage( context ) {
 	downloadSpinner.start();
 
 	try {
-		await exec( `docker pull ${ context.dockerEndpoint }/cs:latest` );
+		await exec( `docker pull ${ context.dockerEndpoint }/cs:${ context.imageVersion }` );
 	} catch ( err ) {
 		downloadSpinner.stop();
 		throw new Error( err.stderr );
@@ -185,10 +190,10 @@ function editDockerComposeFile( context ) {
 
 	context.currentStep = step.editFile;
 
-	let dockerComposeFile = fs.readFileSync( './docker-compose-template.yml', 'utf8' );
+	let dockerComposeFile = fs.readFileSync( './docker/docker-compose-template.yml', 'utf8' );
 	const dockerComposeObject = yaml.load( dockerComposeFile );
 
-	dockerComposeObject.services[ 'ckeditor-cs' ].image = `${ context.dockerEndpoint }/cs:latest`;
+	dockerComposeObject.services[ 'ckeditor-cs' ].image = `${ context.dockerEndpoint }/cs:${ context.imageVersion }`;
 	dockerComposeObject.services[ 'ckeditor-cs' ].environment.LICENSE_KEY = context.licenseKey;
 	dockerComposeObject.services[ 'ckeditor-cs' ].environment.ENVIRONMENTS_MANAGEMENT_SECRET_KEY = context.envSecret;
 	dockerComposeObject.services[ 'ckeditor-cs' ].ports[ 0 ] = `${ context.csPort }:8000`;
@@ -203,7 +208,7 @@ function editDockerComposeFile( context ) {
 function startDockerContainers( context ) {
 	context.currentStep = step.dockerUp;
 	context.cleanupNeeded = true;
-	const dockerSpinner = logger.spinner( context.currentStep );
+	const dockerSpinner = logger.spinner( step.dockerUpWaiting );
 	dockerSpinner.start();
 
 	const dockerComposeUp = spawn( 'docker-compose', [ 'up', '--build' ] );
@@ -214,13 +219,13 @@ function startDockerContainers( context ) {
 	} );
 
 	return new Promise( ( resolve, reject ) => {
-		const serversAvailabilityCheck = setInterval( async () => {
-			const timeout = setTimeout( () => {
-				dockerSpinner.stop();
-				fs.writeFileSync( './log.txt', dockerComposeUp.output, 'utf-8' );
-				reject( new SetupError( error.containersTimeout ) );
-			}, 15 * 60 * 1000 );
+		const timeout = setTimeout( () => {
+			dockerSpinner.stop();
+			fs.writeFileSync( './log.txt', dockerComposeUp.output, 'utf-8' );
+			reject( new SetupError( error.containersTimeout ) );
+		}, 15 * 60 * 1000 );
 
+		const serversAvailabilityCheck = setInterval( async () => {
 			if ( await serverIsUp( 'cs', context ) && await serverIsUp( 'node', context ) ) {
 				clearInterval( serversAvailabilityCheck );
 				clearTimeout( timeout );

@@ -1,14 +1,15 @@
 {
    "missingCredentials": "Some credentials are missing. Please provide them below:",
-   "invalidLicense": "Provided License Key is invalid. Please provide correct License Key below:",
-   "invalidToken": "Provided Docker Download Token is invalid. Please provide correct Docker Download Token below:",
-   "invalidSecret": "Environment Secret can not be empty. Please provide correct Environment Secret below:",
-   "dockerVersion": "Wrong docker version. Please install newer version of docker to run this setup process.",
+   "invalidLicense": "\nThe provided License Key is invalid. Please provide a correct License Key below:",
+   "invalidToken": "\nThe provided Docker Download Token is invalid. Please provide a correct Docker Download Token below:",
+   "invalidSecret": "\nThe Environment Secret can not be empty. Please provide a correct Environment Secret below:",
+   "dockerVersion": "Wrong docker version. Please update your docker version to run this setup process.",
+   "dockerNotRunning": "Docker Desktop is not running. Please start the Docker Desktop app to run this setup process.",
    "dockerNotInstalled": "Docker is not installed on your machine. Please install docker to run this setup process.",
-   "wrongToken": "Could not authorize to docker registry using provided docker token.",
-   "containersTimeout": "Timeout during docker containers startup. Created log.txt file with output from docker containers. Please, contact our support team.",
-   "wrongLicense": "Could not create On-Premises docker container using provided License Key.",
-   "licenseKeyDescription": "You can find your License Key in CKEditor Ecosystem Dashboard inside your CKEditor Collaboration Server On-Premises subscription.",
-   "dockerTokenDescription": "You can find your Docker Download Token in CKEditor Ecosystem Dashboard inside your CKEditor Collaboration Server On-Premises subscription.",
-   "envSecretDescription": "Environment Secret is used as an password for Cloud Services Management Panel."
+   "wrongToken": "Could not authorize to docker registry using the provided Docker Download Token.",
+   "containersTimeout": "Timeout during docker containers startup. Check log.txt for details about errors. If you cannot resolve this issue on your own, please contact our support team.",
+   "wrongLicense": "Could not create a On-Premises docker container using the provided License Key.",
+   "licenseKeyDescription": "\nYou can find your License Key in the CKEditor Ecosystem Dashboard inside your CKEditor Collaboration Server On-Premises subscription page.",
+   "dockerTokenDescription": "\nYou can find your Docker Download Token in the CKEditor Ecosystem Dashboard inside your CKEditor Collaboration Server On-Premises subscription page.",
+   "envSecretDescription": "\nThe Environment Secret is used as a password for the Cloud Services Management Panel."
 }

@@ -21,8 +21,9 @@ function stepError( message ) {
 	console.log( chalk.bold.red( errorIcon + message + '\n' ) );
 }
 
-function warning( message ) {
-	console.log( chalk.bold.yellow( message ) );
+function warning( message, options = { newLine: true } ) {
+	message += options.newLine ? '\n' : '';
+	process.stdout.write( chalk.bold.yellow( message ) );
 }
 
 function spinner( message ) {
