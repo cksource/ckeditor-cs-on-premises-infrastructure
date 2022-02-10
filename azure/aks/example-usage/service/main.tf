@@ -1,9 +1,9 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "cksource"
+    resource_group_name  = "cksource-cs"
     container_name       = "tfstate"
     key                  = "cksource-cs/service.terraform.tfstate"
-    storage_account_name = "cksource"
+    storage_account_name = "cksource-cs"
   }
 }
 
@@ -11,14 +11,19 @@ provider "azurerm" {
   features {}
 }
 
+locals {
+  resource_group_name = "cksource-cs"
+  storage_account_key = "cksource-cs"
+}
+
 data "terraform_remote_state" "infrastructure" {
   backend = "azurerm"
 
   config = {
-    resource_group_name  = "cksource"
+    resource_group_name  = local.resource_group_name
     container_name       = "tfstate"
     key                  = "cksource-cs/infrastructure.terraform.tfstate"
-    storage_account_name = "cksource"
+    storage_account_name = local.storage_account_name
   }
 }
 

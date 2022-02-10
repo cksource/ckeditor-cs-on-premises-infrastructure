@@ -7,11 +7,16 @@ terraform {
   }
 
   backend "azurerm" {
-    resource_group_name  = "cksource"
+    resource_group_name  = "cksource-cs"
     container_name       = "tfstate"
     key                  = "cksource-cs/infrastructure.terraform.tfstate"
-    storage_account_name = "cksource"
+    storage_account_name = "cksource-cs"
   }
+}
+
+locals {
+  region              = "germanywestcentral"
+  resource_group_name = "cksource-cs-infrastructure"
 }
 
 provider "azurerm" {
@@ -21,6 +26,6 @@ provider "azurerm" {
 module "infrastructure" {
   source = "../../infrastructure"
 
-  resource_group_name     = "cksource-cs"
-  resource_group_location = "germanywestcentral"
+  resource_group_name     = local.resource_group_name
+  resource_group_location = local.region
 }
