@@ -34,13 +34,14 @@ find your credentials:
 - The `license_key` can be found in [CKEditor Ecosystem
   Dashboard](https://dashboard.ckeditor.com/) in your CKEditor Collaboration
   Server On-Premises subscription page.
-- The `docker_token` can be found in CKEditor Ecosystem Dashboard in your
+- The `docker_token` can be found in [CKEditor Ecosystem
+  Dashboard](https://dashboard.ckeditor.com/) in your
   CKEditor Collaboration Server On-Premises subscription page in the *Download
   token* section. If you do not see any tokens, you can create them with the
   *Create new token* button.
 - The `environments_management_secret_key` is your password, that will be used
-  to access the Collaboration Server On-Premises [management
-  panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
+  to access the Collaboration Server On-Premises [Management
+  Panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
 
 
 **Note 2**: You can omit using terraform module to provision the CKEditor
