@@ -1,4 +1,4 @@
-resource "azurerm_log_analytics_workspace" "cksource" {
+resource "azurerm_log_analytics_workspace" "ckeditor_cs" {
   # The WorkSpace name has to be unique across the whole of azure, not just the current subscription/tenant.
   name                = local.name
   location            = azurerm_resource_group.resource_group.location
@@ -6,12 +6,12 @@ resource "azurerm_log_analytics_workspace" "cksource" {
   sku                 = "PerGB2018"
 }
 
-resource "azurerm_log_analytics_solution" "cksource" {
+resource "azurerm_log_analytics_solution" "ckeditor_cs" {
   solution_name         = "ContainerInsights"
-  location              = azurerm_log_analytics_workspace.cksource.location
+  location              = azurerm_log_analytics_workspace.ckeditor_cs.location
   resource_group_name   = azurerm_resource_group.resource_group.name
-  workspace_resource_id = azurerm_log_analytics_workspace.cksource.id
-  workspace_name        = azurerm_log_analytics_workspace.cksource.name
+  workspace_resource_id = azurerm_log_analytics_workspace.ckeditor_cs.id
+  workspace_name        = azurerm_log_analytics_workspace.ckeditor_cs.name
 
   plan {
     publisher = "Microsoft"
@@ -57,7 +57,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
     oms_agent {
       enabled                    = true
-      log_analytics_workspace_id = azurerm_log_analytics_workspace.cksource.id
+      log_analytics_workspace_id = azurerm_log_analytics_workspace.ckeditor_cs.id
     }
   }
 

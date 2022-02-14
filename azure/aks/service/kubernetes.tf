@@ -1,4 +1,4 @@
-resource "kubernetes_namespace" "cksource" {
+resource "kubernetes_namespace" "ckeditor_cs" {
   metadata {
     annotations = {
       name = local.namespace

@@ -7,8 +7,8 @@ provisioning CKEditor Collaboration Server.
 download it here: https://docs.microsoft.com/en-us/cli/azure/
 
 ## Quickstart
-The project requires resource group `cksource` and storage account in that
-resource group named the same - `cksource`. You can change used resource group
+The project requires resource group `ckeditor-cs` and storage account in that
+resource group named the same - `ckeditor-cs`. You can change used resource group
 and storage group inside [infrastructure/main.tf](./infrastructure/main.tf) file
 and [service/main.tf](./service/main.tf)
 

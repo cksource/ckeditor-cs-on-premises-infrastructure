@@ -7,7 +7,7 @@ variable "ssh_public_key" {
 variable "name_prefix" {
   description = "Prefix for all resources names"
   type        = string
-  default     = "cksourcecs"
+  default     = "ckeditorcs"
 }
 
 variable "resource_group_name" {

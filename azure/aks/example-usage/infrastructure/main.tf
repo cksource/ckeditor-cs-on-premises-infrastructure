@@ -7,16 +7,16 @@ terraform {
   }
 
   backend "azurerm" {
-    resource_group_name  = "cksource-cs"
+    resource_group_name  = "ckeditor-cs"
     container_name       = "tfstate"
-    key                  = "cksource-cs/infrastructure.terraform.tfstate"
-    storage_account_name = "cksource-cs"
+    key                  = "ckeditor-cs/infrastructure.terraform.tfstate"
+    storage_account_name = "ckeditor-cs"
   }
 }
 
 locals {
   region              = "germanywestcentral"
-  resource_group_name = "cksource-cs-infrastructure"
+  resource_group_name = "ckeditor-cs-infrastructure"
 }
 
 provider "azurerm" {

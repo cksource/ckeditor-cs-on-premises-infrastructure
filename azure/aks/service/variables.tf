@@ -45,7 +45,7 @@ variable "mysql_host" {
 variable "mysql_user" {
   description = "Username for mysql connection"
   type        = string
-  default     = "cksourcecs"
+  default     = "ckeditorcs"
 }
 
 variable "mysql_password" {
