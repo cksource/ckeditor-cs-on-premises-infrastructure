@@ -11,19 +11,14 @@ provider "azurerm" {
   features {}
 }
 
-locals {
-  resource_group_name = "ckeditor-cs"
-  storage_account_key = "ckeditor-cs"
-}
-
 data "terraform_remote_state" "infrastructure" {
   backend = "azurerm"
 
   config = {
-    resource_group_name  = local.resource_group_name
+    resource_group_name  = "ckeditor-cs"
     container_name       = "tfstate"
     key                  = "ckeditor-cs/infrastructure.terraform.tfstate"
-    storage_account_name = local.storage_account_name
+    storage_account_name = "ckeditor-cs"
   }
 }
 

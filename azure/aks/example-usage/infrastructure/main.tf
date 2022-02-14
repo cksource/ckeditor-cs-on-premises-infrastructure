@@ -14,11 +14,6 @@ terraform {
   }
 }
 
-locals {
-  region              = "germanywestcentral"
-  resource_group_name = "ckeditor-cs-infrastructure"
-}
-
 provider "azurerm" {
   features {}
 }
@@ -26,6 +21,6 @@ provider "azurerm" {
 module "infrastructure" {
   source = "../../infrastructure"
 
-  resource_group_name     = local.resource_group_name
-  resource_group_location = local.region
+  resource_group_name     = "ckeditor-cs-infrastructure"
+  resource_group_location = "germanywestcentral"
 }
