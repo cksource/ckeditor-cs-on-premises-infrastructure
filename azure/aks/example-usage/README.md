@@ -1,9 +1,8 @@
 # Example usage of Azure Terraform modules
 
-This catalog contains example usage of Terraform modules prepared for
-provisioning CKEditor Collaboration Server.
+This catalog contains examples of how the Terraform modules can be used for provisioning Collaboration Server On-Premises.
 
-**Note**: Before starting you have to login into the Azure CLI tool. You can
+**Note**: Before starting, you have to log into the Azure CLI tool. You can
 download it here: https://docs.microsoft.com/en-us/cli/azure/
 
 ## Quickstart
@@ -28,25 +27,23 @@ terraform apply
 After the creation of the infrastructure, it is time to apply the service
 module.
 
-**Note**: While running the `apply` command you will be required to pass your
-`docker_token`, `license_key` and `environments_management_secret_key` Where to
+**Note**: While running the `apply` command, you will be required to pass your
+`docker_token`, `license_key` and `environments_management_secret_key`. Here is where to
 find your credentials:
-- The `license_key` can be found in [CKEditor Ecosystem
-  Dashboard](https://dashboard.ckeditor.com/) in your CKEditor Collaboration
+- `license_key` can be found in the [CKEditor Ecosystem
+  Dashboard](https://dashboard.ckeditor.com/) on your CKEditor Collaboration
   Server On-Premises subscription page.
-- The `docker_token` can be found in [CKEditor Ecosystem
-  Dashboard](https://dashboard.ckeditor.com/) in your
+- `docker_token` can be found in the [CKEditor Ecosystem
+  Dashboard](https://dashboard.ckeditor.com/) on your
   CKEditor Collaboration Server On-Premises subscription page in the *Download
   token* section. If you do not see any tokens, you can create them with the
   *Create new token* button.
-- The `environments_management_secret_key` is your password, that will be used
+- `environments_management_secret_key` is your password used
   to access the Collaboration Server On-Premises [Management
   Panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
 
 
-**Note 2**: You can omit using terraform module to provision the CKEditor
-Collaboration Server by using Helm directly. Check our Helm charts directory for
-more information: [Helm](/kubernetes/helm/)
+**Note 2**: You can omit using Terraform modules to provision Collaboration Server On-Premises by using Helm directly. Check our Helm charts directory for more information: [Helm](/kubernetes/helm/)
 
 ```bash
 cd service
@@ -58,10 +55,8 @@ terraform init
 terraform apply
 ```
 
-The CKEditor Collaboration Server should be accessible under the IP address
-assigned to created Application Gateway. You can find the IP of the gateway in
-the Azure panel or by Azure CLI.
+Collaboration Server On-Premises should be accessible under the IP address
+assigned to the created Application Gateway. You can find the IP of the gateway in
+the Azure panel or via the Azure CLI.
 
-You can validate the deployment of the CKEditor Collaboration Server by
-accessing the management panel under the `/panel` path. So, it will be
-`http://${APPLICATION_GATEWAY_FRONTEND_IP}/panel`.
+You can validate the deployment of the Collaboration Server On-Premises by accessing the management panel under the `/panel` path, i.e. `http://${APPLICATION_GATEWAY_FRONTEND_IP}/panel`.
