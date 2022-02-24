@@ -23,4 +23,6 @@ module "infrastructure" {
 
   resource_group_name     = "ckeditor-cs-infrastructure"
   resource_group_location = "germanywestcentral"
+
+  ssh_public_key = var.ssh_public_key_path
 }
