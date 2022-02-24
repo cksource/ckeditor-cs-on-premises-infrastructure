@@ -9,13 +9,8 @@ resource "helm_release" "ckeditor-cs" {
   ]
 
   set {
-    name  = "server.image.tag"
-    value = "latest"
-  }
-
-  set {
     name  = "server.replicaCount"
-    value = 1
+    value = 2
   }
 
   set {
