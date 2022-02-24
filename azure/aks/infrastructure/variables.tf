@@ -1,7 +1,6 @@
 variable "ssh_public_key" {
   description = "Path to SSH public key passed as authorized key in kubernetes node group"
   type        = string
-  default     = "~/.ssh/id_rsa.pub"
 }
 
 variable "name_prefix" {
