@@ -9,8 +9,13 @@ resource "helm_release" "ckeditor-cs" {
   ]
 
   set {
+    name  = "server.image.tag"
+    value = "latest"
+  }
+
+  set {
     name  = "server.replicaCount"
-    value = 2
+    value = 1
   }
 
   set {
@@ -102,6 +107,17 @@ EOT
   }
 
   set {
+    name  = "server.secret.data.REDIS_TLS_ENABLE"
+    value = "true"
+    type  = "string"
+  }
+
+  set {
+    name  = "server.secret.data.REDIS_PORT"
+    value = "6380"
+    type  = "string"
+  }
+  set {
     name  = "server.secret.data.STORAGE_DRIVER"
     value = "azure"
   }
@@ -122,5 +138,5 @@ EOT
   }
 
   depends_on = [kubernetes_secret.container_registry]
-  timeout    = 300
+  timeout    = 600
 }

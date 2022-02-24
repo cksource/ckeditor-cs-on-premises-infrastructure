@@ -13,7 +13,7 @@ terraform {
 }
 
 locals {
-  namespace = "ckeditor_cs"
+  namespace = "ckeditor-cs"
 }
 
 provider "helm" {

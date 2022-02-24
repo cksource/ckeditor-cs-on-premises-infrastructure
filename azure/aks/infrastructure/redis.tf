@@ -5,7 +5,7 @@ resource "azurerm_redis_cache" "redis" {
   capacity                      = var.redis_cache_capacity
   family                        = var.redis_cache_family
   sku_name                      = var.redis_cache_sku_name
-  enable_non_ssl_port           = true
+  enable_non_ssl_port           = false
   minimum_tls_version           = "1.2"
   public_network_access_enabled = false
   redis_version                 = 6

@@ -3,7 +3,7 @@ terraform {
     resource_group_name  = "ckeditor-cs"
     container_name       = "tfstate"
     key                  = "ckeditor-cs/service.terraform.tfstate"
-    storage_account_name = "ckeditor-cs"
+    storage_account_name = "ckeditorcs"
   }
 }
 
@@ -18,7 +18,7 @@ data "terraform_remote_state" "infrastructure" {
     resource_group_name  = "ckeditor-cs"
     container_name       = "tfstate"
     key                  = "ckeditor-cs/infrastructure.terraform.tfstate"
-    storage_account_name = "ckeditor-cs"
+    storage_account_name = "ckeditorcs"
   }
 }
 
