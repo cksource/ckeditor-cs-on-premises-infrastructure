@@ -17,8 +17,8 @@ The first step is to provide the infrastructure needed to run the service. The
 the process can take a long time, usually around 30 minutes.
 
 **Note**: While running the `apply` command, you will be required to pass your
-`ssh_public_key_path`. Content of the file under the path will be used as a
-authorized ssh key to connect to nodes in Kubernetes cluster.
+`ssh_public_key_path`. The content of the file under the path will be used as
+an authorized SSH key to connect to the nodes in the Kubernetes cluster.
 
 
 ```bash
