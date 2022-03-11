@@ -1,6 +1,6 @@
 node_modules
 .vscode
-coverage 
+coverage
 .DS_Store
 quick-start/docker-compose.yml
 quick-start/node-server/package-lock.json
@@ -17,3 +17,8 @@ dev.values.yaml
 
 # Helm chart dependencies
 kubernetes/helm/*/charts
+
+# Terraform
+.terraform
+.terraform.lock.hcl
+*.tfvars
