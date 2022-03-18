@@ -28,6 +28,10 @@ import RealTimeCollaborativeTrackChanges from '@ckeditor/ckeditor5-real-time-col
 import Table from '@ckeditor/ckeditor5-table/src/table.js';
 import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar.js';
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation.js';
+import Underline from '@ckeditor/ckeditor5-basic-styles/src/underline';
+import Comments from '@ckeditor/ckeditor5-comments/src/comments';
+import TrackChanges from '@ckeditor/ckeditor5-track-changes/src/trackchanges';
+import CloudServices from '@ckeditor/ckeditor5-cloud-services/src/cloudservices';
 
 class Editor extends ClassicEditor {}
 
@@ -57,7 +61,18 @@ Editor.builtinPlugins = [
 	RealTimeCollaborativeTrackChanges,
 	Table,
 	TableToolbar,
-	TextTransformation
+	TextTransformation,
+	Comments,
+	TrackChanges,
+	CloudServices
 ];
+
+Editor.defaultConfig = {
+	comments: {
+		editorConfig: {
+			extraPlugins: [ Bold, Italic, Underline, List, Autoformat ]
+		}
+	}
+};
 
 export default Editor;
