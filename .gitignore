@@ -1,5 +1,6 @@
 node_modules
 .vscode
+.idea
 coverage
 .DS_Store
 quick-start/docker-compose.yml
