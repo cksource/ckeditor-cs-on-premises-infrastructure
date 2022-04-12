@@ -27,6 +27,9 @@ services:
       - '8000:8000'
     restart: always
     init: true
+    dns:
+      - 8.8.8.8 
+      - 8.8.4.4 
     environment:
       DATABASE_HOST: mysql-database
       DATABASE_USER: root
