@@ -1,3 +1,7 @@
+/*
+ Copyright (c) 2016-2022, CKSource Holding sp. z o.o. All rights reserved.
+ */
+
 const crypto = require( 'crypto' );
 const express = require( 'express' );
 const cors = require( 'cors' );

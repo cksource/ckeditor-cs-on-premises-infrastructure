@@ -1,3 +1,7 @@
+/*
+ Copyright (c) 2016-2022, CKSource Holding sp. z o.o. All rights reserved.
+ */
+
 const util = require( 'util' );
 const fs = require( 'fs' );
 const exec = util.promisify( require( 'child_process' ).exec );
