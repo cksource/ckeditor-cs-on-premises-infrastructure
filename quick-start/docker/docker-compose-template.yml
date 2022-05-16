@@ -1,7 +1,8 @@
 version: '2.2'
 services:
   mysql-database:
-    image: mysql:5.6.38
+    image: mysql:5.7.38
+    platform: linux/amd64
     container_name: quick-start-mysql
     environment:
       MYSQL_ROOT_PASSWORD: password
@@ -9,7 +10,7 @@ services:
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - ./docker/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
   redis:
-    image: redis:3.2.6
+    image: redis:6.2.7
     container_name: quick-start-redis
   node-server:
     build: ./node-server/
