@@ -34,6 +34,12 @@ resource "azurerm_mysql_flexible_server" "mysql" {
   depends_on = [
     azurerm_private_dns_zone_virtual_network_link.mysql
   ]
+
+  lifecycle {
+    ignore_changes = [
+      zone,
+    ]
+  }
 }
 
 resource "azurerm_mysql_flexible_server_configuration" "max_allowed_packet" {

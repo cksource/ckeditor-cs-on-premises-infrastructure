@@ -49,16 +49,12 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     type = "SystemAssigned"
   }
 
-  addon_profile {
-    ingress_application_gateway {
-      enabled   = true
-      subnet_id = azurerm_subnet.ingress.id
-    }
+  ingress_application_gateway {
+    subnet_id = azurerm_subnet.ingress.id
+  }
 
-    oms_agent {
-      enabled                    = true
-      log_analytics_workspace_id = azurerm_log_analytics_workspace.ckeditor_cs.id
-    }
+  oms_agent {
+    log_analytics_workspace_id = azurerm_log_analytics_workspace.ckeditor_cs.id
   }
 
   network_profile {
