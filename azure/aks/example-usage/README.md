@@ -8,10 +8,14 @@ download it here: https://docs.microsoft.com/en-us/cli/azure/
 
 ## Quickstart
 The project requires a resource group called `ckeditor-cs` and a storage account
-in that resource group named the same - `ckeditor-cs`. You can change the used
-resource group and the storage group in
+in that resource group named - `ckeditorcs`. You can change the used resource
+group and the storage group in
 [infrastructure/main.tf](./infrastructure/main.tf) and
-[service/main.tf](./service/main.tf)
+[service/main.tf](./service/main.tf). Also, you have to create a container
+inside storage account to store terraform state. It must be called `tfstate`.
+You can follow the instructions from [official
+documentation](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-portal#create-a-container)
+to create the container.
 
 The first step is to provide the infrastructure needed to run the service. The
 the process can take a long time, usually around 30 minutes.
