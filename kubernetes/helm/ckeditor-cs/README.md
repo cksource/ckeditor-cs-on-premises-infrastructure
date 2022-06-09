@@ -30,8 +30,14 @@ kubectl create secret docker-registry docker-cke-cs-com \
 ```
 
 - install chart in cluster
+>:warning: By default, the chart installs the Ckeditor Collaboration Server
+>on-premises with the "latest" tag. If you are using this chart for a production
+>environment, it's strongly recommended to change the container image tag to a
+>numeric representation of the version you want to install.
 ```sh
+
 helm install ckeditor-cs ./ckeditor-cs \
+    --set image.tag="latest" \
     --set server.secret.data.DATABASE_HOST="" \
     --set server.secret.data.DATABASE_USER="" \
     --set server.secret.data.DATABASE_PASSWORD="" \
