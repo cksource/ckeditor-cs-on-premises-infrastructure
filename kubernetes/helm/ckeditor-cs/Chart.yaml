@@ -3,5 +3,5 @@ name: ckeditor-cs
 description: CKEditor Collaboration Server On-Premises installation
 
 type: application
-version: 0.1.0
-appVersion: "3.11.0"
+version: 1.0.0
+appVersion: "latest"

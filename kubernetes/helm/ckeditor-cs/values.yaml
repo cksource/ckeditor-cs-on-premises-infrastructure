@@ -16,7 +16,7 @@ server:
   image:
     repository: docker.cke-cs.com/cs
     pullPolicy: IfNotPresent
-    tag: "3.11.0"
+    tag: "latest"
 
   ## Default health check configuration for collaboration server
   readinessProbe:
@@ -65,7 +65,8 @@ server:
   ingress:
     ## If true will create ingress rule to expose collaboration server from cluster
     enabled: false
-    annotations: {}
+    annotations:
+      {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
       # nginx.ingress.kubernetes.io/proxy-body-size: 10m
@@ -74,7 +75,7 @@ server:
     hosts:
       - host: ckeditor-cs.organization.test
         paths:
-        - path: /
+          - path: /
     tls: []
     #  - secretName: ckeditor-cs-organization-test
     #    hosts:
@@ -99,7 +100,6 @@ server:
 
   affinity: {}
 
-
 worker:
   ## If false collaboration worker will not be installed
   ## https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/worker.html
@@ -115,7 +115,7 @@ worker:
   image:
     repository: docker.cke-cs.com/cs-worker
     pullPolicy: IfNotPresent
-    tag: "3.11.0"
+    tag: "latest"
 
   podAnnotations: {}
 
