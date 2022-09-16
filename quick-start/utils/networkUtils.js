@@ -4,6 +4,10 @@
 
 const axios = require( 'axios' );
 
+exports.wait = waitTime => {
+	return new Promise( resolve => setTimeout( resolve, waitTime ) );
+};
+
 // eslint-disable-next-line require-await
 exports.serverIsUp = async ( serverName, context ) => {
 	let serverUrl = '';

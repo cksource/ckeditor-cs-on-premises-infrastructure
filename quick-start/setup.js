@@ -9,7 +9,7 @@ const execSync = require( 'child_process' ).execSync;
 const spawn = require( 'child_process' ).spawn;
 const chalk = require( 'chalk' );
 
-const { serverIsUp } = require( './utils/networkUtils' );
+const { serverIsUp, wait } = require( './utils/networkUtils' );
 const logger = require( './utils/logger' );
 const SetupError = require( './utils/SetupError' );
 const step = require( './utils/steps.json' );
@@ -233,6 +233,7 @@ function startDockerContainers( context ) {
 			if ( await serverIsUp( 'cs', context ) && await serverIsUp( 'node', context ) ) {
 				clearInterval( serversAvailabilityCheck );
 				clearTimeout( timeout );
+				await wait( 1000 );
 				dockerSpinner.stop();
 				logger.stepInfo( context.currentStep );
 				resolve();
