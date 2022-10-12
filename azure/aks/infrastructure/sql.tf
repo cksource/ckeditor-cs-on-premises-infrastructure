@@ -50,7 +50,7 @@ resource "azurerm_mysql_flexible_server_configuration" "max_allowed_packet" {
 }
 
 resource "azurerm_mysql_flexible_database" "mysql" {
-  name                = "ckeditorcs"
+  name                = "cs-on-premises"
   resource_group_name = azurerm_resource_group.resource_group.name
   server_name         = azurerm_mysql_flexible_server.mysql.name
   charset             = "utf8"
