@@ -31,6 +31,10 @@ Server. Used charts as dependencies:
 Helm chart containing the resources to run CKEditor Word Services Server
 which contains Import from Word and Export to Word features.
 
+### [ckeditor-pdf-converter](ckeditor-pdf-converter)
+
+Helm chart containing the resources to run CKEditor PDF Converter Server
+which contains Export to PDF.
 ## Quick start
 
 Follow instructions from helm charts:

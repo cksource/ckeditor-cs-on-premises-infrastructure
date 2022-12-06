@@ -8,16 +8,16 @@ nameOverride: ""
 ## Name of the server component container
 name: server
 
-## Number of desired docx converter server instances
+## Number of desired pdf converter server instances
 replicaCount: 2
 
-## Docx converter server container image
+## PDF converter server container image
 image:
-  repository: docker.cke-cs.com/docx-converter
+  repository: docker.cke-cs.com/pdf-converter
   pullPolicy: IfNotPresent
   tag: "latest"
 
-## Default health check configuration for docx converter server
+## Default health check configuration for pdf converter server
 readinessProbe:
   httpGet:
     path: /docs
@@ -25,18 +25,18 @@ readinessProbe:
   initialDelaySeconds: 3
   periodSeconds: 5
 
-  podAnnotations: {}
+podAnnotations: {}
 
 podSecurityContext: {}
 
 securityContext: {}
 
 secret:
-  ## The name of the secret for docx converter server to use. If not set, a name is generated using the
+  ## The name of the secret for pdf converter server to use. If not set, a name is generated using the
   ## fullname template
   name: ""
   ## Whole list of container environment variables is accessible here
-  ## https://ckeditor.com/docs/cs/latest/onpremises/docx-onpremises/installation.html#containerize-example-using-docker-compose
+  ## https://ckeditor.com/docs/cs/latest/onpremises/pdf-onpremises/installation.html#containerize-example-using-docker-compose
   data:
     LICENSE_KEY: ""
 
@@ -45,7 +45,7 @@ service:
   port: 8080
 
 ingress:
-  ## If true will create ingress rule to expose docx converter server from cluster
+  ## If true will create ingress rule to expose pdf converter server from cluster
   enabled: false
   className: ""
   annotations:
@@ -65,7 +65,7 @@ ingress:
   #    hosts:
   #      - ckeditor-cs.organization.test
 
-## Default resource requirements for docx converter server
+## Default resource requirements for pdf converter server
 resources:
   requests:
     cpu: 1000m

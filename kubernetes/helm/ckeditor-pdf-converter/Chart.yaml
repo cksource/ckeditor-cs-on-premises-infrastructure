@@ -1,0 +1,7 @@
+apiVersion: v2
+name: ckeditor-pdf-converter
+description: CKEditor PDF Converter On-Premises installation
+
+type: application
+version: 1.0.0
+appVersion: "latest"
