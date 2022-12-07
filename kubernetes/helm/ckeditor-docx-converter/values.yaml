@@ -1,0 +1,85 @@
+## Name of the secret containing the container registry authentication data
+imagePullSecrets:
+  - name: docker-cke-cs-com
+
+## Override for fullname template
+nameOverride: ""
+
+## Name of the server component container
+name: server
+
+## Number of desired docx converter server instances
+replicaCount: 2
+
+## The docx converter server container image
+image:
+  repository: docker.cke-cs.com/docx-converter
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+## Default health check configuration for the docx converter server
+readinessProbe:
+  httpGet:
+    path: /docs
+    port: http
+  initialDelaySeconds: 3
+  periodSeconds: 5
+
+  podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+secret:
+  ## The name of the secret for the docx converter server to use. If not set, a name is generated using
+  ## the fullname template
+  name: ""
+  ## A full list of the container environment variables is accessible here
+  ## https://ckeditor.com/docs/cs/latest/onpremises/docx-onpremises/installation.html#containerize-example-using-docker-compose
+  data:
+    LICENSE_KEY: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  ## If true will create ingress rule to expose docx converter server from cluster
+  enabled: false
+  className: ""
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # nginx.ingress.kubernetes.io/proxy-body-size: 10m
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+  hosts:
+    - host: ckeditor-docx-converter.organization.test
+      paths:
+        - path: /
+          pathType: 'Prefix'
+  tls: []
+  #  - secretName: ckeditor-cs-organization-test
+  #    hosts:
+  #      - ckeditor-cs.organization.test
+
+## Default resource requirements for docx converter server
+resources:
+  requests:
+    cpu: 1000m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
