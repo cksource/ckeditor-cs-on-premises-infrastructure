@@ -35,6 +35,7 @@ which contains Import from Word and Export to Word features.
 
 Helm chart containing the resources to run CKEditor PDF Converter Server
 which contains Export to PDF.
+
 ## Quick start
 
 Follow instructions from helm charts:

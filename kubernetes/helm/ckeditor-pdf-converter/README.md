@@ -9,15 +9,16 @@ Kubernetes cluster.
 - Kubernetes 1.19+
 - Helm v3
 
-The default configuration of running this service requires the reservation of 1
-CPU core and 512MB of RAM in the cluster. For more information about resources
+The default configuration for running this service requires the reservation of
+1 CPU core and 512MB of RAM in the cluster. For more information about resources
 usage look here:
 https://ckeditor.com/docs/cs/latest/onpremises/pdf-onpremises/requirements.html
 
 ## Installation
 
-- create imagePullSecret for pulling images from CKEditor container registry,
-  replace `xxx` with authentication token
+- create imagePullSecret for pulling images from the CKEditor container registry,
+  replace `xxx` with the authentication token
+
 ```sh
 kubectl create secret docker-registry docker-cke-cs-com \
     --docker-username "pdf" \
@@ -25,11 +26,13 @@ kubectl create secret docker-registry docker-cke-cs-com \
     --docker-password="xxx"
 ```
 
-- install chart in cluster
+- install chart in the cluster
+
 >:warning: By default, the chart installs the CKEditor PDF Converter
 >on-premises with the "latest" tag. If you are using this chart for a production
->environment, it's strongly recommended to change the container image tag to a
+>environment, it is strongly recommended to change the container image tag to a
 >numeric representation of the version you want to install.
+
 ```sh
 
 helm install ckeditor-pdf-converter ./ckeditor-pdf-converter \
@@ -39,7 +42,6 @@ helm install ckeditor-pdf-converter ./ckeditor-pdf-converter \
 ```
 
 - validate installation by visiting the `/demo` page.
-
 
 ## Deleting
 

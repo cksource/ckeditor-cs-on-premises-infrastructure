@@ -1,4 +1,4 @@
-## Name of the secret containing container registry authentication data
+## Name of the secret containing the container registry authentication data
 imagePullSecrets:
   - name: docker-cke-cs-com
 
