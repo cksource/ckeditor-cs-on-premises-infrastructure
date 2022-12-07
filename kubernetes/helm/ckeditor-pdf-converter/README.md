@@ -4,8 +4,8 @@ Use this Helm chart to provision CKEditor PDF Converter on your
 Kubernetes cluster.
 
 ## Minimum requirements
-- 1 CPU Core
-- 512MB RAM
+- 2 CPU Cores
+- 1024MB RAM
 - Kubernetes 1.19+
 - Helm v3
 
@@ -38,7 +38,8 @@ kubectl create secret docker-registry docker-cke-cs-com \
 helm install ckeditor-pdf-converter ./ckeditor-pdf-converter \
     --set image.tag="latest" \
     --set server.secret.data.LICENSE_KEY="" \
-    --set server.ingress.hosts[0].host="test.example"
+    --set ingress.hosts[0].host="test.example" \
+    --set ingress.enabled=true
 ```
 
 - validate installation by visiting the `/demo` page.
