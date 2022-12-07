@@ -10,7 +10,7 @@ Kubernetes cluster.
 - Helm v3
 
 The default configuration for running this service requires the reservation of
-1 CPU core and 512MB of RAM in the cluster. For more information about resources
+2 CPU cores and 1024MB of RAM in the cluster. For more information about resources
 usage look here:
 https://ckeditor.com/docs/cs/latest/onpremises/docx-onpremises/requirements.html
 
