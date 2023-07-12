@@ -9,6 +9,11 @@ services:
     volumes:
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - ./docker/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    healthcheck:
+      test: ["CMD-SHELL", "exit | mysql -h localhost -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD" ]
+      interval: 5s
+      timeout: 20s
+      retries: 5
   redis:
     image: redis:6.2.7
     container_name: quick-start-redis
@@ -22,8 +27,10 @@ services:
     image: docker.cke-cs.com/cs:latest
     container_name: quick-start-cs
     depends_on:
-      - redis
-      - mysql-database
+      redis:
+        condition: service_started
+      mysql-database:
+        condition: service_healthy
     ports:
       - '8000:8000'
     restart: always
