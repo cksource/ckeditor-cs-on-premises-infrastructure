@@ -48,7 +48,8 @@ redis:
   enabled: true
   cluster:
     enabled: true
-  usePassword: false
+  auth:
+    enabled: false
   commonLabels:
     app.kubernetes.io/part-of: ckeditor-cs
 

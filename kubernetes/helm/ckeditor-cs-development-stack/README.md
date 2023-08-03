@@ -31,7 +31,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 helm dependency update
 helm install ckeditor-cs . \
-   --set server.secret.data.LICENSE_KEY="xxx"
+   --set ckeditor-cs.server.secret.data.LICENSE_KEY="xxx"
 ```
 
 ### Local environment

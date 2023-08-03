@@ -12,12 +12,12 @@ dependencies:
     repository: "file://../ckeditor-cs"
   - name: mysql
     condition: mysql.enabled
-    version: "8.x.x"
+    version: "9.x.x"
     repository: "https://charts.bitnami.com/bitnami"
   - name: redis
     condition: redis.enabled
-    version: "11.x.x"
+    version: "17.x.x"
     repository: "https://charts.bitnami.com/bitnami"
   - name: common
-    version: "0.x.x"
+    version: "2.x.x"
     repository: "https://charts.bitnami.com/bitnami"
