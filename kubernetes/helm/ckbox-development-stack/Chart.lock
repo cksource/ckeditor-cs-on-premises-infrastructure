@@ -1,0 +1,15 @@
+dependencies:
+- name: ckbox
+  repository: file://../ckbox
+  version: 1.0.0
+- name: mysql
+  repository: https://charts.bitnami.com/bitnami
+  version: 10.1.1
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 17.17.1
+- name: common
+  repository: https://charts.bitnami.com/bitnami
+  version: 2.19.1
+digest: sha256:e7a3335a18487132ac9eefef7d678cc4290c94b771887ee83a69a3834e45caa3
+generated: "2024-04-11T09:19:51.99181+02:00"

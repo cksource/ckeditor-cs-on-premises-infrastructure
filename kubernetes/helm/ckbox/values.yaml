@@ -1,0 +1,101 @@
+## Name of the secret containing container registry authentication data
+imagePullSecrets:
+  - name: docker-cke-cs-com
+
+## Override for fullname template
+nameOverride: ""
+
+## Name of the server component container
+name:
+
+## Number of desired collaboration server instances
+replicaCount: 2
+
+## CKBox container image
+image:
+  repository: docker.cke-cs.com/ckbox
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+## Default health check configuration for ckbox
+readinessProbe:
+  httpGet:
+    path: /health
+    port: tcp
+  initialDelaySeconds: 15
+  periodSeconds: 5
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+serviceAccount:
+  ## Specifies whether a service account for collaboration server should be created
+  create: false
+  ## Annotations to add to the service account
+  annotations: {}
+  ## The name of the service account to use. If not set and create is true, a
+  ## name is generated using the server fullname template
+  name: ""
+
+secret:
+  ## The name of the secret for collaboration server to use. If not set, a name is generated using the
+  ## fullname template
+  name: ""
+  ## Whole list of container environment variables is accessible here
+  ## https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/installation/docker.html#docker-container-environment-variables
+  ## Those mentioned below are absolute minimum to run the service
+  data:
+    DATABASE_HOST: ""
+    DATABASE_USER: ""
+    DATABASE_PASSWORD: ""
+    REDIS_HOST: ""
+    ENVIRONMENTS_MANAGEMENT_SECRET_KEY: ""
+    LICENSE_KEY: ""
+    STORAGE_DRIVER: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  ## If true will create ingress rule to expose collaboration server from cluster
+  enabled: false
+  className: ""
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # nginx.ingress.kubernetes.io/proxy-body-size: 10m
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+  hosts:
+    - host: ckbox.organization.test
+      paths:
+        - path: /
+  tls: []
+  #  - secretName: ckbox-organization-test
+  #    hosts:
+  #      - ckbox.organization.test
+
+## Default resource requirements for collaboration server
+resources:
+  requests:
+    {}
+    # cpu: 1000m
+    # memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
