@@ -8,7 +8,7 @@ nameOverride: ""
 ## Name of the server component container
 name:
 
-## Number of desired collaboration server instances
+## Number of desired ckbox instances
 replicaCount: 2
 
 ## CKBox container image
@@ -32,7 +32,7 @@ podSecurityContext: {}
 securityContext: {}
 
 serviceAccount:
-  ## Specifies whether a service account for collaboration server should be created
+  ## Specifies whether a service account for ckbox should be created
   create: false
   ## Annotations to add to the service account
   annotations: {}
@@ -41,11 +41,11 @@ serviceAccount:
   name: ""
 
 secret:
-  ## The name of the secret for collaboration server to use. If not set, a name is generated using the
+  ## The name of the secret for ckbox to use. If not set, a name is generated using the
   ## fullname template
   name: ""
   ## Whole list of container environment variables is accessible here
-  ## https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/installation/docker.html#docker-container-environment-variables
+  ## https://ckeditor.com/docs/cs/latest/onpremises/ckbox-onpremises/configuration.html
   ## Those mentioned below are absolute minimum to run the service
   data:
     DATABASE_HOST: ""
@@ -61,7 +61,7 @@ service:
   port: 8080
 
 ingress:
-  ## If true will create ingress rule to expose collaboration server from cluster
+  ## If true will create ingress rule to expose ckbox from cluster
   enabled: false
   className: ""
   annotations:
@@ -80,7 +80,7 @@ ingress:
   #    hosts:
   #      - ckbox.organization.test
 
-## Default resource requirements for collaboration server
+## Default resource requirements for ckbox
 resources:
   requests:
     {}
