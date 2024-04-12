@@ -48,6 +48,7 @@ secret:
   ## https://ckeditor.com/docs/cs/latest/onpremises/ckbox-onpremises/configuration.html
   ## Those mentioned below are absolute minimum to run the service
   data:
+    DATABASE_DATABASE: ""
     DATABASE_HOST: ""
     DATABASE_USER: ""
     DATABASE_PASSWORD: ""
