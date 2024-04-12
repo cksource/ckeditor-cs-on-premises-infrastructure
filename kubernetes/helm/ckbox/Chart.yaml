@@ -1,0 +1,7 @@
+apiVersion: v2
+name: ckbox
+description: CKBox On-Premises installation
+
+type: application
+version: 1.0.0
+appVersion: "latest"

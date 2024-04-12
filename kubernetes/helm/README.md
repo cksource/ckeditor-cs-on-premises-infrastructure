@@ -36,6 +36,21 @@ which contains Import from Word and Export to Word features.
 Helm chart containing the resources to run CKEditor PDF Converter Server
 which contains Export to PDF.
 
+### [ckbox](ckbox)
+
+Helm chart containing the resources to run CKBox configured to connect to
+external third-party services.
+
+### [ckbox-development-stack](ckbox-development-stack)
+
+Fast way to provision whole infrastructure needed for CKBox . Used charts as
+dependencies:
+- `ckbox`
+- `bitnami/mysql`
+- `bitnami/redis`
+
+>:warning: **Not for production purposes!** This configuration is insecure, not
+>persistent and its purpose is testing only.
 ## Quick start
 
 Follow instructions from helm charts:
