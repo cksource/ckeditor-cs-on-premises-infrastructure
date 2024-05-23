@@ -11,6 +11,8 @@ Use this Terraform module to provision infrastructure hosted in AWS for Collabor
 - Redis and MySQL databases in private subnets.
 - S3 bucket for Easy Image and collaboration storage.
 
+Note: This module will create only HTTP listener for the load balancer. You need to adjust the script to use your custom domain and HTTPS listeners.
+
 ## Usage
 Ensure you have terraform in version `1.7.4` or higher and your AWS credentials are configured properly.
 
@@ -25,19 +27,21 @@ cd aws/ecs
 terraform init
 ```
 
-3. Change the version of the application in `aws/ecs/main.tf`. Refer to https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/changelog.html for the list of currently available versions. You can also change the AWS region in which the resources will be created.
-
-4. (Optionally) Create a `terraform.tfvars` file in `aws/ecs` folder with the following variables:
+3. (Optionally) Create a `terraform.tfvars` file in `aws/ecs` folder with the following variables:
 ```
+image_version = ""
 license_key = ""
 docker_token = ""
 environments_management_secret_key = ""
 ```
 
 Note:
-- The `license_key` can be found in [CKEditor Ecosystem Dashboard](https://dashboard.ckeditor.com/) in your CKEditor Collaboration Server On-Premises subscription page.
-- The `docker_token` can be found in the CKEditor Ecosystem Dashboard in your CKEditor Collaboration Server On-Premises subscription page in the *Download token* section. If you do not see any tokens, you can create them with the *Create new token* button.
-- The `environments_management_secret_key` is your password, which is used to access the Collaboration Server On-Premises [management panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
+- The `image_version` property should be set to the version of CKEditor Collaboration Server On-Premises image that you want to run. 3. CRefer to https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/changelog.html for the list of currently available versions.
+- The `license_key` property can be found in [CKEditor Ecosystem Dashboard](https://dashboard.ckeditor.com/) in your CKEditor Collaboration Server On-Premises subscription page.
+- The `docker_token` property can be found in the CKEditor Ecosystem Dashboard in your CKEditor Collaboration Server On-Premises subscription page in the *Download token* section. If you do not see any tokens, you can create them with the *Create new token* button.
+- The `environments_management_secret_key` property is your password, which is used to access the Collaboration Server On-Premises [management panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
+
+4. You can change the AWS region in which the resources will be created in `aws/ecs/main.tf`. Refer to the `aws/ecs/cs-on-premises/variables.tf` file to see which properties of the application can be optionally configured in the module.
 
 5. Create all required resources:
 ```

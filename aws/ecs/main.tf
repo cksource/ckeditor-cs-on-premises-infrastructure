@@ -28,8 +28,7 @@ module "cs-on-premises" {
   docker_token                       = var.docker_token
   environments_management_secret_key = var.environments_management_secret_key
 
-  // Change the version to any available version, e.g `4.17.3`. Refer to https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/changelog.html for the list of currently available versions.
   app = {
-    version = "CHANGE_THIS"
+    version = var.image_version
   }
 }

@@ -30,11 +30,6 @@ variable "app" {
     memory    = optional(number, 1024)
     port      = optional(number, 8000)
   })
-
-  validation {
-    condition     = var.app.version != "CHANGE_THIS"
-    error_message = "You should adjust the version of the application before creating the resources. Refer to https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/changelog.html for the list of currently available versions."
-  }
 }
 
 variable "redis" {
