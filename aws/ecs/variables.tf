@@ -19,4 +19,5 @@ variable "environments_management_secret_key" {
 variable "image_version" {
   type     = string
   nullable = false
+  default  = "latest"
 }

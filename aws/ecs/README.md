@@ -36,7 +36,7 @@ environments_management_secret_key = ""
 ```
 
 Note:
-- The `image_version` property should be set to the version of CKEditor Collaboration Server On-Premises image that you want to run. 3. CRefer to https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/changelog.html for the list of currently available versions.
+- The `image_version` property should be set to the version of CKEditor Collaboration Server On-Premises image that you want to run. By default, the module uses the CKEditor Collaboration Server On-Premises with the "latest" tag. If you are using this module for a production environment, it's strongly recommended to change the container image tag to a numeric representation of the version you want to use. Refer to https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/changelog.html for the list of currently available versions.
 - The `license_key` property can be found in [CKEditor Ecosystem Dashboard](https://dashboard.ckeditor.com/) in your CKEditor Collaboration Server On-Premises subscription page.
 - The `docker_token` property can be found in the CKEditor Ecosystem Dashboard in your CKEditor Collaboration Server On-Premises subscription page in the *Download token* section. If you do not see any tokens, you can create them with the *Create new token* button.
 - The `environments_management_secret_key` property is your password, which is used to access the Collaboration Server On-Premises [management panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
