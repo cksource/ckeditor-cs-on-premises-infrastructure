@@ -1,75 +1,53 @@
-# CKEditor Collaboration Server On-Premise AWS ECS example
+# CKEditor Collaboration Server On-Premises AWS Terraform module
 
-Use this script to provision infrastructure with recommended settings and install CKEditor Collaboration Server on your AWS account.
+Use this Terraform module to provision infrastructure hosted in AWS for Collaboration Server On-Premises. A single module will create all the resources needed to run an On-Premises application using ECS Fargate.
 
-**Note**:
-This script uses AWS CDK. If you haven't worked with it before, we highly recommend to get familiar with it first:
-https://docs.aws.amazon.com/cdk/index.html
+**Note:** This module is made for Terraform. If you haven't worked with it before, we highly recommend getting familiar with it first: https://www.terraform.io/intro
 
-## Parameters
-[Read more about AWS CDK context parameters](https://docs.aws.amazon.com/cdk/latest/guide/context.html)
+## List of created resources
 
-- `dockerRegistryAuthToken` - Authentication token to `docker.cke-cs.com` repository
-- `version` - Collaboration Server version (default `latest`)
-- `env` - A comma-separated list of CKEditor Collaboration Server configuration ([see available options](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/installation/docker.html#docker-container-environment-variables))
+- Network resources: VPC, subnets, route tables, internet and NAT gateways.
+- Load balancer and ECS cluster with ECS task running CKEditor Collaboration Server On-Premises application.
+- Redis and MySQL databases in private subnets.
+- S3 bucket for Easy Image and collaboration storage.
 
-## Quick start
+Note: This module will create only HTTP listener for the load balancer. You need to adjust the script to use your custom domain and HTTPS listeners.
 
-To use AWS CDK first You need an AWS account and AWS credentials. Read more about how to configure the environment [on official CDK docs](https://docs.aws.amazon.com/cdk/latest/guide/work-with.html).
+## Usage
+Ensure you have terraform in version `1.7.4` or higher and your AWS credentials are configured properly.
 
-- install dependencies
-```bash
-	npm install
+1. Clone the repository
+```
+git clone git@github.com:cksource/ckeditor-cs-on-premises-infrastructure.git
 ```
 
-- [bootstrap CDK](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html) into your AWS account
-```bash
-	npm run -- cdk bootstrap
+2. Initialize terraform
+```
+cd aws/ecs
+terraform init
 ```
 
-- deploy the application (replace `xxx` with your credentials).
-```bash
-	npm run -- cdk deploy -c dockerRegistryAuthToken=xxx -c env=LICENSE_KEY=xxx,ENVIRONMENTS_MANAGEMENT_SECRET_KEY=xxx
+3. (Optionally) Create a `terraform.tfvars` file in `aws/ecs` folder with the following variables:
+```
+image_version = ""
+license_key = ""
+docker_token = ""
+environments_management_secret_key = ""
 ```
 
-**Note**:
-For easier work with CDK, we recommend using it together with AWS credentials manager like [aws-vault](https://github.com/99designs/aws-vault).
-## Infrastructure overview
+Note:
+- The `image_version` property should be set to the version of CKEditor Collaboration Server On-Premises image that you want to run. By default, the module uses the CKEditor Collaboration Server On-Premises with the "latest" tag. If you are using this module for a production environment, it's strongly recommended to change the container image tag to a numeric representation of the version you want to use. Refer to https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/changelog.html for the list of currently available versions.
+- The `license_key` property can be found in [CKEditor Ecosystem Dashboard](https://dashboard.ckeditor.com/) in your CKEditor Collaboration Server On-Premises subscription page.
+- The `docker_token` property can be found in the CKEditor Ecosystem Dashboard in your CKEditor Collaboration Server On-Premises subscription page in the *Download token* section. If you do not see any tokens, you can create them with the *Create new token* button.
+- The `environments_management_secret_key` property is your password, which is used to access the Collaboration Server On-Premises [management panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
 
-![CKEditor ECS Diagram](diagram.jpg)
+4. You can change the AWS region in which the resources will be created in `aws/ecs/main.tf`. Refer to the `aws/ecs/cs-on-premises/variables.tf` file to see which properties of the application can be optionally configured in the module.
 
-To provide high availability and fault tolerance we're recommending running the application in at least two availability zones. For high security, we're following the least privilege model for all of the infrastructure resources - no permissions are given unless they are required. All of the data used by the system is encrypted.
+5. Create all required resources:
+```
+terraform apply
+```
 
-### Load balancer
-Spread traffic evenly between servers. This is the only public (internet facing) component.
+Note: It may take several minutes, wait until the command finishes.
 
-### ECS
-Docker container orchestration for running the application and managing available EC2 resources.
-
-### Database
-Databases are running in an isolated network (no in/out internet access) with backup and encryption enabled.
-MySQL (RDS Aurora) is running on R5 large instances.
-Redis (ElastiCache cluster) is running on M5 large instances.
-
-### S3
-Private encrypted bucket for editor and easy image files.
-
-### VPC
-Including three subnets:
-
-- public subnet for load balancer
-- private subnet for application cluster
-- isolated subnet for databases
-
-### Autoscaling Group
-To ensure high availability and fault tolerance, we're using at least two EC2 instances in different availability zones. We recommend using at least C5 large to provide good user experience.
-This gives enough CPU power and memory for handling up to 1000 concurrent users.
-
-- RDS Aurora cluster - large R5 instances
-- ElastiCache Redis in cluster mode - medium T3 instance
-- S3 bucket
-
-To provide high-security standards we keep infrastructure resources in private/isolated subnets whenever it's possible. The data is encrypted in the bucket, as well as in the database and Redis.
-
-## Destroy provisioned infrastructure
-You can destroy the infrastructure by running command `npm run -- cdk destroy` or via CloudFront in AWS console.
+Application URL will be printed as terraform output after all resources are created.

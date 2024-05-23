@@ -22,4 +22,7 @@ kubernetes/helm/*/charts
 # Terraform
 .terraform
 .terraform.lock.hcl
+terraform.tfstate.backup
+.terraform.tfstate.lock.info
+terraform.tfstate
 *.tfvars
