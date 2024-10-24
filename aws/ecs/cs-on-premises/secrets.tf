@@ -38,7 +38,8 @@ resource "aws_secretsmanager_secret_version" "environments_management_secret_key
 }
 
 resource "random_string" "database_password" {
-  length = 16
+  length  = 16
+  special = false
 }
 
 resource "aws_secretsmanager_secret" "database_password" {
