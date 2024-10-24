@@ -36,7 +36,7 @@ resource "aws_rds_cluster_parameter_group" "rds_pg" {
 resource "aws_rds_cluster" "cluster" {
   cluster_identifier        = "cs-on-premises-db"
   engine                    = "mysql"
-  engine_version            = "8.0"
+  engine_version            = "8.0.35"
   master_username           = "root"
   master_password           = random_string.database_password.result
   database_name             = "cs_on_premises"
