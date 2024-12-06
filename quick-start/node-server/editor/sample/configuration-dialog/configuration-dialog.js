@@ -17,6 +17,7 @@
 				<div><label for="upload-url">Upload URL</label><input id="upload-url"></div>
 				<div><label for="web-socket-url">WebSocket URL</label><input id="web-socket-url"></div>
 				<div><label for="token-url">Token URL</label><input required id="token-url"></div>
+				<div><label for="license-key">License Key</label><input id="license-key" placeholder="Enter your editor license key"></div>
 				<div id="additional">
 					<p>Use one of the following users to define the user data.</p>
 					<div id="user-container"></div>
@@ -32,6 +33,7 @@
 		const uploadUrlInput = document.getElementById( 'upload-url' );
 		const webSocketUrlInput = document.getElementById( 'web-socket-url' );
 		const channelIdInput = document.getElementById( 'channel-id' );
+		const licenseKeyInput = document.getElementById( 'license-key' );
 		const additional = document.getElementById( 'additional' );
 		const userContainer = document.getElementById( 'user-container' );
 
@@ -41,6 +43,7 @@
 		uploadUrlInput.value = csConfig.uploadUrl || 'http://localhost:8000/easyimage/upload';
 		webSocketUrlInput.value = csConfig.webSocketUrl || 'ws://localhost:8000/ws';
 		channelIdInput.value = handleDocIdInUrl();
+		licenseKeyInput.value = csConfig.licenseKey || '';
 
 		// Create two random users with avatars.
 		addUser( {
@@ -90,7 +93,8 @@
 				storeConfig( {
 					tokenUrl: getRawTokenUrl( tokenUrlInput.value ),
 					uploadUrl: uploadUrlInput.value,
-					webSocketUrl: webSocketUrlInput.value
+					webSocketUrl: webSocketUrlInput.value,
+					editorLicenseKey: licenseKeyInput.value
 				} );
 
 				updateDocIdInUrl( channelIdInput.value );
@@ -101,6 +105,7 @@
 					tokenUrl: tokenUrlInput.value,
 					uploadUrl: uploadUrlInput.value,
 					webSocketUrl: webSocketUrlInput.value,
+					editorLicenseKey: licenseKeyInput.value,
 					channelId: channelIdInput.value
 				} );
 			} );

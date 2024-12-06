@@ -180,7 +180,7 @@ function uid() {
 		createDialog().then( cloudServicesConfig => {
 		return ClassicEditor
 			.create( document.querySelector( '.collaboration-demo__editable' ), {
-				
+				licenseKey: cloudServicesConfig.editorLicenseKey,
 				toolbar: {
 					items: [
 						'heading',
