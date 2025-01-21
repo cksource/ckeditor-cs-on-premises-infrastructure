@@ -1,5 +1,5 @@
 <!DOCTYPE html><!--
-	Copyright (c) 2014-2022, CKSource Holding sp. z o.o. All rights reserved.
+	Copyright (c) 2014-2025, CKSource Holding sp. z o.o. All rights reserved.
 	This file is licensed under the terms of the MIT License (see LICENSE.md).
 -->
 
@@ -72,13 +72,13 @@
 		<p><a href="https://ckeditor.com/ckeditor-5/" target="_blank" rel="noopener">CKEditor 5</a>
 			– Rich text editor of tomorrow, available today
 		</p>
-		<p>Copyright © 2003-2022,
+		<p>Copyright © 2003-2025,
 			<a href="https://cksource.com/" target="_blank" rel="noopener">CKSource</a>
 			– Holding sp. z o.o. All rights reserved.
 		</p>
 	</footer>
 	<script src="configuration-dialog/configuration-dialog.js"></script>
-	<script src="../build/ckeditor.js"></script>
+	<script src="../dist/editor.bundle.js"></script>
 	<script>
 function getDocIdFromUrl() {
 	const docIdMatch = location.search.match( /docId=(.+)$/ );
@@ -178,7 +178,7 @@ function uid() {
 		let revertOriginalButtonTimeoutId = null;
 		
 		createDialog().then( cloudServicesConfig => {
-		return ClassicEditor
+		return CKEditorCS
 			.create( document.querySelector( '.collaboration-demo__editable' ), {
 				licenseKey: cloudServicesConfig.editorLicenseKey,
 				toolbar: {
