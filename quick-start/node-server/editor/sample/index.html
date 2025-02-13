@@ -60,7 +60,7 @@
 					<ul>
 						<li><a href="http://localhost:8000/panel" target="_blank" rel="noopener">Cloud Services Management Panel</a></li>
 						<li><a href="https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/features/easy-image.html" target="_blank" rel="noopener">Easy Image</a></li>
-						<li><a href="http://localhost:8000/api/v4/docs" target="_blank" rel="noopener">REST API</a></li>
+						<li><a href="http://localhost:8000/api/v5/docs" target="_blank" rel="noopener">REST API</a></li>
 						<li><a href="https://ckeditor.com/docs/cs/latest/guides/collaboration/document-storage.html" target="_blank" rel="noopener">Document storage</a></li>
 						<li><a href="https://ckeditor.com/docs/cs/latest/guides/webhooks/overview.html" target="_blank" rel="noopener">Webhooks</a></li>
 					</ul>
@@ -257,9 +257,6 @@ function uid() {
 				} );
 		
 				
-				
-				
-		
 				if ( !editor.plugins.has( 'AnnotationsUIs' ) ) {
 					return;
 				}
@@ -315,7 +312,6 @@ function uid() {
 			.catch( error => {
 				console.error( 'Oops, something went wrong!' );
 				console.error( 'Please, report the following error on https://github.com/ckeditor/ckeditor5/issues with the build id and the error stack trace:' );
-				console.warn( 'Build id: rj6kl3116z5i-yj6en54gao1' );
 				console.error( error );
 			} );
 		} );
