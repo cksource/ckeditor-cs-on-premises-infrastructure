@@ -1,5 +1,7 @@
 ckeditor-cs:
   worker:
+    image:
+        pullPolicy: Always
     enabled: true
     secret:
       data:
@@ -9,9 +11,11 @@ ckeditor-cs:
         REDIS_HOST: ckeditor-cs-redis-master
 
   server:
+    image:
+      pullPolicy: Always
     secret:
       data:
-        DATABASE_DATABASE: ckbox-on-premises
+        DATABASE_DATABASE: cs-on-premises
         DATABASE_HOST: ckeditor-cs-mysql
         DATABASE_USER: root
         DATABASE_PASSWORD: root-password
@@ -36,7 +40,7 @@ ckeditor-cs:
 mysql:
   enabled: true
   image:
-    tag: "5.7"
+    tag: "8.4.4"
   auth:
     database: cs-on-premises
     auth: ckeditor-cs

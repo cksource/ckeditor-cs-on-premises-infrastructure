@@ -1,6 +1,7 @@
 ckbox:
   secret:
     data:
+      DATABASE_DATABASE: ckbox-on-premises
       DATABASE_HOST: ckbox-mysql
       DATABASE_USER: root
       DATABASE_PASSWORD: root-password
@@ -24,7 +25,7 @@ ckbox:
 mysql:
   enabled: true
   image:
-    tag: "8.0"
+    tag: "8.4.4"
   auth:
     database: ckbox-on-premises
     auth: ckbox
