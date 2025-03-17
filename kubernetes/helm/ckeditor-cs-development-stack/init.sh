@@ -10,42 +10,44 @@ fi
 sudo echo ''
 
 # Install required tools
-tools=( "minikube" "helm" )
+tools=("minikube" "helm")
 for tool in "${tools[@]}"; do
-  if ! command -v "$tool" &> /dev/null; then
-      brew install "$tool"
+  if ! command -v "$tool" &>/dev/null; then
+    brew install "$tool"
   fi
 done
 
 # Provision minikube
 if ! minikube status; then
-    minikube start --cpus 4 --memory 4g --driver=hyperkit
+  minikube start --cpus 4 --memory 4g
 fi
 
 # Enable addons
-addons=( "ingress" "ingress-dns" "metrics-server" "dashboard" )
+addons=("ingress" "ingress-dns" "metrics-server" "dashboard")
 
 for addon in "${addons[@]}"; do
-  if minikube addons list | grep -E "$addon.*disabled"; then 
+  if minikube addons list | grep -E "$addon.*disabled"; then
     minikube addons enable "$addon"
   fi
 done
 
 # Create dns configuration for `ingress-dns` addon
-sudo mkdir -p /etc/resolver
-sudo bash -c "cat << EOF > /etc/resolver/minikube-test
-domain test
-nameserver $(minikube ip)
-search_order 1
-timeout 5
-EOF"
+if ! test -f /etc/resolver/minikube-test; then
+  sudo mkdir -p /etc/resolver
+  sudo bash -c "cat << EOF > /etc/resolver/minikube-test
+  domain test
+  nameserver $(minikube ip)
+  search_order 1
+  timeout 5
+  EOF"
+fi
 
 # Create imagePullSecret for CKEditor container registry
 if ! kubectl get secret docker-cke-cs-com; then
   kubectl create secret docker-registry docker-cke-cs-com \
-      --docker-username "cs" \
-      --docker-server "https://docker.cke-cs.com" \
-      --docker-password="$DOCKER_TOKEN"
+    --docker-username "cs" \
+    --docker-server "https://docker.cke-cs.com" \
+    --docker-password="$DOCKER_TOKEN"
 fi
 
 # Add bitnami repository to helm
@@ -56,6 +58,7 @@ fi
 # Install helm chart in minikube cluster
 helm repo update
 helm dependency update
+echo "Running deployment of ckeditor-cs stack, this may take a while..."
 helm upgrade ckeditor-cs . \
   --install \
   --set ckeditor-cs.server.secret.data.LICENSE_KEY="$LICENSE_KEY" \
