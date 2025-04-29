@@ -1,7 +1,104 @@
-# CKEditor Collaboration Server On-Premises Helm chart
+# CKEditor Collaboration Server Helm Chart
 
-Use this Helm chart to provision CKEditor Collaboration Server on your
-Kubernetes cluster.
+This Helm chart deploys CKEditor Collaboration Server On-Premises installation on a Kubernetes cluster.
+
+## Prerequisites
+
+- Kubernetes 1.19+
+- Helm 3.2.0+
+- Access to CKEditor Collaboration Server container registry
+
+## GitOps Support
+
+This chart is compatible with GitOps tools like ArgoCD. The following features are supported:
+
+- Sync waves for proper resource ordering
+- Prune and sync options for ArgoCD
+- GitOps-friendly annotations and labels
+
+### ArgoCD Integration
+
+To deploy this chart using ArgoCD, create an Application manifest:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ckeditor-cs
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: <your-git-repo-url>
+    targetRevision: HEAD
+    path: kubernetes/helm/ckeditor-cs
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ckeditor-cs
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - Prune=true
+      - CreateNamespace=true
+```
+
+## Installing the Chart
+
+To install the chart with the release name `ckeditor-cs`:
+
+```bash
+helm install ckeditor-cs . --namespace ckeditor-cs
+```
+
+## Uninstalling the Chart
+
+To uninstall/delete the `ckeditor-cs` deployment:
+
+```bash
+helm uninstall ckeditor-cs --namespace ckeditor-cs
+```
+
+## Configuration
+
+The following table lists the configurable parameters of the CKEditor Collaboration Server chart and their default values.
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `server.replicaCount` | Number of server instances | `2` |
+| `server.image.repository` | Server image repository | `docker.cke-cs.com/cs` |
+| `server.image.tag` | Server image tag | `latest` |
+| `worker.enabled` | Enable worker component | `false` |
+| `worker.replicaCount` | Number of worker instances | `1` |
+| `worker.image.repository` | Worker image repository | `docker.cke-cs.com/cs-worker` |
+| `worker.image.tag` | Worker image tag | `latest` |
+
+Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
+
+```bash
+helm install ckeditor-cs . --namespace ckeditor-cs \
+  --set server.replicaCount=3 \
+  --set worker.enabled=true
+```
+
+Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example:
+
+```bash
+helm install ckeditor-cs . --namespace ckeditor-cs -f values.yaml
+```
+
+## GitOps Best Practices
+
+1. Always use versioned tags for images instead of `latest`
+2. Store sensitive values in a separate values file or use a secrets management solution
+3. Use sync waves to ensure proper resource ordering
+4. Enable pruning to maintain cluster state in sync with Git
+5. Use proper labels and annotations for resource tracking
+
+## Support
+
+For support, please contact CKEditor support team.
 
 ## Minimum requirements
 - 2 CPU Core

@@ -5,3 +5,12 @@ description: CKEditor Collaboration Server On-Premises installation
 type: application
 version: 1.0.0
 appVersion: "latest"
+
+# Add annotations for GitOps tools
+annotations:
+  argocd.argoproj.io/sync-wave: "0"
+  argocd.argoproj.io/sync-options: Prune=true
+  argocd.argoproj.io/compare-options: IgnoreExtraneous=true
+
+# Add dependencies if needed
+dependencies: []
