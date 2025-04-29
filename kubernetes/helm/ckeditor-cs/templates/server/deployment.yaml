@@ -10,7 +10,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "ckeditor-cs.server.matchLabels" . | nindent 6 }}
+      {{- include "ckeditor-cs.server.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.server.podAnnotations }}
@@ -18,35 +18,33 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "ckeditor-cs.server.matchLabels" . | nindent 8 }}
+        {{- include "ckeditor-cs.server.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.server.serviceAccount.create }}
       serviceAccountName: {{ include "ckeditor-cs.server.serviceAccountName" . }}
-      {{- end }}
       securityContext:
         {{- toYaml .Values.server.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ template "ckeditor-cs.name" . }}-{{ .Values.server.name }}
+        - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.server.securityContext | nindent 12 }}
-          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
           imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+          env:
+            {{- include "ckeditor-cs.env" (dict "component" "server" "values" .Values.server) | nindent 12 }}
           ports:
-            - name: tcp
+            - name: http
               containerPort: 8000
               protocol: TCP
-        {{- with .Values.server.readinessProbe }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
           readinessProbe:
-          {{- toYaml . | nindent 12 }}
-        {{- end }}
-
-          envFrom:
-            - secretRef:
-                name: {{ include "ckeditor-cs.server.secretName" . }}
+            {{- toYaml .Values.server.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.server.resources | nindent 12 }}
       {{- with .Values.server.nodeSelector }}

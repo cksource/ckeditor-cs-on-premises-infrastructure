@@ -50,6 +50,19 @@ server:
     ## name is generated using the server fullname template
     name: ""
 
+  ## Additional environment variables for the server
+  env:
+    ## Use existing secrets
+    existingSecrets: []
+    # - name: existing-secret
+    #   key: secret-key
+    #   envVar: ENV_VAR_NAME
+
+    ## Additional environment variables
+    additional: []
+    # - name: ENV_VAR_NAME
+    #   value: env-var-value
+
   secret:
     ## The name of the secret for collaboration server to use. If not set, a name is generated using the
     ## fullname template
@@ -142,6 +155,19 @@ worker:
     ## The name of the service account to use. If not set and create is true, a
     ## name is generated using the worker fullname template
     name: ""
+
+  ## Additional environment variables for the worker
+  env:
+    ## Use existing secrets
+    existingSecrets: []
+    # - name: existing-secret
+    #   key: secret-key
+    #   envVar: ENV_VAR_NAME
+
+    ## Additional environment variables
+    additional: []
+    # - name: ENV_VAR_NAME
+    #   value: env-var-value
 
   secret:
     name: ""
