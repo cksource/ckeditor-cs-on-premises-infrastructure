@@ -1,12 +1,22 @@
-# CKEditor Collaboration Server Helm Chart
+# CKEditor Collaboration Server On-Premises Helm chart
 
-This Helm chart deploys CKEditor Collaboration Server On-Premises installation on a Kubernetes cluster.
+Use this Helm chart to provision CKEditor Collaboration Server on your
+Kubernetes cluster.
 
-## Prerequisites
-
+## Minimum requirements
+- 2 CPU Core
+- 1024MB RAM
+- One of the following SQL databases:
+  - MySQL 5.6/5.7
+  - PostgreSQL min. 12.0
+- External Redis cluster 3.2.6 or newer
 - Kubernetes 1.19+
-- Helm 3.2.0+
-- Access to CKEditor Collaboration Server container registry
+- Helm v3
+
+The default configuration of running this service requires the reservation of 2
+CPU cores and 1GB of RAM in the cluster. For more information about resources
+usage look here:
+https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/requirements.html#docker
 
 ## GitOps Support
 
@@ -43,77 +53,6 @@ spec:
       - Prune=true
       - CreateNamespace=true
 ```
-
-## Installing the Chart
-
-To install the chart with the release name `ckeditor-cs`:
-
-```bash
-helm install ckeditor-cs . --namespace ckeditor-cs
-```
-
-## Uninstalling the Chart
-
-To uninstall/delete the `ckeditor-cs` deployment:
-
-```bash
-helm uninstall ckeditor-cs --namespace ckeditor-cs
-```
-
-## Configuration
-
-The following table lists the configurable parameters of the CKEditor Collaboration Server chart and their default values.
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `server.replicaCount` | Number of server instances | `2` |
-| `server.image.repository` | Server image repository | `docker.cke-cs.com/cs` |
-| `server.image.tag` | Server image tag | `latest` |
-| `worker.enabled` | Enable worker component | `false` |
-| `worker.replicaCount` | Number of worker instances | `1` |
-| `worker.image.repository` | Worker image repository | `docker.cke-cs.com/cs-worker` |
-| `worker.image.tag` | Worker image tag | `latest` |
-
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
-
-```bash
-helm install ckeditor-cs . --namespace ckeditor-cs \
-  --set server.replicaCount=3 \
-  --set worker.enabled=true
-```
-
-Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example:
-
-```bash
-helm install ckeditor-cs . --namespace ckeditor-cs -f values.yaml
-```
-
-## GitOps Best Practices
-
-1. Always use versioned tags for images instead of `latest`
-2. Store sensitive values in a separate values file or use a secrets management solution
-3. Use sync waves to ensure proper resource ordering
-4. Enable pruning to maintain cluster state in sync with Git
-5. Use proper labels and annotations for resource tracking
-
-## Support
-
-For support, please contact CKEditor support team.
-
-## Minimum requirements
-- 2 CPU Core
-- 1024MB RAM
-- One of the following SQL databases:
-  - MySQL 5.6/5.7
-  - PostgreSQL min. 12.0
-- External Redis cluster 3.2.6 or newer
-- Kubernetes 1.19+
-- Helm v3
-
-The default configuration of running this service requires the reservation of 2
-CPU cores and 1GB of RAM in the cluster. For more information about resources
-usage look here:
-https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/requirements.html#docker
 
 ## Installation
 
