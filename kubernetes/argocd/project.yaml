@@ -1,0 +1,52 @@
+---
+# ArgoCD Project configuration
+# This file defines a custom project with RBAC rules
+# Note: This is optional - you can use the default project instead
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: ckeditor
+  namespace: argocd
+spec:
+  description: Project for ckeditor applications
+
+  # Source repository configuration
+  # '*' allows all repositories - you can restrict this to specific repositories
+  # For production, consider restricting to specific repositories:
+  # - https://github.com/cksource/ckeditor-cs-on-premises-infrastructure.git
+  sourceRepos:
+  - '*'
+
+  # Destination configuration
+  # '*' allows deployment to any namespace and cluster
+  # For production, consider restricting to specific namespaces:
+  # - namespace: ckeditor
+  #   server: https://kubernetes.default.svc
+  destinations:
+  - namespace: '*'
+    server: '*'
+
+  # Resource whitelist configuration
+  # These settings allow all cluster-scoped and namespaced resources
+  # For production, consider restricting to specific resource types
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+
+  # RBAC role configuration
+  # Defines a role with full access to the project
+  roles:
+  - name: full-access
+    description: Full administrative access to the ckeditor project
+    policies:
+    # Allow all operations on applications in the ckeditor project
+    - p, proj:ckeditor:full-access, applications, *, ckeditor/*, allow
+    # Allow getting cluster information
+    - p, proj:ckeditor:full-access, clusters, get, *, allow
+    # Allow all operations on repositories
+    - p, proj:ckeditor:full-access, repositories, *, *, allow
+    # Allow getting logs for applications in the ckeditor project
+    - p, proj:ckeditor:full-access, logs, get, ckeditor/*, allow

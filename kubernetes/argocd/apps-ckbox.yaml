@@ -1,0 +1,61 @@
+---
+# ArgoCD Application definition for CKBox
+# This file defines how ArgoCD should deploy CKBox using Helm charts
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ckbox
+  namespace: argocd
+spec:
+  # Project name - can be changed to 'default' if not using custom projects
+  # If using a custom project, ensure it matches the project name in project.yaml
+  project: ckeditor
+  
+  # Source configuration - where to find the Helm chart
+  source:
+    # Git repository containing the Helm chart
+    repoURL: https://github.com/cksource/ckeditor-cs-on-premises-infrastructure.git
+    # Path to the Helm chart within the repository
+    path: kubernetes/helm/ckbox
+    # Git branch/tag to use
+    targetRevision: main
+    # Helm-specific configuration
+    helm:
+      # Name of the Helm release
+      releaseName: ckbox
+      # Inline Helm values configuration
+      values: |
+        # Number of replicas for the CKBox deployment
+        replicaCount: 3
+        # Readiness probe configuration
+        readinessProbe:
+          # Initial delay before starting readiness checks
+          initialDelaySeconds: 10
+          # How often to perform readiness checks
+          periodSeconds: 10
+          # Number of failures before marking as not ready
+          failureThreshold: 3
+          # Timeout for each probe
+          timeoutSeconds: 5
+          # HTTP GET probe configuration
+          httpGet:
+            path: /health
+            port: http
+  
+  # Destination configuration - where to deploy
+  destination:
+    # Target Kubernetes cluster
+    server: https://kubernetes.default.svc
+    # Target namespace
+    namespace: ckeditor
+  
+  # Sync policy configuration
+  syncPolicy:
+    # Enable automated sync and pruning
+    automated:
+      prune: true
+      selfHeal: true
+    # Additional sync options
+    syncOptions:
+    - CreateNamespace=true
+
