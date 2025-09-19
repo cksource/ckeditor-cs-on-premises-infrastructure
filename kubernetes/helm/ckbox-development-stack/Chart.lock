@@ -3,13 +3,10 @@ dependencies:
   repository: file://../ckbox
   version: 1.0.0
 - name: mysql
-  repository: https://charts.bitnami.com/bitnami
-  version: 12.3.1
+  repository: file://../misc/mysql
+  version: 1.0.0
 - name: redis
-  repository: https://charts.bitnami.com/bitnami
-  version: 20.11.3
-- name: common
-  repository: https://charts.bitnami.com/bitnami
-  version: 2.27.0
-digest: sha256:1950504cab214bad7c2c5df17c98c982e207b33b2a0850e2357352619363f144
-generated: "2025-03-17T09:21:32.657505+01:00"
+  repository: file://../misc/redis
+  version: 1.0.0
+digest: sha256:689c1146d0abc18fb45e3a63c9b7fa2622f533899c95a9f20d3f9ffa60544f6f
+generated: "2025-09-18T19:34:12.39294+02:00"

@@ -51,18 +51,5 @@ mysql:
 
 redis:
   enabled: true
-  cluster:
-    enabled: true
-  auth:
-    enabled: false
   commonLabels:
     app.kubernetes.io/part-of: ckeditor-cs
-
-common:
-  names:
-    fullname: ckeditor-cs
-  capabilities:
-    deployment:
-      apiVersion: apps/v1
-    statefulset:
-      apiVersion: apps/v1

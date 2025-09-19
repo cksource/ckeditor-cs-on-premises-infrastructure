@@ -20,8 +20,8 @@ configured to connect to external third-party services.
 Fast way to provision whole infrastructure needed for CKEditor Collaboration
 Server. Used charts as dependencies:
 - `ckeditor-cs`
-- `bitnami/mysql`
-- `bitnami/redis`
+- `misc/mysql` - minimal custom chart deploying MySQL instance
+- `misc/redis` - minimal custom chart deploying Redis instance
 
 >:warning: **Not for production purposes!** This configuration is insecure, not
 >persistent and its purpose is testing only.
@@ -46,8 +46,8 @@ external third-party services.
 Fast way to provision whole infrastructure needed for CKBox . Used charts as
 dependencies:
 - `ckbox`
-- `bitnami/mysql`
-- `bitnami/redis`
+- `misc/mysql` - minimal custom chart deploying MySQL instance
+- `misc/redis` - minimal custom chart deploying Redis instance
 
 >:warning: **Not for production purposes!** This configuration is insecure, not
 >persistent and its purpose is testing only.

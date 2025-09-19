@@ -50,11 +50,6 @@ if ! kubectl get secret docker-cke-cs-com; then
     --docker-password="$DOCKER_TOKEN"
 fi
 
-# Add bitnami repository to helm
-if ! helm repo list | grep bitnami; then
-  helm repo add bitnami https://charts.bitnami.com/bitnami
-fi
-
 # Install helm chart in minikube cluster
 helm repo update
 helm dependency update
