@@ -1,0 +1,8 @@
+image:
+  tag: "8.4.4"
+auth:
+  database: ""
+  auth: ""
+  password: ""
+  rootPassword: ""
+commonLabels: {}

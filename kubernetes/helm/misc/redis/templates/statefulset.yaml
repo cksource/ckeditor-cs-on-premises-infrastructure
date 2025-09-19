@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "redis.fullname" . }}
+  labels:
+    {{- include "redis.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "redis.fullname" . }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "redis.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "redis.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- if .Values.commonLabels }}
+{{ toYaml .Values.commonLabels | indent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: redis
+          image: "redis:{{ .Values.image.tag }}"
+          ports:
+            - name: redis
+              containerPort: 6379
+          command: ["redis-server"]
+          args: []
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}
