@@ -3,13 +3,10 @@ dependencies:
   repository: file://../ckeditor-cs
   version: 1.0.0
 - name: mysql
-  repository: https://charts.bitnami.com/bitnami
-  version: 12.3.1
+  repository: file://../misc/mysql
+  version: 1.0.0
 - name: redis
-  repository: https://charts.bitnami.com/bitnami
-  version: 20.11.3
-- name: common
-  repository: https://charts.bitnami.com/bitnami
-  version: 2.27.0
-digest: sha256:80d9554007f992b49fb9136c8a20c3c33ab274e2732a4212bf81fbf6a3531013
-generated: "2025-03-13T09:54:35.997747+01:00"
+  repository: file://../misc/redis
+  version: 1.0.0
+digest: sha256:b81eca8903d4fe5364d6db328840e94a619c58d549d411bab8144103e706153b
+generated: "2025-09-18T19:10:45.532918+02:00"

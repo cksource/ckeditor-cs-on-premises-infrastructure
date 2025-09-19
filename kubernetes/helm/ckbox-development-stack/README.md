@@ -27,7 +27,6 @@ kubectl create secret docker-registry docker-cke-cs-com \
 Installing helm chart in cluster, replace `xxx` with valid licence key:
 ```sh
 cd ckbox-development-stack
-helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 helm dependency update
 helm install ckbox . \
