@@ -43,8 +43,8 @@ cd ckeditor-cs-on-premises-infrastructure/quick-start && npm install
 node setup.js --license_key="YOUR_LICENSE_KEY" --docker_token="YOUR_DOCKER_DOWNLOAD_TOKEN" --env_secret="YOUR_ENVIRONMENT_SECRET"
 ```
 Where to find your own credentials:
-- The `license_key` can be found in [CKEditor Ecosystem Dashboard](https://dashboard.ckeditor.com/) in your CKEditor Collaboration Server On-Premises subscription page.
-- The `docker_token` can be found in CKEditor Ecosystem Dashboard in your CKEditor Collaboration Server On-Premises subscription page in the *Download token* section. If you do not see any tokens, you can create them with the *Create new token* button.
+- The `license_key` can be found in [CKEditor Customer Portal](https://portal.ckeditor.com/) in your CKEditor Collaboration Server On-Premises subscription page.
+- The `docker_token` can be found in CKEditor Customer Portal in your CKEditor Collaboration Server On-Premises subscription page in the *Download token* section. If you do not see any tokens, you can create them with the *Create new token* button.
 - The `env_secret` is your password, that will be used to access the Collaboration Server On-Premises [management panel](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/management.html)
 
 
