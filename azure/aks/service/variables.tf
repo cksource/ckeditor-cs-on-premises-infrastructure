@@ -11,7 +11,7 @@ variable "docker_username" {
 }
 
 variable "docker_token" {
-  description = "The `docker_token` can be found in CKEditor Ecosystem Dashboard in your CKEditor Collaboration Server On-Premises subscription page in the *Download token* section. If you do not see any tokens, you can create them with the *Create new token* button."
+  description = "The `docker_token` can be found in CKEditor Customer Portal in your CKEditor Collaboration Server On-Premises subscription page in the *Download token* section. If you do not see any tokens, you can create them with the *Create new token* button."
   type        = string
 }
 
