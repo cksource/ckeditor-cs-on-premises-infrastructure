@@ -1,14 +1,14 @@
 terraform {
-  required_version = ">= 1.7.4"
+  required_version = ">= 1.11.0"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.47"
+      version = ">= 6.50.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = ">= 3.6.1"
+      version = ">= 3.7.0"
     }
   }
 }
@@ -22,7 +22,7 @@ data "aws_region" "current" {}
 module "cs-on-premises" {
   source = "./cs-on-premises"
 
-  aws_region = data.aws_region.current.name
+  aws_region = data.aws_region.current.region
 
   license_key                        = var.license_key
   docker_token                       = var.docker_token

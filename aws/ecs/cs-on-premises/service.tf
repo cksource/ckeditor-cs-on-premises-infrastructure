@@ -27,8 +27,51 @@ resource "aws_ecs_task_definition" "app" {
   network_mode             = "awsvpc"
   cpu                      = var.app.cpu
   memory                   = var.app.memory
-  container_definitions = jsonencode(
+  container_definitions = nonsensitive(jsonencode(
     [
+      {
+        name       = "db-bootstrap"
+        image      = "public.ecr.aws/docker/library/mysql:${local.mysql_engine_version}"
+        essential  = false
+        entryPoint = ["sh", "-c"]
+        command = [
+          <<-EOT
+          mysql -h "$DATABASE_HOST" -u "$DATABASE_ADMIN_USER" <<SQL
+          CREATE USER IF NOT EXISTS '${local.app_db_username}'@'%' IDENTIFIED BY '$APP_DB_PASSWORD';
+          GRANT SELECT, INSERT, UPDATE, DELETE, ALTER, CREATE, DROP, INDEX, TRIGGER, LOCK TABLES, REFERENCES ON ${aws_rds_cluster.cluster.database_name}.* TO '${local.app_db_username}'@'%';
+          FLUSH PRIVILEGES;
+          SQL
+          EOT
+        ]
+        environment = [
+          {
+            name  = "DATABASE_HOST",
+            value = aws_rds_cluster.cluster.endpoint
+          },
+          {
+            name  = "DATABASE_ADMIN_USER",
+            value = aws_rds_cluster.cluster.master_username
+          },
+        ]
+        secrets = [
+          {
+            name      = "MYSQL_PWD",
+            valueFrom = "${aws_rds_cluster.cluster.master_user_secret[0].secret_arn}:password::"
+          },
+          {
+            name      = "APP_DB_PASSWORD",
+            valueFrom = module.app_db_password.secret_arn
+          },
+        ]
+        logConfiguration = {
+          logDriver = "awslogs"
+          options = {
+            awslogs-region        = var.aws_region
+            awslogs-group         = aws_cloudwatch_log_group.log_group.name
+            awslogs-stream-prefix = "cs-on-premises-db-bootstrap"
+          }
+        }
+      },
       {
         name  = "cs-on-premises"
         image = "docker.cke-cs.com/cs:${var.app.version}"
@@ -52,6 +95,12 @@ resource "aws_ecs_task_definition" "app" {
         }
         essential   = true
         healthCheck = null
+        dependsOn = [
+          {
+            containerName = "db-bootstrap",
+            condition     = "SUCCESS"
+          }
+        ]
         environment = [
           {
             name  = "REDIS_HOST",
@@ -63,7 +112,7 @@ resource "aws_ecs_task_definition" "app" {
           },
           {
             name  = "DATABASE_USER",
-            value = aws_rds_cluster.cluster.master_username
+            value = local.app_db_username
           },
           {
             name  = "DATABASE_DATABASE",
@@ -113,12 +162,12 @@ resource "aws_ecs_task_definition" "app" {
           },
           {
             name      = "DATABASE_PASSWORD",
-            valueFrom = aws_secretsmanager_secret.database_password.arn
+            valueFrom = module.app_db_password.secret_arn
           },
         ]
       }
     ]
-  )
+  ))
 }
 
 resource "aws_iam_role" "task_execution_role" {
@@ -147,7 +196,8 @@ data "aws_iam_policy_document" "task_execution_role" {
       aws_secretsmanager_secret.license_key.arn,
       aws_secretsmanager_secret.docker_token.arn,
       aws_secretsmanager_secret.environments_management_secret_key.arn,
-      aws_secretsmanager_secret.database_password.arn
+      module.app_db_password.secret_arn,
+      aws_rds_cluster.cluster.master_user_secret[0].secret_arn,
     ]
   }
 }

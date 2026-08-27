@@ -14,7 +14,7 @@ Use this Terraform module to provision infrastructure hosted in AWS for Collabor
 Note: This module will create only HTTP listener for the load balancer. You need to adjust the script to use your custom domain and HTTPS listeners.
 
 ## Usage
-Ensure you have terraform in version `1.7.4` or higher and your AWS credentials are configured properly.
+Ensure you have terraform in version `1.11.0` or higher and your AWS credentials are configured properly.
 
 1. Clone the repository
 ```
@@ -27,7 +27,7 @@ cd aws/ecs
 terraform init
 ```
 
-3. (Optionally) Create a `terraform.tfvars` file in `aws/ecs` folder with the following variables:
+3. Create a `terraform.tfvars` file in `aws/ecs` folder with the following variables:
 ```
 image_version = ""
 license_key = ""
@@ -51,3 +51,22 @@ terraform apply
 Note: It may take several minutes, wait until the command finishes.
 
 Application URL will be printed as terraform output after all resources are created.
+
+## Database user
+
+**Not appropriate for production credential management** — the application
+must connect to MySQL as a dedicated, non-root user rather than the RDS
+master user, and this module creates that user for you automatically via
+an ECS init-sidecar, for two concrete reasons this isn't production-grade:
+- It runs once **per task replica**, on every deployment (with
+  `desired_count = 2`, that's two independent, concurrent executions
+  every time you deploy).
+- The RDS master (root) password is readable by the ECS task's
+  execution role for this to work, even though it's only ever
+  used by the short-lived bootstrap container, not the long-running
+  application container.
+
+A typical production setup instead attaches to an already-provisioned,
+externally-managed MySQL user on an existing cluster, with your own
+tooling (Vault, IAM auth, CI/CD) handling user creation and your own
+network path into the database.
