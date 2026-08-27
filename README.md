@@ -1,5 +1,5 @@
 ## Collaboration Server On-Premises
-This repository contains a set of easy-to-use scripts that help to provision the recommended infrastructure for CKEditor Collaboration Server On-Premises. You can use these scripts as a reference or to set up a production-ready service.
+This repository contains a set of easy-to-use scripts that help to provision infrastructure for CKEditor Collaboration Server On-Premises. Use them as a starting point for your own deployment — check each provider's README for what it does and doesn't cover before using it in production.
 
 Regardless of the infrastructure provider, we recommend using a layered architecture for the separation of data from the application layer. Another key point is to run multiple instances and a load balancer to spread the traffic across them. By implementing the infrastructure in this way, the service will be easily scalable and more resilient.
 

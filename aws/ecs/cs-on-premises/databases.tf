@@ -34,16 +34,16 @@ resource "aws_rds_cluster_parameter_group" "rds_pg" {
 }
 
 resource "aws_rds_cluster" "cluster" {
-  cluster_identifier        = "cs-on-premises-db"
-  engine                    = "mysql"
-  engine_version            = "8.0.35"
-  master_username           = "root"
-  master_password           = random_string.database_password.result
-  database_name             = "cs_on_premises"
-  storage_type              = "io1"
-  allocated_storage         = var.mysql.storage
-  db_cluster_instance_class = var.mysql.db_instance
-  iops                      = var.mysql.iops
+  cluster_identifier           = "cs-on-premises-db"
+  engine                       = "mysql"
+  engine_version               = local.mysql_engine_version
+  master_username              = "root"
+  manage_master_user_password  = true
+  database_name                = "cs_on_premises"
+  storage_type                 = "io1"
+  allocated_storage            = var.mysql.storage
+  db_cluster_instance_class    = var.mysql.db_instance
+  iops                         = var.mysql.iops
 
   db_subnet_group_name            = aws_db_subnet_group.db_subnet_group.name
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.rds_pg.name

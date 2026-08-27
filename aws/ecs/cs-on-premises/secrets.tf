@@ -37,19 +37,9 @@ resource "aws_secretsmanager_secret_version" "environments_management_secret_key
   secret_string = var.environments_management_secret_key
 }
 
-resource "random_string" "database_password" {
-  length  = 16
-  special = false
-}
+module "app_db_password" {
+  source = "./modules/managed-password-secret"
 
-resource "aws_secretsmanager_secret" "database_password" {
-  name        = "cs-on-premises-database-password"
-  description = "The license_key can be found in CKEditor Customer Portal in your CKEditor Collaboration Server On-Premises subscription page"
-
-  recovery_window_in_days = 0
-}
-
-resource "aws_secretsmanager_secret_version" "database_password" {
-  secret_id     = aws_secretsmanager_secret.database_password.id
-  secret_string = random_string.database_password.result
+  name        = "cs-on-premises-app-db-password"
+  description = "Password for the application's MySQL user, created by the db-bootstrap init container"
 }
