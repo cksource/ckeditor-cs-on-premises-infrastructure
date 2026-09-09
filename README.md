@@ -9,6 +9,7 @@ Regardless of the infrastructure provider, we recommend using a layered architec
 ## Providers
 - [AWS ECS](/aws/ecs)
 - [AWS ECS — CKEditor AI Service](/aws/ecs-ai-service)
+- [AWS ECS — Collaboration Server with CKEditor AI Service](/aws/ecs-cs-with-ai)
 - [Kubernetes Helm charts](/kubernetes/helm)
 
 ## CKEditor AI Service On-Premises
@@ -17,6 +18,11 @@ Besides the Collaboration Server, this repository also contains examples for
 in its standalone variant — [AWS ECS](/aws/ecs-ai-service) and Helm charts
 ([production](/kubernetes/helm/ai-service),
 [development stack](/kubernetes/helm/ai-service-development-stack)).
+
+It can also share a single database and Redis instance with the Collaboration
+Server, the compatible mode — see
+[AWS ECS](/aws/ecs-cs-with-ai) and the
+[`cs-with-ai` Helm chart](/kubernetes/helm/cs-with-ai).
 
 ## Collaboration Server On-Premises Quick-start
 The Collaboration Server On-Premises Quick-Start guide lets you quickly set up the infrastructure needed to use CKEditor 5 WYSIWYG editor with Real-Time Collaboration and Collaboration Server On-Premises. After running a single setup command, you can run a working CKEditor 5 instance and start testing our solution with the Collaboration Server running locally on your machine. Check out the [On-Premises Quick-start](/quick-start) guide.
