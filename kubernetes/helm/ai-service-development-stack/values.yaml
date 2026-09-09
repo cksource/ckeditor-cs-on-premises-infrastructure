@@ -1,0 +1,54 @@
+ai-service:
+  ## A single replica is enough for a development stack. Production deployments
+  ## should run at least 3 instances
+  replicaCount: 1
+  secret:
+    data:
+      DATABASE_DRIVER: mysql
+      DATABASE_DATABASE: ai-service-on-premises
+      DATABASE_HOST: ai-service-mysql
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root-password
+      REDIS_HOST: ai-service-redis-master
+      ENVIRONMENTS_MANAGEMENT_SECRET_KEY: secret
+      STORAGE_DRIVER: database
+      LICENSE_KEY:
+      ## At least one LLM provider has to be configured, for example:
+      ## '{"openai":{"type":"openai","apiKeys":["your-api-key"]}}'
+      PROVIDERS:
+  ingress:
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    hosts:
+      - host: ai-service.organization.test
+        paths:
+          - path: /
+            pathType: 'Prefix'
+  readinessProbe:
+    initialDelaySeconds: 60
+
+mysql:
+  enabled: true
+  image:
+    tag: "8.4.4"
+  ## The AI service expects the database to use the `utf8mb4` character set and
+  ## the `utf8mb4_bin` collation, see:
+  ## https://ckeditor.com/docs/cs/latest/onpremises/ckeditor-ai-onpremises/deployment.html#mysql
+  args:
+    - "--character-set-server=utf8mb4"
+    - "--collation-server=utf8mb4_bin"
+  auth:
+    database: ai-service-on-premises
+    auth: ai-service
+    password: password
+    rootPassword: root-password
+  commonLabels:
+    app.kubernetes.io/part-of: ai-service
+
+redis:
+  enabled: true
+  commonLabels:
+    app.kubernetes.io/part-of: ai-service

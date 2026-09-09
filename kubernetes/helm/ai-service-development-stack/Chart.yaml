@@ -1,0 +1,20 @@
+apiVersion: v2
+name: ai-service-stack
+description: CKEditor AI Service On-Premises stack installation
+
+type: application
+version: 1.0.0
+appVersion: "latest"
+
+dependencies:
+  - name: ai-service
+    version: "1.0.0"
+    repository: "file://../ai-service"
+  - name: mysql
+    condition: mysql.enabled
+    version: "1.0.0"
+    repository: "file://../misc/mysql"
+  - name: redis
+    condition: redis.enabled
+    version: "1.0.0"
+    repository: "file://../misc/redis"

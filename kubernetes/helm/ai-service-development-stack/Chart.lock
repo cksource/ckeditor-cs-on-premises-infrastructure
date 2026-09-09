@@ -1,0 +1,12 @@
+dependencies:
+- name: ai-service
+  repository: file://../ai-service
+  version: 1.0.0
+- name: mysql
+  repository: file://../misc/mysql
+  version: 1.0.0
+- name: redis
+  repository: file://../misc/redis
+  version: 1.0.0
+digest: sha256:877fe44409529c8ab2a49476ac9b71c67d58911dfc5042950e80a42a87af7d30
+generated: "2026-09-09T10:01:04.546516+02:00"
