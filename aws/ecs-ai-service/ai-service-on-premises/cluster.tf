@@ -1,7 +1,7 @@
 resource "aws_security_group" "lb" {
   name        = "ai-service-load-balancer-security-group"
   description = "controls access to the ALB"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = module.network.vpc_id
 
   ingress {
     protocol    = "tcp"
@@ -21,7 +21,7 @@ resource "aws_security_group" "lb" {
 resource "aws_security_group" "ecs_tasks" {
   name        = "ai-service-ecs-tasks-security-group"
   description = "allow inbound access from the ALB only"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = module.network.vpc_id
 
   ingress {
     protocol        = "tcp"
@@ -41,7 +41,7 @@ resource "aws_security_group" "ecs_tasks" {
 resource "aws_alb" "main" {
   name                       = "ai-service-load-balancer"
   drop_invalid_header_fields = true
-  subnets                    = aws_subnet.public.*.id
+  subnets                    = module.network.public_subnet_ids
   security_groups            = [aws_security_group.lb.id]
 }
 
@@ -49,7 +49,7 @@ resource "aws_alb_target_group" "app" {
   name        = "ai-service-target-group"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = module.network.vpc_id
   target_type = "ip"
 
   health_check {
