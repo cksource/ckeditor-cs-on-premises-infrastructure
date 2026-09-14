@@ -19,7 +19,7 @@ resource "aws_ecs_service" "ai" {
 
   network_configuration {
     security_groups  = [aws_security_group.ai_tasks.id]
-    subnets          = aws_subnet.private.*.id
+    subnets          = module.network.private_subnet_ids
     assign_public_ip = false
   }
 }
@@ -52,7 +52,7 @@ resource "aws_ecs_task_definition" "ai" {
           logDriver = "awslogs"
           options = {
             awslogs-region        = var.aws_region
-            awslogs-group         = aws_cloudwatch_log_group.log_group.name
+            awslogs-group         = module.logs.log_group_name
             awslogs-stream-prefix = "cs-with-ai-on-premises-ai-logs"
           }
         }

@@ -90,7 +90,7 @@ resource "aws_secretsmanager_secret_version" "providers_config" {
 # Shared: both services connect to the shared database as the same application
 # user, so there is one password.
 module "app_db_password" {
-  source = "./modules/managed-password-secret"
+  source = "../../modules/managed-password-secret"
 
   name        = "cs-with-ai-on-premises-app-db-password"
   description = "Password for the application's MySQL user, created by the db-bootstrap init container"

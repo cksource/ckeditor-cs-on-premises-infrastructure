@@ -67,7 +67,7 @@ resource "aws_secretsmanager_secret_version" "providers_config" {
 }
 
 module "app_db_password" {
-  source = "./modules/managed-password-secret"
+  source = "../../modules/managed-password-secret"
 
   name        = "ai-service-on-premises-app-db-password"
   description = "Password for the application's MySQL user, created by the db-bootstrap init container"

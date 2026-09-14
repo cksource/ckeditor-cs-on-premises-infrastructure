@@ -13,7 +13,7 @@ resource "aws_ecs_service" "service" {
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_tasks.id]
-    subnets          = aws_subnet.private.*.id
+    subnets          = module.network.private_subnet_ids
     assign_public_ip = false
   }
 
@@ -67,7 +67,7 @@ resource "aws_ecs_task_definition" "app" {
           logDriver = "awslogs"
           options = {
             awslogs-region        = var.aws_region
-            awslogs-group         = aws_cloudwatch_log_group.log_group.name
+            awslogs-group         = module.logs.log_group_name
             awslogs-stream-prefix = "cs-on-premises-db-bootstrap"
           }
         }
@@ -89,7 +89,7 @@ resource "aws_ecs_task_definition" "app" {
           logDriver = "awslogs"
           options = {
             awslogs-region        = var.aws_region
-            awslogs-group         = aws_cloudwatch_log_group.log_group.name
+            awslogs-group         = module.logs.log_group_name
             awslogs-stream-prefix = "cs-on-premises-logs"
           }
         }
@@ -124,7 +124,7 @@ resource "aws_ecs_task_definition" "app" {
           },
           {
             name  = "STORAGE_BUCKET",
-            value = aws_s3_bucket.storage.id
+            value = module.storage.bucket_id
           },
           {
             name  = "STORAGE_REGION",
@@ -136,7 +136,7 @@ resource "aws_ecs_task_definition" "app" {
           },
           {
             name  = "COLLABORATION_STORAGE_BUCKET",
-            value = aws_s3_bucket.storage.id
+            value = module.storage.bucket_id
           },
           {
             name  = "COLLABORATION_STORAGE_REGION",
@@ -232,8 +232,8 @@ data "aws_iam_policy_document" "task_role" {
     effect  = "Allow"
     actions = ["s3:*"]
     resources = [
-      aws_s3_bucket.storage.arn,
-      "${aws_s3_bucket.storage.arn}/*",
+      module.storage.bucket_arn,
+      "${module.storage.bucket_arn}/*",
     ]
   }
 }

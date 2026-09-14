@@ -1,7 +1,7 @@
 resource "aws_security_group" "lb" {
   name        = "cs-with-ai-load-balancer-security-group"
   description = "controls access to the ALB"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = module.network.vpc_id
 
   ingress {
     description = "Collaboration Server"
@@ -30,7 +30,7 @@ resource "aws_security_group" "lb" {
 resource "aws_security_group" "cs_tasks" {
   name        = "cs-with-ai-cs-tasks-security-group"
   description = "allow inbound access to the Collaboration Server from the ALB only"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = module.network.vpc_id
 
   ingress {
     protocol        = "tcp"
@@ -50,7 +50,7 @@ resource "aws_security_group" "cs_tasks" {
 resource "aws_security_group" "ai_tasks" {
   name        = "cs-with-ai-ai-tasks-security-group"
   description = "allow inbound access to the AI Service from the ALB and from the Collaboration Server"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = module.network.vpc_id
 
   ingress {
     description     = "Browser traffic through the load balancer"
@@ -79,7 +79,7 @@ resource "aws_security_group" "ai_tasks" {
 resource "aws_alb" "main" {
   name                       = "cs-with-ai-load-balancer"
   drop_invalid_header_fields = true
-  subnets                    = aws_subnet.public.*.id
+  subnets                    = module.network.public_subnet_ids
   security_groups            = [aws_security_group.lb.id]
 }
 
@@ -87,7 +87,7 @@ resource "aws_alb_target_group" "cs" {
   name        = "cs-with-ai-cs-target-group"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = module.network.vpc_id
   target_type = "ip"
 
   health_check {
@@ -105,7 +105,7 @@ resource "aws_alb_target_group" "ai" {
   name        = "cs-with-ai-ai-target-group"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = module.network.vpc_id
   target_type = "ip"
 
   health_check {
@@ -152,7 +152,7 @@ resource "aws_ecs_cluster" "main" {
 resource "aws_service_discovery_private_dns_namespace" "internal" {
   name        = local.internal_namespace
   description = "Internal service discovery for CS with AI On-Premises"
-  vpc         = aws_vpc.vpc.id
+  vpc         = module.network.vpc_id
 }
 
 resource "aws_service_discovery_service" "ai" {

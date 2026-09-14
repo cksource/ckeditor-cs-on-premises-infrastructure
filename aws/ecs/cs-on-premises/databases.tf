@@ -1,19 +1,19 @@
 
 resource "aws_db_subnet_group" "db_subnet_group" {
   name       = "cs-on-premises-rds-db-subnet-group"
-  subnet_ids = [for subnet in aws_subnet.private : subnet.id]
+  subnet_ids = module.network.private_subnet_ids
 }
 
 resource "aws_security_group" "rds_sg" {
   name        = "cs-on-premises-rds-sg"
   description = "CS On-Premises RDS Security Group"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = module.network.vpc_id
 
   ingress {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.vpc.cidr_block]
+    cidr_blocks = [module.network.vpc_cidr_block]
   }
 }
 
@@ -75,19 +75,19 @@ resource "aws_elasticache_replication_group" "redis" {
   at_rest_encryption_enabled = true
   transit_encryption_enabled = false
 
-  preferred_cache_cluster_azs = slice(data.aws_availability_zones.available.names, 0, var.redis.instances <= 3 ? var.redis.instances : 3)
+  preferred_cache_cluster_azs = slice(module.network.availability_zone_names, 0, var.redis.instances <= 3 ? var.redis.instances : 3)
   subnet_group_name           = aws_elasticache_subnet_group.default.name
   security_group_ids          = [aws_security_group.elasticache.id]
 }
 
 resource "aws_elasticache_subnet_group" "default" {
   name       = "cs-on-premises"
-  subnet_ids = aws_subnet.private[*].id
+  subnet_ids = module.network.private_subnet_ids
 }
 
 resource "aws_security_group" "elasticache" {
   name        = "cs-on-premises-redis-sg"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = module.network.vpc_id
   description = "Handle elasticache database traffic"
 
   ingress {
@@ -95,6 +95,6 @@ resource "aws_security_group" "elasticache" {
     from_port   = 6379
     to_port     = 6379
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.vpc.cidr_block]
+    cidr_blocks = [module.network.vpc_cidr_block]
   }
 }

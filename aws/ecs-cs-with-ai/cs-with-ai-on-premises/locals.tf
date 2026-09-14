@@ -105,7 +105,7 @@ locals {
       logDriver = "awslogs"
       options = {
         awslogs-region        = var.aws_region
-        awslogs-group         = aws_cloudwatch_log_group.log_group.name
+        awslogs-group         = module.logs.log_group_name
         awslogs-stream-prefix = "cs-with-ai-on-premises-db-bootstrap"
       }
     }
