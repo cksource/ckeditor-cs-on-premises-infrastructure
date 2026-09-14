@@ -26,6 +26,10 @@ spec:
           ports:
             - name: mysql
               containerPort: 3306
+          {{- with .Values.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: MYSQL_DATABASE
               valueFrom:

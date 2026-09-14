@@ -1,13 +1,13 @@
 resource "aws_ecs_service" "service" {
-  name            = "cs-on-premises"
+  name            = "ai-service-on-premises"
   cluster         = aws_ecs_cluster.main.arn
   task_definition = aws_ecs_task_definition.app.arn
-  desired_count   = 2
+  desired_count   = var.app.instances
   launch_type     = "FARGATE"
 
   load_balancer {
     target_group_arn = aws_alb_target_group.app.arn
-    container_name   = "cs-on-premises"
+    container_name   = "ai-service-on-premises"
     container_port   = var.app.port
   }
 
@@ -20,7 +20,7 @@ resource "aws_ecs_service" "service" {
 }
 
 resource "aws_ecs_task_definition" "app" {
-  family                   = "cs-on-premises"
+  family                   = "ai-service-on-premises"
   task_role_arn            = aws_iam_role.task_role.arn
   execution_role_arn       = aws_iam_role.task_execution_role.arn
   requires_compatibilities = ["FARGATE"]
@@ -37,6 +37,7 @@ resource "aws_ecs_task_definition" "app" {
         command = [
           <<-EOT
           mysql -h "$DATABASE_HOST" -u "$DATABASE_ADMIN_USER" <<SQL
+          ALTER DATABASE ${aws_rds_cluster.cluster.database_name} CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
           CREATE USER IF NOT EXISTS '${local.app_db_username}'@'%' IDENTIFIED BY '$APP_DB_PASSWORD';
           GRANT SELECT, INSERT, UPDATE, DELETE, ALTER, CREATE, DROP, INDEX, TRIGGER, LOCK TABLES, REFERENCES ON ${aws_rds_cluster.cluster.database_name}.* TO '${local.app_db_username}'@'%';
           FLUSH PRIVILEGES;
@@ -68,13 +69,13 @@ resource "aws_ecs_task_definition" "app" {
           options = {
             awslogs-region        = var.aws_region
             awslogs-group         = module.logs.log_group_name
-            awslogs-stream-prefix = "cs-on-premises-db-bootstrap"
+            awslogs-stream-prefix = "ai-service-on-premises-db-bootstrap"
           }
         }
       },
       {
-        name  = "cs-on-premises"
-        image = "docker.cke-cs.com/cs:${var.app.version}"
+        name  = "ai-service-on-premises"
+        image = "docker.cke-cs.com/ai-service:${var.app.version}"
         repositoryCredentials = {
           credentialsParameter = aws_secretsmanager_secret.docker_token.arn
         }
@@ -90,7 +91,7 @@ resource "aws_ecs_task_definition" "app" {
           options = {
             awslogs-region        = var.aws_region
             awslogs-group         = module.logs.log_group_name
-            awslogs-stream-prefix = "cs-on-premises-logs"
+            awslogs-stream-prefix = "ai-service-on-premises-logs"
           }
         }
         essential   = true
@@ -101,56 +102,63 @@ resource "aws_ecs_task_definition" "app" {
             condition     = "SUCCESS"
           }
         ]
-        environment = [
-          {
-            name  = "REDIS_HOST",
-            value = aws_elasticache_replication_group.redis.primary_endpoint_address
-          },
-          {
-            name  = "DATABASE_HOST",
-            value = aws_rds_cluster.cluster.endpoint
-          },
-          {
-            name  = "DATABASE_USER",
-            value = local.app_db_username
-          },
-          {
-            name  = "DATABASE_DATABASE",
-            value = aws_rds_cluster.cluster.database_name
-          },
-          {
-            name  = "STORAGE_DRIVER",
-            value = "s3"
-          },
-          {
-            name  = "STORAGE_BUCKET",
-            value = module.storage.bucket_id
-          },
-          {
-            name  = "STORAGE_REGION",
-            value = var.aws_region
-          },
-          {
-            name  = "COLLABORATION_STORAGE_DRIVER",
-            value = "s3"
-          },
-          {
-            name  = "COLLABORATION_STORAGE_BUCKET",
-            value = module.storage.bucket_id
-          },
-          {
-            name  = "COLLABORATION_STORAGE_REGION",
-            value = var.aws_region
-          },
-          {
-            name  = "ENABLE_METRIC_LOGS",
-            value = "true"
-          },
-          {
-            name  = "LOG_LEVEL",
-            value = tostring(var.app.log_level)
-          },
-        ]
+        environment = concat(
+          [
+            {
+              name  = "APPLICATION_HTTP_PORT",
+              value = tostring(var.app.port)
+            },
+            {
+              name  = "DATABASE_DRIVER",
+              value = "mysql"
+            },
+            {
+              name  = "DATABASE_HOST",
+              value = aws_rds_cluster.cluster.endpoint
+            },
+            {
+              name  = "DATABASE_USER",
+              value = local.app_db_username
+            },
+            {
+              name  = "DATABASE_DATABASE",
+              value = aws_rds_cluster.cluster.database_name
+            },
+            {
+              name  = "REDIS_HOST",
+              value = aws_elasticache_replication_group.redis.primary_endpoint_address
+            },
+            {
+              name  = "STORAGE_DRIVER",
+              value = "s3"
+            },
+            {
+              name  = "STORAGE_BUCKET",
+              value = module.storage.bucket_id
+            },
+            {
+              name  = "STORAGE_REGION",
+              value = var.aws_region
+            },
+            {
+              name  = "ENABLE_METRIC_LOGS",
+              value = "true"
+            },
+            {
+              name  = "LOG_LEVEL",
+              value = tostring(var.app.log_level)
+            },
+          ],
+          # `MODELS` carries no credentials, only model ids, names and feature
+          # lists, so it stays in plain `environment`. Without it the service
+          # uses the default model list of every configured provider.
+          var.models_config == "" ? [] : [
+            {
+              name  = "MODELS",
+              value = var.models_config
+            },
+          ]
+        )
         secrets = [
           {
             name      = "LICENSE_KEY",
@@ -164,6 +172,10 @@ resource "aws_ecs_task_definition" "app" {
             name      = "DATABASE_PASSWORD",
             valueFrom = module.app_db_password.secret_arn
           },
+          {
+            name      = "PROVIDERS",
+            valueFrom = aws_secretsmanager_secret.providers_config.arn
+          },
         ]
       }
     ]
@@ -171,7 +183,7 @@ resource "aws_ecs_task_definition" "app" {
 }
 
 resource "aws_iam_role" "task_execution_role" {
-  name = "cs-on-premises-task-execution"
+  name = "ai-service-on-premises-task-execution"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -189,13 +201,14 @@ resource "aws_iam_role" "task_execution_role" {
 
 data "aws_iam_policy_document" "task_execution_role" {
   statement {
-    sid     = "AllowAccessToCsOnPremisesSecrets"
+    sid     = "AllowAccessToAiServiceOnPremisesSecrets"
     effect  = "Allow"
     actions = ["secretsmanager:GetSecretValue"]
     resources = [
       aws_secretsmanager_secret.license_key.arn,
       aws_secretsmanager_secret.docker_token.arn,
       aws_secretsmanager_secret.environments_management_secret_key.arn,
+      aws_secretsmanager_secret.providers_config.arn,
       module.app_db_password.secret_arn,
       aws_rds_cluster.cluster.master_user_secret[0].secret_arn,
     ]
@@ -203,14 +216,14 @@ data "aws_iam_policy_document" "task_execution_role" {
 }
 
 resource "aws_iam_role_policy" "task_execution_role" {
-  name = "cs-on-premises-secrets"
+  name = "ai-service-on-premises-secrets"
   role = aws_iam_role.task_execution_role.id
 
   policy = data.aws_iam_policy_document.task_execution_role.json
 }
 
 resource "aws_iam_role" "task_role" {
-  name = "cs-on-premises-task"
+  name = "ai-service-on-premises-task"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -239,7 +252,7 @@ data "aws_iam_policy_document" "task_role" {
 }
 
 resource "aws_iam_role_policy" "task_role" {
-  name = "cs-on-premises-s3-access"
+  name = "ai-service-on-premises-s3-access"
   role = aws_iam_role.task_role.id
 
   policy = data.aws_iam_policy_document.task_role.json

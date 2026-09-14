@@ -38,7 +38,7 @@ resource "aws_secretsmanager_secret_version" "environments_management_secret_key
 }
 
 module "app_db_password" {
-  source = "./modules/managed-password-secret"
+  source = "../../modules/managed-password-secret"
 
   name        = "cs-on-premises-app-db-password"
   description = "Password for the application's MySQL user, created by the db-bootstrap init container"

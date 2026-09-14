@@ -1,0 +1,15 @@
+dependencies:
+- name: ckeditor-cs
+  repository: file://../ckeditor-cs
+  version: 1.0.0
+- name: ai-service
+  repository: file://../ai-service
+  version: 1.0.0
+- name: mysql
+  repository: file://../misc/mysql
+  version: 1.0.0
+- name: redis
+  repository: file://../misc/redis
+  version: 1.0.0
+digest: sha256:8d73cca018be0634cd82383f0b953f18461eb6e0c2e7e16a893bc652875393c5
+generated: "2026-09-09T15:27:36.837395+02:00"

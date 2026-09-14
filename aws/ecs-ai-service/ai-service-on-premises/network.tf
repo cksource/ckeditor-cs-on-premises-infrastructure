@@ -1,6 +1,6 @@
 module "network" {
   source = "../../modules/network"
 
-  name     = "CS On-Premises"
+  name     = "CKEditor AI Service On-Premises"
   az_count = var.az_count
 }

@@ -1,0 +1,151 @@
+## Name of the secret containing the container registry authentication data
+imagePullSecrets:
+  - name: docker-cke-cs-com
+
+## Override for fullname template
+nameOverride: ""
+
+## Number of desired CKEditor AI Service instances. At least 3 instances are
+## recommended for high availability, see:
+## https://ckeditor.com/docs/cs/latest/onpremises/ckeditor-ai-onpremises/requirements.html
+replicaCount: 3
+
+## CKEditor AI Service container image
+image:
+  repository: docker.cke-cs.com/ai-service
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+## Port the CKEditor AI Service container listens on. If you change it, set the
+## APPLICATION_HTTP_PORT environment variable in `secret.data` to the same value
+containerPort: 8000
+
+## Default health check configuration for CKEditor AI Service.
+## A database connection that times out during start-up leaves the process alive
+## but never serving, which nothing else would restart. `startupProbe` gives the
+## first start 150s (`failureThreshold * periodSeconds`) to answer `/health`,
+## then restarts the container - raise `failureThreshold` for a slow database.
+## The other two probes are held off until it passes
+startupProbe:
+  httpGet:
+    path: /health
+    port: http
+  periodSeconds: 5
+  failureThreshold: 30
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 20
+  periodSeconds: 5
+
+## Restarts the container if it stops serving `/health` after a successful
+## start. Set to null to disable
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+serviceAccount:
+  ## Specifies whether a service account for CKEditor AI Service should be
+  ## created
+  create: false
+  ## Annotations to add to the service account
+  annotations: {}
+  ## The name of the service account to use. If not set and create is true, a
+  ## name is generated using the fullname template
+  name: ""
+
+secret:
+  ## Specifies whether the secret with the environment variables should be
+  ## created by this chart. Set it to false to use a secret you manage yourself
+  create: true
+  ## The name of the secret for CKEditor AI Service to use. If not set, a name
+  ## is generated using the fullname template
+  name: ""
+  ## Whole list of container environment variables is accessible here
+  ## https://ckeditor.com/docs/cs/latest/onpremises/ckeditor-ai-onpremises/configuration.html
+  ## Those mentioned below are the minimum to run the service.
+  ##
+  ## Every value here ends up in the `stringData` of a Secret, so it has to be a
+  ## string - quote numbers and booleans
+  data:
+    LICENSE_KEY: ""
+    ENVIRONMENTS_MANAGEMENT_SECRET_KEY: ""
+    ## Either "mysql" or "postgres"
+    DATABASE_DRIVER: ""
+    DATABASE_HOST: ""
+    DATABASE_USER: ""
+    DATABASE_PASSWORD: ""
+    DATABASE_DATABASE: ""
+    REDIS_HOST: ""
+    ## At least one LLM provider has to be configured. The value is a
+    ## stringified JSON object, for example:
+    ## '{"openai":{"type":"openai","apiKeys":["your-api-key"]}}'
+    PROVIDERS: ""
+    ## One of "s3", "azure", "filesystem" or "database". Every driver except
+    ## "database" needs additional STORAGE_* variables
+    STORAGE_DRIVER: ""
+    ## Emits periodic metric logs about the service usage
+    ENABLE_METRIC_LOGS: "true"
+    ## Log verbosity. "40" is the default the Terraform modules use - lower it
+    ## to "30" or "20" when diagnosing a deployment
+    LOG_LEVEL: "40"
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  ## If true will create ingress rule to expose CKEditor AI Service from cluster
+  enabled: false
+  className: ""
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # nginx.ingress.kubernetes.io/proxy-body-size: 10m
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+  hosts:
+    - host: ai-service.organization.test
+      paths:
+        - path: /
+          pathType: 'Prefix'
+  tls: []
+  #  - secretName: ai-service-organization-test
+  #    hosts:
+  #      - ai-service.organization.test
+
+## Resource requirements for CKEditor AI Service. The documentation does not
+## prescribe fixed figures - monitor your deployment and adjust them to your
+## traffic, see:
+## https://ckeditor.com/docs/cs/latest/onpremises/ckeditor-ai-onpremises/requirements.html
+resources:
+  requests:
+    {}
+    # cpu: 1000m
+    # memory: 2048Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 3
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

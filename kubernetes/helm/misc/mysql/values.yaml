@@ -1,5 +1,7 @@
 image:
   tag: "8.4.4"
+## Extra command line flags passed to the mysqld container
+args: []
 auth:
   database: ""
   auth: ""
