@@ -75,13 +75,6 @@ resource "aws_secretsmanager_secret_version" "environments_management_secret_key
 # no per-provider variable such as `PROVIDERS_OPENAI_APIKEYS` to point at a
 # secret, and ECS can only populate a whole environment variable, never splice
 # a secret into part of one.
-#
-# To avoid holding a provider API key at all, use the `bedrock` provider with
-# no `apiKeys`: it then falls back to the ambient AWS credential chain, which
-# on Fargate is the task's role. That role is not enough on its own - the one
-# created in `iam.tf` only grants S3 access - so you also have to allow
-# `bedrock:InvokeModel` and `bedrock:InvokeModelWithResponseStream` on the
-# models you use in `data.aws_iam_policy_document.task_role`. See the README.
 resource "aws_secretsmanager_secret" "providers_config" {
   name        = "cs-with-ai-on-premises-providers"
   description = "Stringified JSON with the LLM providers configuration, including their API keys"
@@ -97,7 +90,7 @@ resource "aws_secretsmanager_secret_version" "providers_config" {
 # Shared: both services connect to the shared database as the same application
 # user, so there is one password.
 module "app_db_password" {
-  source = "../../modules/managed-password-secret"
+  source = "./modules/managed-password-secret"
 
   name        = "cs-with-ai-on-premises-app-db-password"
   description = "Password for the application's MySQL user, created by the db-bootstrap init container"

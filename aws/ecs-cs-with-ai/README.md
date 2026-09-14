@@ -150,16 +150,6 @@ only populate an entire environment variable, never part of one. Passing the
 blob as plain `environment` would leave the keys in the task definition, where
 anyone with `ecs:DescribeTaskDefinition` can read them.
 
-If you would rather not hold a provider API key at all, Amazon Bedrock can be
-used without one: declare the provider with no `apiKeys` and the service falls
-back to the ambient AWS credential chain, which on Fargate is the ECS task
-role. The task role this module creates only grants access to the S3 bucket,
-so you have to extend it yourself — add `bedrock:InvokeModel` and
-`bedrock:InvokeModelWithResponseStream` for the models you intend to use to
-`data.aws_iam_policy_document.task_role` in `cs-with-ai-on-premises/iam.tf`.
-Bedrock also requires that model access be enabled in the AWS account and
-region you deploy to.
-
 ## Number of instances
 
 The module runs 2 instances of each service by default to keep the cost of the

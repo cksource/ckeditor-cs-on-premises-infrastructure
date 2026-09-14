@@ -52,21 +52,6 @@ Note: It may take several minutes, wait until the command finishes.
 
 Application URL will be printed as terraform output after all resources are created.
 
-## Upgrading an existing deployment
-
-The VPC, the CloudWatch log group and the S3 bucket now come from shared
-modules in [`aws/modules`](/aws/modules) instead of being declared inside
-`cs-on-premises`, so that the AWS examples in this repository do not each carry
-their own copy. Two things follow for a deployment created before that change:
-
-- The resources keep their identity but change address in the Terraform state.
-  `cs-on-premises/moved.tf` tells Terraform about every move, so a plain
-  `terraform apply` migrates the state — the plan should report the moves and
-  create or destroy nothing.
-- The VPC now sets `enable_dns_support` and `enable_dns_hostnames` explicitly
-  instead of relying on the defaults, which turns DNS hostnames on. This is an
-  in-place update of the existing VPC, not a replacement.
-
 ## Database user
 
 **Not appropriate for production credential management** — the application

@@ -66,8 +66,8 @@ data "aws_iam_policy_document" "task_role" {
     effect  = "Allow"
     actions = ["s3:*"]
     resources = [
-      module.storage.bucket_arn,
-      "${module.storage.bucket_arn}/*",
+      aws_s3_bucket.storage.arn,
+      "${aws_s3_bucket.storage.arn}/*",
     ]
   }
 }

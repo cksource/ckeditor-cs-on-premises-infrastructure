@@ -13,7 +13,7 @@ resource "aws_ecs_service" "cs" {
 
   network_configuration {
     security_groups  = [aws_security_group.cs_tasks.id]
-    subnets          = module.network.private_subnet_ids
+    subnets          = aws_subnet.private.*.id
     assign_public_ip = false
   }
 }
@@ -46,7 +46,7 @@ resource "aws_ecs_task_definition" "cs" {
           logDriver = "awslogs"
           options = {
             awslogs-region        = var.aws_region
-            awslogs-group         = module.logs.log_group_name
+            awslogs-group         = aws_cloudwatch_log_group.log_group.name
             awslogs-stream-prefix = "cs-with-ai-on-premises-cs-logs"
           }
         }
@@ -79,7 +79,7 @@ resource "aws_ecs_task_definition" "cs" {
             },
             {
               name  = "STORAGE_BUCKET",
-              value = module.storage.bucket_id
+              value = aws_s3_bucket.storage.id
             },
             {
               name  = "STORAGE_REGION",
@@ -91,7 +91,7 @@ resource "aws_ecs_task_definition" "cs" {
             },
             {
               name  = "COLLABORATION_STORAGE_BUCKET",
-              value = module.storage.bucket_id
+              value = aws_s3_bucket.storage.id
             },
             {
               name  = "COLLABORATION_STORAGE_REGION",
