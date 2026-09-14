@@ -34,6 +34,27 @@ for addon in "${addons[@]}"; do
   fi
 done
 
+# Enabling the `ingress` addon returns before the ingress-nginx admission
+# webhook accepts connections, and an already-enabled addon is skipped above
+# without any wait at all. Installing the chart before the controller is ready
+# fails the release on `validate.nginx.ingress.kubernetes.io`, so wait it out.
+# The pod itself can take a moment to be created, hence the first loop.
+echo "Waiting for the ingress-nginx controller..."
+for _ in {1..60}; do
+  controller="$(kubectl get pod --namespace ingress-nginx \
+    --selector app.kubernetes.io/component=controller \
+    --output name 2>/dev/null)"
+  if [[ -n "$controller" ]]; then
+    break
+  fi
+  sleep 2
+done
+
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector app.kubernetes.io/component=controller \
+  --timeout=180s
+
 # Create dns configuration for `ingress-dns` addon
 sudo mkdir -p /etc/resolver
 sudo bash -c "cat << EOF > /etc/resolver/minikube-test
@@ -44,7 +65,7 @@ timeout 5
 EOF"
 
 # Create imagePullSecret for CKEditor container registry
-if ! kubectl get secret docker-cke-cs-com; then
+if ! kubectl get secret docker-cke-cs-com &>/dev/null; then
   kubectl create secret docker-registry docker-cke-cs-com \
     --docker-username "ai-service" \
     --docker-server "https://docker.cke-cs.com" \
@@ -62,8 +83,8 @@ ai-service:
       PROVIDERS: '$PROVIDERS'
 EOF
 
-# Install helm chart in minikube cluster
-helm repo update
+# Install helm chart in minikube cluster. Every chart dependency is a local
+# `file://` path, so there are no repositories to update.
 helm dependency update
 helm upgrade ai-service . \
   --install \

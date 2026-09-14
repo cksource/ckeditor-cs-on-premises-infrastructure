@@ -129,7 +129,6 @@ ai-service:
 
 ```sh
 cd cs-with-ai
-helm repo update
 helm dependency update
 helm install cs-with-ai . --values cs-with-ai.values.yaml
 ```

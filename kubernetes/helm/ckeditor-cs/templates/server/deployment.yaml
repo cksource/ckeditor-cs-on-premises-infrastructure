@@ -39,8 +39,16 @@ spec:
             - name: tcp
               containerPort: 8000
               protocol: TCP
+        {{- with .Values.server.startupProbe }}
+          startupProbe:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
         {{- with .Values.server.readinessProbe }}
           readinessProbe:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with .Values.server.livenessProbe }}
+          livenessProbe:
           {{- toYaml . | nindent 12 }}
         {{- end }}
 

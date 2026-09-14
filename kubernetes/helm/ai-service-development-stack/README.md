@@ -42,7 +42,6 @@ ai-service:
 Installing helm chart in cluster:
 ```sh
 cd ai-service-development-stack
-helm repo update
 helm dependency update
 helm install ai-service . --values dev.values.yaml
 ```
@@ -67,9 +66,10 @@ check the status of the deployment you can either run `kubectl get pods` command
 or access Kubernetes Dashboard by `minikube dashboard`.
 
 By default the development environment can be accessed at
-http://ai-service.organization.test — sign in to the management panel with the
-`ENVIRONMENTS_MANAGEMENT_SECRET_KEY` from `values.yaml` (`secret`) to create an
-environment and an access key.
+http://ai-service.organization.test/panel — sign in to the management panel with
+the `ENVIRONMENTS_MANAGEMENT_SECRET_KEY` from `values.yaml` (`secret`) to create
+an environment and an access key. The API docs can be visited at
+`/v1/api/docs`.
 
 ## Deleting installation
 
@@ -83,10 +83,16 @@ helm delete ai-service
    service container, it's normal and the cause is in MySQL startup time.
    However, it should be running correctly after a short time.
 
-2. It is possible to encounter problems with Nginx ingress validation in
-   minikube environment, the solution is to remove the hook of it:
+2. Installing the chart right after enabling the minikube `ingress` addon can
+   fail on `validate.nginx.ingress.kubernetes.io` with `connection refused`.
+   The admission webhook is registered before the ingress-nginx controller
+   serves it, so wait for the controller and install again - `init.sh` already
+   does this for you:
 ```sh
-kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector app.kubernetes.io/component=controller \
+  --timeout=180s
 ```
 
 3. If the service exits during start-up with a configuration error, check that

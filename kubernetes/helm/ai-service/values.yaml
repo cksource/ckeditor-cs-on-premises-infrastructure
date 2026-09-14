@@ -20,13 +20,35 @@ image:
 ## APPLICATION_HTTP_PORT environment variable in `secret.data` to the same value
 containerPort: 8000
 
-## Default health check configuration for CKEditor AI Service
+## Default health check configuration for CKEditor AI Service.
+## A database connection that times out during start-up leaves the process alive
+## but never serving, which nothing else would restart. `startupProbe` gives the
+## first start 150s (`failureThreshold * periodSeconds`) to answer `/health`,
+## then restarts the container - raise `failureThreshold` for a slow database.
+## The other two probes are held off until it passes
+startupProbe:
+  httpGet:
+    path: /health
+    port: http
+  periodSeconds: 5
+  failureThreshold: 30
+
 readinessProbe:
   httpGet:
     path: /health
     port: http
   initialDelaySeconds: 20
   periodSeconds: 5
+
+## Restarts the container if it stops serving `/health` after a successful
+## start. Set to null to disable
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
 
 podAnnotations: {}
 
@@ -53,7 +75,10 @@ secret:
   name: ""
   ## Whole list of container environment variables is accessible here
   ## https://ckeditor.com/docs/cs/latest/onpremises/ckeditor-ai-onpremises/configuration.html
-  ## Those mentioned below are the absolute minimum to run the service
+  ## Those mentioned below are the minimum to run the service.
+  ##
+  ## Every value here ends up in the `stringData` of a Secret, so it has to be a
+  ## string - quote numbers and booleans
   data:
     LICENSE_KEY: ""
     ENVIRONMENTS_MANAGEMENT_SECRET_KEY: ""
@@ -71,6 +96,11 @@ secret:
     ## One of "s3", "azure", "filesystem" or "database". Every driver except
     ## "database" needs additional STORAGE_* variables
     STORAGE_DRIVER: ""
+    ## Emits periodic metric logs about the service usage
+    ENABLE_METRIC_LOGS: "true"
+    ## Log verbosity. "40" is the default the Terraform modules use - lower it
+    ## to "30" or "20" when diagnosing a deployment
+    LOG_LEVEL: "40"
 
 service:
   type: ClusterIP

@@ -13,10 +13,17 @@ spec:
       {{- include "ai-service.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        {{- /*
+        Environment variables reach the container through `envFrom`, which is
+        read once at container start. Rolling the pods on a change to the
+        rendered Secret keeps an upgrade from reporting success while the
+        running pods still hold the previous values.
+        */}}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "ai-service.selectorLabels" . | nindent 8 }}
     spec:
@@ -39,8 +46,16 @@ spec:
             - name: http
               containerPort: {{ .Values.containerPort }}
               protocol: TCP
+        {{- with .Values.startupProbe }}
+          startupProbe:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
         {{- with .Values.readinessProbe }}
           readinessProbe:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with .Values.livenessProbe }}
+          livenessProbe:
           {{- toYaml . | nindent 12 }}
         {{- end }}
           envFrom:
