@@ -48,7 +48,12 @@ resource "aws_secretsmanager_secret_version" "environments_management_secret_key
 #
 # To avoid holding a provider API key at all, use the `bedrock` provider with
 # no `apiKeys`: it then falls back to the ambient AWS credential chain, which
-# on Fargate is this task's role. See the README.
+# on Fargate is this task's role. If you go that way, the role created in
+# `service.tf` is not enough on its own - it only grants S3 access - so add
+# `bedrock:InvokeModel` and `bedrock:InvokeModelWithResponseStream` on the
+# Bedrock models you use to `data.aws_iam_policy_document.task_role`. Other
+# providers authenticate with their own API keys, so they need no IAM changes.
+# See the README.
 resource "aws_secretsmanager_secret" "providers_config" {
   name        = "ai-service-on-premises-providers"
   description = "Stringified JSON with the LLM providers configuration, including their API keys"
