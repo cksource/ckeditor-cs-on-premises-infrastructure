@@ -1,6 +1,6 @@
 module "network" {
   source = "../../modules/network"
 
-  name     = "CS On-Premises"
+  name     = "CS with AI On-Premises"
   az_count = var.az_count
 }

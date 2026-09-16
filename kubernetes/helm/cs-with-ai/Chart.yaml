@@ -1,0 +1,23 @@
+apiVersion: v2
+name: cs-with-ai
+description: CKEditor Collaboration Server On-Premises and CKEditor AI Service On-Premises sharing one data layer
+
+type: application
+version: 1.0.0
+appVersion: "latest"
+
+dependencies:
+  - name: ckeditor-cs
+    version: "1.0.0"
+    repository: "file://../ckeditor-cs"
+  - name: ai-service
+    version: "1.0.0"
+    repository: "file://../ai-service"
+  - name: mysql
+    condition: mysql.enabled
+    version: "1.0.0"
+    repository: "file://../misc/mysql"
+  - name: redis
+    condition: redis.enabled
+    version: "1.0.0"
+    repository: "file://../misc/redis"

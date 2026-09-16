@@ -51,6 +51,32 @@ dependencies:
 
 >:warning: **Not for production purposes!** This configuration is insecure, not
 >persistent and its purpose is testing only.
+
+### [ai-service](ai-service)
+
+Helm chart containing the resources to run CKEditor AI Service On-Premises
+in its standalone variant, configured to connect to external third-party
+services.
+
+### [cs-with-ai](cs-with-ai)
+
+Helm chart running CKEditor Collaboration Server On-Premises and CKEditor AI
+Service On-Premises on one shared SQL database and Redis instance - the
+compatible mode. Used charts as dependencies:
+- `ckeditor-cs`
+- `ai-service`
+- `misc/mysql` and `misc/redis` - optional, disabled by default
+
+### [ai-service-development-stack](ai-service-development-stack)
+
+Fast way to provision the whole infrastructure needed for CKEditor AI Service
+On-Premises. Used charts as dependencies:
+- `ai-service`
+- `misc/mysql` - minimal custom chart deploying MySQL instance
+- `misc/redis` - minimal custom chart deploying Redis instance
+
+>:warning: **Not for production purposes!** This configuration is insecure, not
+>persistent and its purpose is testing only.
 ## Quick start
 
 Follow instructions from helm charts:

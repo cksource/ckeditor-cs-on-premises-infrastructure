@@ -1,0 +1,110 @@
+## Compatible mode: the Collaboration Server and the AI Service run as separate
+## deployments but share one SQL database and one Redis instance. The AI Service
+## detects the Collaboration Server through that shared database on its own -
+## there is no flag to switch the integration on. What matters is that the
+## values below are *identical* on both sides, so they are defined once here and
+## merged into each component with YAML merge keys.
+sharedDatabase: &sharedDatabase
+  ## Either "mysql" or "postgres"
+  DATABASE_DRIVER: mysql
+  DATABASE_HOST: ""
+  DATABASE_USER: ""
+  DATABASE_PASSWORD: ""
+  DATABASE_DATABASE: cs-on-premises
+
+sharedRedis: &sharedRedis
+  REDIS_HOST: ""
+
+## Password for the Collaboration Server management panel, which manages both
+## services once they are integrated. The AI Service still requires the variable
+## to be set, so keep the two in sync.
+sharedManagementSecretKey: &sharedManagementSecretKey ""
+
+ckeditor-cs:
+  server:
+    secret:
+      data:
+        <<: [*sharedDatabase, *sharedRedis]
+        ENVIRONMENTS_MANAGEMENT_SECRET_KEY: *sharedManagementSecretKey
+        ## Collaboration Server license key - a different key than the one the
+        ## AI Service uses, from your Collaboration Server subscription
+        LICENSE_KEY: ""
+        STORAGE_DRIVER: filesystem
+        STORAGE_LOCATION: /var/cs/easyimage
+        ## Where the Collaboration Server management panel reaches the AI API.
+        ## It defaults to the Collaboration Server's own port, which only works
+        ## when both services run in one process - here they do not, so it has
+        ## to point at the AI Service. Derived from the `cs-with-ai` release
+        ## name; update it if you install under a different name.
+        AI_API_BASE_URL: http://cs-with-ai-ai-service:8080
+    ingress:
+      enabled: false
+      hosts:
+        - host: ckeditor-cs.organization.test
+          paths:
+            - path: /
+
+  worker:
+    ## Set to true to also run the collaboration worker. It connects to the same
+    ## shared data layer, so it gets the same values merged in
+    enabled: false
+    secret:
+      data:
+        <<: [*sharedDatabase, *sharedRedis]
+
+ai-service:
+  ## If your Collaboration Server and AI Service download tokens differ, create
+  ## a second image pull secret and name it here
+  imagePullSecrets:
+    - name: docker-cke-cs-com
+  secret:
+    data:
+      <<: [*sharedDatabase, *sharedRedis]
+      ENVIRONMENTS_MANAGEMENT_SECRET_KEY: *sharedManagementSecretKey
+      ## AI Service license key - a different key than the one the Collaboration
+      ## Server uses, from your CKEditor AI Server subscription
+      LICENSE_KEY: ""
+      ## At least one LLM provider has to be configured, for example:
+      ## '{"openai":{"type":"openai","apiKeys":["your-api-key"]}}'
+      PROVIDERS: ""
+      ## "database" keeps AI files in the shared SQL database, so compatible
+      ## mode needs no extra storage. Switch to s3, azure or filesystem if you
+      ## would rather keep them elsewhere
+      STORAGE_DRIVER: database
+  ingress:
+    enabled: false
+    hosts:
+      - host: ckeditor-ai.organization.test
+        paths:
+          - path: /
+            pathType: 'Prefix'
+
+## Both databases are meant to be external services you already run. Enabling
+## the two charts below deploys a throwaway MySQL and Redis in the cluster,
+## which is useful for trying compatible mode out locally.
+##
+## :warning: Not for production purposes! They are insecure and not persistent.
+mysql:
+  enabled: false
+  image:
+    tag: "8.4.4"
+  ## The AI Service expects the database to use the `utf8mb4` character set and
+  ## the `utf8mb4_bin` collation. The Collaboration Server creates functions and
+  ## triggers during migrations, so it needs `log-bin-trust-function-creators`
+  ## enabled when binary logging is on without the SUPER privilege.
+  args:
+    - "--character-set-server=utf8mb4"
+    - "--collation-server=utf8mb4_bin"
+    - "--log-bin-trust-function-creators=1"
+  auth:
+    database: cs-on-premises
+    auth: ckeditor-cs
+    password: password
+    rootPassword: root-password
+  commonLabels:
+    app.kubernetes.io/part-of: cs-with-ai
+
+redis:
+  enabled: false
+  commonLabels:
+    app.kubernetes.io/part-of: cs-with-ai

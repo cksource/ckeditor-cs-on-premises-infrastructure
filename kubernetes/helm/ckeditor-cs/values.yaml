@@ -18,13 +18,36 @@ server:
     pullPolicy: IfNotPresent
     tag: "latest"
 
-  ## Default health check configuration for collaboration server
+  ## Default health check configuration for collaboration server.
+  ## A database connection that times out during start-up leaves the process
+  ## alive but never serving, which nothing else would restart. `startupProbe`
+  ## gives the first start 150s (`failureThreshold * periodSeconds`) to answer
+  ## `/health`, then restarts the container - raise `failureThreshold` for a slow
+  ## database, or for migrations that take longer. The other two probes are held
+  ## off until it passes
+  startupProbe:
+    httpGet:
+      path: /health
+      port: tcp
+    periodSeconds: 5
+    failureThreshold: 30
+
   readinessProbe:
     httpGet:
       path: /health
       port: tcp
     initialDelaySeconds: 15
     periodSeconds: 5
+
+  ## Restarts the container if it stops serving `/health` after a successful
+  ## start. Set to null to disable
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: tcp
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
 
   podAnnotations: {}
 

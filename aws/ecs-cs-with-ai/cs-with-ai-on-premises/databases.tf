@@ -1,12 +1,12 @@
 
 resource "aws_db_subnet_group" "db_subnet_group" {
-  name       = "cs-on-premises-rds-db-subnet-group"
+  name       = "cs-with-ai-on-premises-rds-db-subnet-group"
   subnet_ids = module.network.private_subnet_ids
 }
 
 resource "aws_security_group" "rds_sg" {
-  name        = "cs-on-premises-rds-sg"
-  description = "CS On-Premises RDS Security Group"
+  name        = "cs-with-ai-on-premises-rds-sg"
+  description = "CS with AI On-Premises RDS Security Group"
   vpc_id      = module.network.vpc_id
 
   ingress {
@@ -18,10 +18,12 @@ resource "aws_security_group" "rds_sg" {
 }
 
 resource "aws_rds_cluster_parameter_group" "rds_pg" {
-  name        = "cs-on-premises-rds-pg"
+  name        = "cs-with-ai-on-premises-rds-pg"
   family      = "mysql8.0"
-  description = "RDS cluster parameter group for CS On-Premises database"
+  description = "RDS cluster parameter group for CS with AI On-Premises database"
 
+  # Both services run migrations that create functions and triggers, so this is
+  # needed when binary logging is on without the SUPER privilege.
   parameter {
     name  = "log_bin_trust_function_creators"
     value = 1
@@ -33,17 +35,20 @@ resource "aws_rds_cluster_parameter_group" "rds_pg" {
   }
 }
 
+# One database for both services - this is what compatible mode is. They share
+# the schema for environments, security and logs, and each keeps its own
+# service-specific tables alongside.
 resource "aws_rds_cluster" "cluster" {
-  cluster_identifier           = "cs-on-premises-db"
-  engine                       = "mysql"
-  engine_version               = local.mysql_engine_version
-  master_username              = "root"
-  manage_master_user_password  = true
-  database_name                = "cs_on_premises"
-  storage_type                 = "io1"
-  allocated_storage            = var.mysql.storage
-  db_cluster_instance_class    = var.mysql.db_instance
-  iops                         = var.mysql.iops
+  cluster_identifier          = "cs-with-ai-on-premises-db"
+  engine                      = "mysql"
+  engine_version              = local.mysql_engine_version
+  master_username             = "root"
+  manage_master_user_password = true
+  database_name               = "cs_on_premises"
+  storage_type                = "io1"
+  allocated_storage           = var.mysql.storage
+  db_cluster_instance_class   = var.mysql.db_instance
+  iops                        = var.mysql.iops
 
   db_subnet_group_name            = aws_db_subnet_group.db_subnet_group.name
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.rds_pg.name
@@ -54,15 +59,16 @@ resource "aws_rds_cluster" "cluster" {
   storage_encrypted = true
 
   tags = {
-    Name = "cs-on-premises-db"
+    Name = "cs-with-ai-on-premises-db"
   }
 
   apply_immediately = true
 }
 
+# One Redis for both services, for the same reason.
 resource "aws_elasticache_replication_group" "redis" {
-  replication_group_id = "cs-on-premises"
-  description          = "Redis for CS On-Premises"
+  replication_group_id = "cs-with-ai-on-premises"
+  description          = "Redis for CS with AI On-Premises"
 
   engine               = "redis"
   engine_version       = "7.0"
@@ -81,12 +87,12 @@ resource "aws_elasticache_replication_group" "redis" {
 }
 
 resource "aws_elasticache_subnet_group" "default" {
-  name       = "cs-on-premises"
+  name       = "cs-with-ai-on-premises"
   subnet_ids = module.network.private_subnet_ids
 }
 
 resource "aws_security_group" "elasticache" {
-  name        = "cs-on-premises-redis-sg"
+  name        = "cs-with-ai-on-premises-redis-sg"
   vpc_id      = module.network.vpc_id
   description = "Handle elasticache database traffic"
 
