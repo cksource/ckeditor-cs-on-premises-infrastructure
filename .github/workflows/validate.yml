@@ -21,7 +21,7 @@ env:
   KUBERNETES_VERSION: "1.36.0"
 
 jobs:
-  validate:
+  helm:
     name: Validate Helm charts
     runs-on: ubuntu-latest
     steps:
