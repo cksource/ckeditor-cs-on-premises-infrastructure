@@ -1,0 +1,63 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "kubernetes/helm/**"
+      - ".github/workflows/validate.yml"
+  pull_request:
+    paths:
+      - "kubernetes/helm/**"
+      - ".github/workflows/validate.yml"
+
+permissions:
+  contents: read
+
+env:
+  HELM_VERSION: v4.3.0
+  KUBECONFORM_VERSION: v0.8.0
+  KUBECONFORM_SHA256: 9bc2bffbf71f261128533edaf912153948b7ff238f9a531ae6d34466ec287883
+  KUBERNETES_VERSION: "1.36.0"
+
+jobs:
+  validate:
+    name: Validate Helm charts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Install kubeconform
+        run: |
+          curl -sSL --fail -o kubeconform.tar.gz \
+            "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz"
+          echo "${KUBECONFORM_SHA256}  kubeconform.tar.gz" | sha256sum -c -
+          sudo tar -xz -C /usr/local/bin -f kubeconform.tar.gz kubeconform
+          rm kubeconform.tar.gz
+
+      - name: List charts
+        run: |
+          echo "CHARTS=$(find kubernetes/helm -name Chart.yaml -not -path '*/charts/*' -exec dirname {} + | sort | xargs)" >> "$GITHUB_ENV"
+
+      - name: Build chart dependencies
+        run: for chart in $CHARTS; do helm dependency build "$chart"; done
+
+      - name: Lint Helm charts
+        run: helm lint $CHARTS
+
+      - name: Run kubeconform
+        run: |
+          rc=0
+          for chart in $CHARTS; do
+            echo "::group::$chart"
+            helm template "$chart" --kube-version "$KUBERNETES_VERSION" \
+              | kubeconform -strict -summary -kubernetes-version "$KUBERNETES_VERSION" - || rc=1
+            echo "::endgroup::"
+          done
+          exit $rc
