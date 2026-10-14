@@ -5,10 +5,14 @@ on:
     branches: [main]
     paths:
       - "kubernetes/helm/**"
+      - "aws/**"
+      - "azure/**"
       - ".github/workflows/validate.yml"
   pull_request:
     paths:
       - "kubernetes/helm/**"
+      - "aws/**"
+      - "azure/**"
       - ".github/workflows/validate.yml"
 
 permissions:
@@ -19,6 +23,7 @@ env:
   KUBECONFORM_VERSION: v0.8.0
   KUBECONFORM_SHA256: 9bc2bffbf71f261128533edaf912153948b7ff238f9a531ae6d34466ec287883
   KUBERNETES_VERSION: "1.36.0"
+  TERRAFORM_VERSION: "1.16.5"
 
 jobs:
   helm:
@@ -58,6 +63,33 @@ jobs:
             echo "::group::$chart"
             helm template "$chart" --kube-version "$KUBERNETES_VERSION" \
               | kubeconform -strict -summary -kubernetes-version "$KUBERNETES_VERSION" - || rc=1
+            echo "::endgroup::"
+          done
+          exit $rc
+
+  terraform:
+    name: Validate Terraform
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Check formatting
+        run: terraform fmt -check -recursive -diff
+
+      - name: Validate configurations
+        run: |
+          rc=0
+          for dir in $(find aws azure -name '*.tf' -exec dirname {} + | sort -u); do
+            echo "::group::$dir"
+            terraform -chdir="$dir" init -backend=false -input=false \
+              && terraform -chdir="$dir" validate || rc=1
             echo "::endgroup::"
           done
           exit $rc
