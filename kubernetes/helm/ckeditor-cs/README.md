@@ -10,7 +10,7 @@ Kubernetes cluster.
   - MySQL 5.6/5.7
   - PostgreSQL min. 12.0
 - External Redis cluster 3.2.6 or newer
-- Kubernetes 1.19+
+- Kubernetes 1.25+
 - Helm v3
 
 The default configuration of running this service requires the reservation of 2

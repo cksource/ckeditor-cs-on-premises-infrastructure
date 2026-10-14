@@ -16,7 +16,6 @@
 {{- end }}
 
 {{- define "mysql.labels" -}}
-app.kubernetes.io/name: {{ include "mysql.name" . }}
 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 {{ include "mysql.selectorLabels" . }}
 {{- if .Values.commonLabels }}

@@ -21,7 +21,7 @@ variant — with its own SQL database, Redis and management panel.
   OpenAI, Amazon Bedrock, Google Vertex AI or any OpenAI API-compatible
   provider)
 - File storage: AWS S3, Azure Blob Storage, filesystem or the SQL database
-- Kubernetes 1.19+
+- Kubernetes 1.25+
 - Helm v3
 
 The documentation does not prescribe fixed CPU and memory figures, so this

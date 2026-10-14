@@ -11,10 +11,10 @@ metadata:
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- if and .Values.server.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
-  ingressClassName: {{ .Values.server.ingress.className }}
-  {{- end }}
 spec:
+  {{- with .Values.server.ingress.className }}
+  ingressClassName: {{ . }}
+  {{- end }}
   {{- if .Values.server.ingress.tls }}
   tls:
     {{- range .Values.server.ingress.tls }}

@@ -9,7 +9,7 @@ Use this Helm chart to provision CKBox on your Kubernetes cluster.
   - MySQL 8.0 or newer
   - PostgreSQL min. 12.0
 - External Redis cluster 3.2.6 or newer
-- Kubernetes 1.19+
+- Kubernetes 1.25+
 - Helm v3
 
 The default configuration of running this service requires the reservation of 2

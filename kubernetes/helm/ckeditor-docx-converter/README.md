@@ -6,7 +6,7 @@ Kubernetes cluster.
 ## Minimum requirements
 - 2 CPU Cores
 - 1024MB RAM
-- Kubernetes 1.19+
+- Kubernetes 1.25+
 - Helm v3
 
 The default configuration for running this service requires the reservation of

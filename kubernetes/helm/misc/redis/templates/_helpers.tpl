@@ -16,7 +16,6 @@
 {{- end }}
 
 {{- define "redis.labels" -}}
-app.kubernetes.io/name: {{ include "redis.name" . }}
 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 {{ include "redis.selectorLabels" . }}
 {{- if .Values.commonLabels }}
