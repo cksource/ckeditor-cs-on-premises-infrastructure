@@ -44,7 +44,7 @@ Collaboration Server on its own or
 - Network resources: VPC, subnets, route tables, internet and NAT gateways.
 - One load balancer and one ECS cluster running two ECS services: the
   Collaboration Server and the CKEditor AI Service.
-- One Redis and one MySQL database in private subnets, shared by both services.
+- One Valkey (Redis-compatible) and one MySQL database in private subnets, shared by both services.
 - S3 bucket for Easy Image and collaboration storage.
 - A Cloud Map private DNS namespace so the Collaboration Server can reach the
   AI Service inside the VPC.

@@ -2,20 +2,14 @@
 
 Use this Helm chart to provision CKBox on your Kubernetes cluster.
 
-## Minimum requirements
-- 2 CPU Core
-- 1024MB RAM
-- One of the following SQL databases:
-  - MySQL 8.0 or newer
-  - PostgreSQL min. 12.0
-- External Redis cluster 3.2.6 or newer
+## Requirements
 - Kubernetes 1.25+
 - Helm v3
+- The SQL database, Redis-compatible store and other prerequisites of CKBox
+  On-Premises, as listed in its [requirements](https://ckeditor.com/docs/cs/latest/onpremises/ckbox-onpremises/requirements.html)
 
-The default configuration of running this service requires the reservation of 2
-CPU cores and 1GB of RAM in the cluster. For more information about resources
-usage look here:
-https://ckeditor.com/docs/cs/latest/onpremises/ckbox-onpremises/requirements.html
+The chart does not set `resources.requests` by default. Set them according to
+the resource guidance in the requirements linked above.
 
 ## Installation
 

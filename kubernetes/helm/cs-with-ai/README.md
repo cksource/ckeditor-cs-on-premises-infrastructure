@@ -34,15 +34,14 @@ for the product-side description of this setup.
 - [`misc/redis`](../misc/redis) — optional, disabled by default
 
 ## Requirements
-- One of the following SQL databases, shared by both services:
-  - MySQL 8.0 or newer
-  - PostgreSQL 12.0 or newer
-- External Redis 3.2.6 or newer, shared by both services
-- At least one configured LLM provider
-- Two license keys — one for the Collaboration Server, one for CKEditor AI
-  Server — and the download token(s) for both images
 - Kubernetes 1.25+
 - Helm v3
+- One SQL database and one Redis-compatible store shared by both services,
+  plus the other prerequisites of each product, as listed in the
+  [Collaboration Server On-Premises requirements](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/requirements.html) and the
+  [CKEditor AI Service On-Premises requirements](https://ckeditor.com/docs/cs/latest/onpremises/ckeditor-ai-onpremises/requirements.html)
+- Two license keys — one for the Collaboration Server, one for CKEditor AI
+  Server — and the download token(s) for both images
 
 ## Installation
 

@@ -20,7 +20,7 @@ https://www.terraform.io/intro
 - Network resources: VPC, subnets, route tables, internet and NAT gateways.
 - Load balancer and ECS cluster with an ECS task running the CKEditor AI Service
   On-Premises application.
-- Redis and MySQL databases in private subnets.
+- Valkey (Redis-compatible) and MySQL databases in private subnets.
 - S3 bucket for the AI service file storage.
 
 Note: This module will create only an HTTP listener for the load balancer. You
