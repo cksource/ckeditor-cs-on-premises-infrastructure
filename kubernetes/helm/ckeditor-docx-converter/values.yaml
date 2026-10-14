@@ -25,7 +25,7 @@ readinessProbe:
   initialDelaySeconds: 3
   periodSeconds: 5
 
-  podAnnotations: {}
+podAnnotations: {}
 
 podSecurityContext: {}
 

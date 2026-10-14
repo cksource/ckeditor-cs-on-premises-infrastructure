@@ -11,7 +11,7 @@ object storage is needed.
 ## Minimum requirements
 - 4 CPU Core
 - 4096MB RAM
-- Kubernetes 1.19+
+- Kubernetes 1.25+
 - Helm v3
 - An API key for at least one LLM provider
 

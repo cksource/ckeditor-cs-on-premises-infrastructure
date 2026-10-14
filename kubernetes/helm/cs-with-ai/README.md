@@ -41,7 +41,7 @@ for the product-side description of this setup.
 - At least one configured LLM provider
 - Two license keys — one for the Collaboration Server, one for CKEditor AI
   Server — and the download token(s) for both images
-- Kubernetes 1.19+
+- Kubernetes 1.25+
 - Helm v3
 
 ## Installation
