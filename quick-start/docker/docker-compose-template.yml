@@ -1,8 +1,6 @@
-version: '2.2'
 services:
   mysql-database:
-    image: mysql:5.7.38
-    platform: linux/amd64
+    image: mysql:8.4.11
     container_name: quick-start-mysql
     environment:
       MYSQL_ROOT_PASSWORD: password
@@ -15,7 +13,7 @@ services:
       timeout: 20s
       retries: 5
   redis:
-    image: redis:6.2.7
+    image: valkey/valkey:9.1.2
     container_name: quick-start-redis
   node-server:
     build: ./node-server/

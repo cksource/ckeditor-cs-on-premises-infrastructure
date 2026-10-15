@@ -8,7 +8,7 @@ Use this Terraform module to provision infrastructure hosted in AWS for Collabor
 
 - Network resources: VPC, subnets, route tables, internet and NAT gateways.
 - Load balancer and ECS cluster with ECS task running CKEditor Collaboration Server On-Premises application.
-- Redis and MySQL databases in private subnets.
+- Valkey (Redis-compatible) and MySQL databases in private subnets.
 - S3 bucket for Easy Image and collaboration storage.
 
 Note: This module will create only HTTP listener for the load balancer. You need to adjust the script to use your custom domain and HTTPS listeners.

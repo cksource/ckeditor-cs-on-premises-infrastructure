@@ -3,16 +3,15 @@
 Use this Helm chart to provision CKEditor Word Services on your
 Kubernetes cluster.
 
-## Minimum requirements
-- 2 CPU Cores
-- 1024MB RAM
+## Requirements
 - Kubernetes 1.25+
 - Helm v3
+- The prerequisites of CKEditor DOCX Converter On-Premises, as listed in its
+  [requirements](https://ckeditor.com/docs/cs/latest/onpremises/docx-onpremises/requirements.html)
 
-The default configuration for running this service requires the reservation of
-2 CPU cores and 1024MB of RAM in the cluster. For more information about resources
-usage look here:
-https://ckeditor.com/docs/cs/latest/onpremises/docx-onpremises/requirements.html
+The chart's default `resources` request 1 CPU core and 512MB of RAM per pod,
+so 2 CPU cores and 1GB of RAM with the default two replicas. Adjust them to the
+resource guidance in the requirements linked above.
 
 ## Installation
 

@@ -1,6 +1,6 @@
 apiVersion: v2
 name: redis
-description: Minimal Redis Helm chart
+description: Minimal Valkey (Redis-compatible) Helm chart
 type: application
 version: 1.0.0
-appVersion: "7"
+appVersion: "9.1.2"

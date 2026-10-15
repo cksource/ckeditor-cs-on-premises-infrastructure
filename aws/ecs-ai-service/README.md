@@ -5,9 +5,9 @@ CKEditor AI Service On-Premises. A single module will create all the resources
 needed to run the On-Premises application using ECS Fargate.
 
 This module deploys the AI service in its **standalone** variant — with its own
-database, Redis and management panel. If you already run Collaboration Server
+database, Valkey and management panel. If you already run Collaboration Server
 On-Premises 5.0.0 or newer (see [`aws/ecs`](/aws/ecs)) and want both services to
-share a single data layer, point the AI service at the same database and Redis
+share a single data layer, point the AI service at the same database and Valkey
 the Collaboration Server uses instead of creating new ones. See
 [Integration with Collaboration Server On-Premises](https://ckeditor.com/docs/cs/latest/onpremises/ckeditor-ai-onpremises/deployment.html#integration-with-collaboration-server-on-premises).
 
@@ -20,7 +20,7 @@ https://www.terraform.io/intro
 - Network resources: VPC, subnets, route tables, internet and NAT gateways.
 - Load balancer and ECS cluster with an ECS task running the CKEditor AI Service
   On-Premises application.
-- Redis and MySQL databases in private subnets.
+- Valkey (Redis-compatible) and MySQL databases in private subnets.
 - S3 bucket for the AI service file storage.
 
 Note: This module will create only an HTTP listener for the load balancer. You
