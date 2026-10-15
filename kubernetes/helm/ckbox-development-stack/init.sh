@@ -31,6 +31,23 @@ for addon in "${addons[@]}"; do
   fi
 done
 
+# The ingress addon returns before its admission webhook accepts connections.
+echo "Waiting for the ingress-nginx controller..."
+for _ in {1..60}; do
+  controller="$(kubectl get pod --namespace ingress-nginx \
+    --selector app.kubernetes.io/component=controller \
+    --output name 2>/dev/null)"
+  if [[ -n "$controller" ]]; then
+    break
+  fi
+  sleep 2
+done
+
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector app.kubernetes.io/component=controller \
+  --timeout=180s
+
 # Create dns configuration for `ingress-dns` addon
 sudo mkdir -p /etc/resolver
 sudo bash -c "cat << EOF > /etc/resolver/minikube-test
@@ -41,7 +58,7 @@ timeout 5
 EOF"
 
 # Create imagePullSecret for CKEditor container registry
-if ! kubectl get secret docker-cke-cs-com; then
+if ! kubectl get secret docker-cke-cs-com &>/dev/null; then
   kubectl create secret docker-registry docker-cke-cs-com \
     --docker-username "cs" \
     --docker-server "https://docker.cke-cs.com" \
@@ -49,7 +66,6 @@ if ! kubectl get secret docker-cke-cs-com; then
 fi
 
 # Install helm chart in minikube cluster
-helm repo update
 helm dependency update
 helm upgrade ckbox . \
   --install \
