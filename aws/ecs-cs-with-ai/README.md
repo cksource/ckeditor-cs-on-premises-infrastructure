@@ -4,7 +4,7 @@ Use this Terraform module to provision infrastructure hosted in AWS that runs
 CKEditor Collaboration Server On-Premises and CKEditor AI Service On-Premises
 on **one shared data layer** — the compatible mode. A single module
 creates everything needed for both applications, running them as two ECS
-Fargate services against the same database and the same Redis instance.
+Fargate services against the same database and the same Valkey instance.
 
 Running them this way means:
 
@@ -18,7 +18,7 @@ Running them this way means:
 
 There is nothing to switch on: the AI Service detects the Collaboration Server
 through the shared database by itself. What matters is that the database and
-Redis settings are identical on both sides, so this module defines them once
+Valkey settings are identical on both sides, so this module defines them once
 (`local.shared_data_layer_environment` and `local.shared_data_layer_secrets`)
 and splices them into both task definitions.
 
