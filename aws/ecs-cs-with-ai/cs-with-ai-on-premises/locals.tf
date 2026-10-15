@@ -4,7 +4,7 @@ locals {
   # the privileges both services need is enough.
   app_db_username = "cs_app"
 
-  mysql_engine_version = "8.0.46"
+  mysql_engine_version = "8.4.11"
 
   # The AI Service is reached over Cloud Map from inside the VPC, so the
   # Collaboration Server management panel can proxy AI API calls without

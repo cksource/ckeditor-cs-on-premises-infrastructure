@@ -22,11 +22,11 @@ spec:
     spec:
       containers:
         - name: redis
-          image: "redis:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - name: redis
               containerPort: 6379
-          command: ["redis-server"]
+          command: ["valkey-server"]
           args: []
           volumeMounts:
             - name: data

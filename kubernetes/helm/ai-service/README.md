@@ -12,24 +12,16 @@ variant — with its own SQL database, Redis and management panel.
 > [Integration with Collaboration Server On-Premises](https://ckeditor.com/docs/cs/latest/onpremises/ckeditor-ai-onpremises/deployment.html#integration-with-collaboration-server-on-premises).
 
 ## Requirements
-- One of the following SQL databases:
-  - MySQL 8.0 or newer
-  - PostgreSQL 12.0 or newer
-- External Redis 3.2.6 or newer (single instance or Redis Cluster; Redis
-  Sentinel is not supported)
-- At least one configured LLM provider (OpenAI, Anthropic, Google, Azure
-  OpenAI, Amazon Bedrock, Google Vertex AI or any OpenAI API-compatible
-  provider)
-- File storage: AWS S3, Azure Blob Storage, filesystem or the SQL database
 - Kubernetes 1.25+
 - Helm v3
+- The SQL database, Redis-compatible store, LLM provider, file storage and
+  other prerequisites of CKEditor AI Service On-Premises, as listed in its
+  [requirements](https://ckeditor.com/docs/cs/latest/onpremises/ckeditor-ai-onpremises/requirements.html)
 
 The documentation does not prescribe fixed CPU and memory figures, so this
 chart leaves `resources.requests` empty — monitor your deployment and adjust
 them to your traffic. Running at least 3 replicas is recommended for high
-availability, which is the default of this chart. For more information look
-here:
-https://ckeditor.com/docs/cs/latest/onpremises/ckeditor-ai-onpremises/requirements.html
+availability, which is the default of this chart.
 
 The database has to exist before the service starts, and the database user
 needs at least the `ALTER`, `CREATE`, `DELETE`, `DROP`, `INDEX`, `INSERT`,

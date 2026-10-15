@@ -19,7 +19,7 @@ resource "aws_security_group" "rds_sg" {
 
 resource "aws_rds_cluster_parameter_group" "rds_pg" {
   name        = "cs-with-ai-on-premises-rds-pg"
-  family      = "mysql8.0"
+  family      = "mysql8.4"
   description = "RDS cluster parameter group for CS with AI On-Premises database"
 
   # Both services run migrations that create functions and triggers, so this is
@@ -68,11 +68,11 @@ resource "aws_rds_cluster" "cluster" {
 # One Redis for both services, for the same reason.
 resource "aws_elasticache_replication_group" "redis" {
   replication_group_id = "cs-with-ai-on-premises"
-  description          = "Redis for CS with AI On-Premises"
+  description          = "Valkey for CS with AI On-Premises"
 
-  engine               = "redis"
-  engine_version       = "7.0"
-  parameter_group_name = "default.redis7"
+  engine               = "valkey"
+  engine_version       = "9.1"
+  parameter_group_name = "default.valkey9"
   port                 = 6379
 
   node_type          = var.redis.node_type

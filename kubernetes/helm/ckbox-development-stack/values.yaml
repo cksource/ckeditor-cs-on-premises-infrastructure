@@ -24,8 +24,6 @@ ckbox:
 
 mysql:
   enabled: true
-  image:
-    tag: "8.4.4"
   auth:
     database: ckbox-on-premises
     auth: ckbox
