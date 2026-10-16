@@ -3,20 +3,16 @@
 Use this Helm chart to provision CKEditor Collaboration Server on your
 Kubernetes cluster.
 
-## Minimum requirements
-- 2 CPU Core
-- 1024MB RAM
-- One of the following SQL databases:
-  - MySQL 5.6/5.7
-  - PostgreSQL min. 12.0
-- External Redis cluster 3.2.6 or newer
+## Requirements
 - Kubernetes 1.25+
 - Helm v3
+- The SQL database, Redis-compatible store and other prerequisites of
+  Collaboration Server On-Premises, as listed in its
+  [requirements](https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/requirements.html)
 
-The default configuration of running this service requires the reservation of 2
-CPU cores and 1GB of RAM in the cluster. For more information about resources
-usage look here:
-https://ckeditor.com/docs/cs/latest/onpremises/cs-onpremises/requirements.html#docker
+The chart's default `server.resources` request 1 CPU core and 512MB of RAM per
+pod, so 2 CPU cores and 1GB of RAM with the default two replicas. Adjust them
+to the resource guidance in the requirements linked above.
 
 ## Installation
 

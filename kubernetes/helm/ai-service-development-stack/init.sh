@@ -34,11 +34,7 @@ for addon in "${addons[@]}"; do
   fi
 done
 
-# Enabling the `ingress` addon returns before the ingress-nginx admission
-# webhook accepts connections, and an already-enabled addon is skipped above
-# without any wait at all. Installing the chart before the controller is ready
-# fails the release on `validate.nginx.ingress.kubernetes.io`, so wait it out.
-# The pod itself can take a moment to be created, hence the first loop.
+# The ingress addon returns before its admission webhook accepts connections.
 echo "Waiting for the ingress-nginx controller..."
 for _ in {1..60}; do
   controller="$(kubectl get pod --namespace ingress-nginx \
@@ -83,8 +79,7 @@ ai-service:
       PROVIDERS: '$PROVIDERS'
 EOF
 
-# Install helm chart in minikube cluster. Every chart dependency is a local
-# `file://` path, so there are no repositories to update.
+# Install helm chart in minikube cluster
 helm dependency update
 helm upgrade ai-service . \
   --install \

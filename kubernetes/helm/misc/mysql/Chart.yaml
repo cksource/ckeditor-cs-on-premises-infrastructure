@@ -3,4 +3,4 @@ name: mysql
 description: Minimal MySQL Helm chart
 type: application
 version: 1.0.0
-appVersion: "8.4.4"
+appVersion: "8.4.11"

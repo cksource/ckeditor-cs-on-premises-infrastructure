@@ -1,3 +1,4 @@
 image:
-  tag: "7"
+  repository: valkey/valkey
+  tag: "9.1.2"
 commonLabels: {}

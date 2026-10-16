@@ -39,8 +39,6 @@ ckeditor-cs:
 
 mysql:
   enabled: true
-  image:
-    tag: "8.4.4"
   auth:
     database: cs-on-premises
     auth: ckeditor-cs
