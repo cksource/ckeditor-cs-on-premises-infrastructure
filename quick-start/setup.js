@@ -7,7 +7,6 @@ const fs = require( 'fs' );
 const exec = util.promisify( require( 'child_process' ).exec );
 const execSync = require( 'child_process' ).execSync;
 const spawn = require( 'child_process' ).spawn;
-const chalk = require( 'chalk' );
 
 const { serverIsUp, wait } = require( './utils/networkUtils' );
 const logger = require( './utils/logger' );
@@ -40,6 +39,8 @@ const error = require( './utils/errors.json' );
 	process.on( 'SIGINT', () => {
 		process.exit( 2 );
 	} );
+
+	await logger.init();
 
 	try {
 		printWelcomeMessage();
@@ -77,7 +78,7 @@ const error = require( './utils/errors.json' );
 function printWelcomeMessage() {
 	/* eslint-disable max-len */
 	logger.info( '\n\n' );
-	logger.info( `The ${ chalk.green( 'Collaboration Server On-Premises Quick-Start' ) } installation` );
+	logger.info( `The ${ logger.chalk.green( 'Collaboration Server On-Premises Quick-Start' ) } installation` );
 	logger.info( 'This setup script allows you to quickly set up the infrastructure needed to use CKEditor 5 with Real-Time Collaboration and Collaboration Server On-Premises.' );
 	logger.warning( 'The Collaboration Server On-Premises Quick-Start can be only used for testing purposes during local development and it cannot be used in production.' );
 }
@@ -273,8 +274,8 @@ async function createEnvironment( context ) {
 }
 
 function printInstructionsAfterInstallation( context ) {
-	logger.info( `${ chalk.green( '\nInstallation complete' ) }` );
-	logger.info( `Visit ${ chalk.underline.cyan( `http://${ context.ipAddr }:${ context.nodePort }` ) } to start collaborating` );
+	logger.info( `${ logger.chalk.green( '\nInstallation complete' ) }` );
+	logger.info( `Visit ${ logger.chalk.underline.cyan( `http://${ context.ipAddr }:${ context.nodePort }` ) } to start collaborating` );
 }
 
 async function askForCredential( credential ) {
