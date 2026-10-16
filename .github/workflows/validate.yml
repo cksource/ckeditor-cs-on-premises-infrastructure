@@ -3,17 +3,7 @@ name: Validate
 on:
   push:
     branches: [main]
-    paths:
-      - "kubernetes/helm/**"
-      - "aws/**"
-      - "azure/**"
-      - ".github/workflows/validate.yml"
   pull_request:
-    paths:
-      - "kubernetes/helm/**"
-      - "aws/**"
-      - "azure/**"
-      - ".github/workflows/validate.yml"
 
 permissions:
   contents: read
